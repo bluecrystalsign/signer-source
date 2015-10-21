@@ -20,6 +20,10 @@
 		<module>..\bluecrystal.deps.service</module>
 		<module>..\bluecrystal.server.jaxws.tomcat</module>
 		<module>..\bluecrystal.server.rest.jboss63</module>
+		<module>..\bluecrystal.client.jaxws.jdk8</module>
+		<module>..\bluecrystal.example.server.jaxws.tomcat</module>
+		
+		
 	</modules>
 
 </project>
