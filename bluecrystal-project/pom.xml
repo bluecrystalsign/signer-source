@@ -19,6 +19,7 @@
 		<module>..\bluecrystal.deps.bc_g1</module>
 		<module>..\bluecrystal.deps.service</module>
 		<module>..\bluecrystal.server.jaxws.tomcat</module>
+		<module>..\bluecrystal.server.rest.jboss63</module>
 	</modules>
 
 </project>

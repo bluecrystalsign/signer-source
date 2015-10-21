@@ -30,7 +30,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import bluecrystal.domain.CertStatus;
+import bluecrystal.domain.OperationStatus;
 import bluecrystal.domain.StatusConst;
 import bluecrystal.domain.helper.IttruLoggerFactory;
 import bluecrystal.service.exception.RevokedException;
@@ -55,13 +55,13 @@ public class StatusValidatorImpl implements StatusValidator {
 		this.useOcsp = useOcsp;
 	}
 
-	public CertStatus verifyStatusEE(Collection<X509Certificate> certsOnPath, 
+	public OperationStatus verifyStatusEE(Collection<X509Certificate> certsOnPath, 
 			Date date, List<String> crlDist)
 			throws IOException, CertificateException, CRLException,
 			UndefStateException, RevokedException {
 		Iterator<X509Certificate> it = certsOnPath.iterator();
-		CertStatus eeCertStatus = new CertStatus(StatusConst.GOOD, null);
-		CertStatus nextCertStatus = new CertStatus(StatusConst.GOOD, null);
+		OperationStatus eeCertStatus = new OperationStatus(StatusConst.GOOD, null);
+		OperationStatus nextCertStatus = new OperationStatus(StatusConst.GOOD, null);
 
 		X509Certificate nextCert = null;
 		X509Certificate nextIssuer = null;
@@ -101,12 +101,12 @@ public class StatusValidatorImpl implements StatusValidator {
 
 	
 	
-	public CertStatus verifyStatus(Collection<X509Certificate> certsOnPath, Date date)
+	public OperationStatus verifyStatus(Collection<X509Certificate> certsOnPath, Date date)
 			throws IOException, CertificateException, CRLException,
 			UndefStateException, RevokedException {
 		Iterator<X509Certificate> it = certsOnPath.iterator();
-		CertStatus eeCertStatus = new CertStatus(StatusConst.GOOD, null);
-		CertStatus nextCertStatus = new CertStatus(StatusConst.GOOD, null);
+		OperationStatus eeCertStatus = new OperationStatus(StatusConst.GOOD, null);
+		OperationStatus nextCertStatus = new OperationStatus(StatusConst.GOOD, null);
 
 		X509Certificate nextCert = null;
 		X509Certificate nextIssuer = null;

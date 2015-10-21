@@ -25,12 +25,12 @@ import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.List;
 
-import bluecrystal.domain.CertStatus;
+import bluecrystal.domain.OperationStatus;
 import bluecrystal.service.exception.RevokedException;
 import bluecrystal.service.exception.UndefStateException;
 
 public interface CrlValidator {
-	public CertStatus verifyLCR(X509Certificate nextCert, Date date, List<String> crlDist)
+	public OperationStatus verifyLCR(X509Certificate nextCert, Date date, List<String> crlDist)
 	throws IOException, CertificateException, CRLException,
 	UndefStateException, RevokedException;
 }

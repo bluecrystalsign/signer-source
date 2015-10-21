@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>bluecrystal.deps</groupId>
 	<artifactId>bluecrystal.deps.bc_g1</artifactId>
-	<version>1.3</version>
+	<version>1.3.1</version>
 	<dependencies>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
@@ -29,6 +29,12 @@
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcpkix-jdk15on</artifactId>
 			<version>1.48</version>
+		</dependency>
+
+		<dependency>
+			<groupId>bluecrystal.deps</groupId>
+			<artifactId>bluecrystal.deps.domain</artifactId>
+			<version>1.3.1</version>
 		</dependency>
 	</dependencies>
 	<parent>

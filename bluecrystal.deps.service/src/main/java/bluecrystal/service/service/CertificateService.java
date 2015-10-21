@@ -63,7 +63,7 @@ import org.slf4j.LoggerFactory;
 import bluecrystal.bcdeps.helper.DerEncoder;
 import bluecrystal.bcdeps.helper.PkiOps;
 import bluecrystal.domain.CertConstants;
-import bluecrystal.domain.CertStatus;
+import bluecrystal.domain.OperationStatus;
 import bluecrystal.domain.CiKeyUsage;
 import bluecrystal.domain.StatusConst;
 import bluecrystal.domain.helper.IttruLoggerFactory;
@@ -247,13 +247,13 @@ public class CertificateService {
 	//
 	// }
 
-	public CertStatus isValidForSign(Date refDate, X509Certificate cert)
+	public OperationStatus isValidForSign(Date refDate, X509Certificate cert)
 			throws Exception, IOException, CertificateException, CRLException,
 			UndefStateException, RevokedException {
 		RSAKey rsaKey = (RSAKey) (cert.getPublicKey());
 		int keySize = rsaKey.getModulus().bitLength();
 		if (!forSign(cert) || keySize < minKeyLen) {
-			return new CertStatus(StatusConst.UNSABLEKEY, null);
+			return new OperationStatus(StatusConst.UNSABLEKEY, null);
 		}
 		return isValid(refDate, cert);
 	}
@@ -581,17 +581,17 @@ public class CertificateService {
 						|| ku[CiKeyUsage.nonRepudiation];
 	}
 
-	public CertStatus isValid(Date refDate, X509Certificate cert)
+	public OperationStatus isValid(Date refDate, X509Certificate cert)
 			throws Exception, IOException, CertificateException, CRLException,
 			UndefStateException, RevokedException {
 		return isValid(refDate, cert, true);
 	}
 
-	public CertStatus isValid(Date refDate, X509Certificate cert,
+	public OperationStatus isValid(Date refDate, X509Certificate cert,
 			boolean verifyRevoke) throws Exception, IOException,
 			CertificateException, CRLException, UndefStateException,
 			RevokedException {
-		CertStatus ret = new CertStatus(StatusConst.UNKNOWN, null);
+		OperationStatus ret = new OperationStatus(StatusConst.UNKNOWN, null);
 		List<X509Certificate> certsOnPath = buildPath(cert);
 		if (certsOnPath != null) {
 
@@ -602,12 +602,12 @@ public class CertificateService {
 							this.getCrlDistributionPoints(cert));
 				}
 			} catch (Exception e) {
-				ret = new CertStatus(StatusConst.UNTRUSTED, null);
+				ret = new OperationStatus(StatusConst.UNTRUSTED, null);
 			}
 
 		} else {
 			LOG.error("** ERROR:certsOnPath == null " + new Date());
-			ret = new CertStatus(StatusConst.UNTRUSTED, null);
+			ret = new OperationStatus(StatusConst.UNTRUSTED, null);
 		}
 		return ret;
 	}

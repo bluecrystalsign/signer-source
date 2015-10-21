@@ -26,15 +26,15 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import bluecrystal.domain.CertStatus;
+import bluecrystal.domain.OperationStatus;
 import bluecrystal.service.exception.RevokedException;
 import bluecrystal.service.exception.UndefStateException;
 
 public interface StatusValidator {
 	public void setUseOcsp(boolean useOcsp);
-	public CertStatus verifyStatus(Collection<X509Certificate> certsOnPath, Date date)
+	public OperationStatus verifyStatus(Collection<X509Certificate> certsOnPath, Date date)
 	throws IOException, CertificateException, CRLException,
 	UndefStateException, RevokedException;	
-	public CertStatus verifyStatusEE(Collection<X509Certificate> certsOnPath, Date date, List<String> crlDist)	throws IOException, CertificateException, CRLException,
+	public OperationStatus verifyStatusEE(Collection<X509Certificate> certsOnPath, Date date, List<String> crlDist)	throws IOException, CertificateException, CRLException,
 	UndefStateException, RevokedException;	
 }

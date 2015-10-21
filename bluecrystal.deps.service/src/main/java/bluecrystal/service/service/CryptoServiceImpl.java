@@ -38,7 +38,7 @@ import sun.misc.BASE64Decoder;
 import bluecrystal.bcdeps.helper.DerEncoder;
 import bluecrystal.domain.AppSignedInfo;
 import bluecrystal.domain.AppSignedInfoEx;
-import bluecrystal.domain.CertStatus;
+import bluecrystal.domain.OperationStatus;
 import bluecrystal.domain.SignCompare;
 import bluecrystal.domain.SignCompare2;
 import bluecrystal.domain.SignPolicyRef;
@@ -140,7 +140,7 @@ public class CryptoServiceImpl implements CryptoService {
 		return DerEncoder.extractDTOSignPolicyOid(sign, signCompare);
 	}
 
-	public boolean validateSignByContent(byte[] signCms, byte[] content,
+	public int validateSignByContent(byte[] signCms, byte[] content,
 			Date dtSign, boolean verifyCRL) throws Exception {
 		byte[] origHash = null;
 		String hashIdStr = extractHashId(signCms);
@@ -152,64 +152,66 @@ public class CryptoServiceImpl implements CryptoService {
 		return validateSign(signCms, origHash, dtSign, verifyCRL);
 	}
 
-	public boolean validateSign(byte[] signCms, byte[] origHash, Date dtSign,
+	public int validateSign(byte[] signCms, byte[] origHash, Date dtSign,
 			boolean verifyCRL) throws Exception {
 
+		boolean ret = true;
+		OperationStatus operationStatus = null;
+
+		// Extract Signature Info from CMS
 		SignCompare signCompare = extractSignCompare(signCms);
 		X509Certificate cert = certServ.decodeEE(signCms);
-
-		boolean ret = true;
-		boolean validateCertB = Boolean.parseBoolean(validateCert);
-		if (validateCertB) {
-			CertStatus certStatus = null;
-			if (dtSign != null) {
-				certStatus = certServ.isValid(dtSign, cert, verifyCRL);
-			} else {
-				certStatus = certServ.isValid(signCompare.getSigningTime(),
-						cert, verifyCRL);
-			}
-
-			if (!(certStatus.getStatus() == StatusConst.GOOD || certStatus
-					.getStatus() == StatusConst.UNKNOWN)) {
-				return false;
-			}
-		}
 		String hashIdStr = extractHashId(signCms);
 		byte[] sign = extractSignature(signCms);
 
-		int hashId = NDX_SHA1;
-
-		// byte[] origHash = null;
-		byte[] hashSa = null;
-		byte[] contentHash = null;
-
-		if (ID_SHA256.compareTo(hashIdStr) == 0) {
-			hashId = NDX_SHA256;
-			// origHash = calcSha256(content);
-			if (signCompare.getSignedAttribs() == null
-					|| signCompare.getSignedAttribs().size() == 0) {
-				contentHash = origHash;
+		
+		// Validate Certificate Status
+		boolean validateCertB = Boolean.parseBoolean(validateCert);
+		if (validateCertB) {
+			if (dtSign != null) {
+				operationStatus = certServ.isValid(dtSign, cert, verifyCRL);
 			} else {
-				hashSa = hashSignedAttribSha256(origHash,
-						signCompare.getSigningTime(), cert);
-				contentHash = calcSha256(hashSa);
+				operationStatus = certServ.isValid(signCompare.getSigningTime(),
+						cert, verifyCRL);
 			}
-
 		} else {
-
-			// origHash = calcSha1(content);
-			if (signCompare.getSignedAttribs() == null
-					|| signCompare.getSignedAttribs().size() == 0) {
-				contentHash = origHash;
-			} else {
-				hashSa = hashSignedAttribSha1(origHash,
-						signCompare.getSigningTime(), cert);
-				contentHash = calcSha1(hashSa);
-			}
+			operationStatus = new OperationStatus(StatusConst.GOOD, new Date());
 		}
-		ret = signVerifyServ.verify(hashId, contentHash, sign, cert);
+//			if (!(operationStatus.getStatus() == StatusConst.GOOD || 
+//				operationStatus.getStatus() == StatusConst.UNKNOWN)) {
+//				return false;
+//			}
+			
+			// Go on with Validation,otherwise return error...
+			if (operationStatus.getStatus() == StatusConst.GOOD ){
+				int hashId = NDX_SHA1;
+				byte[] contentHash = null;
+				
+				if (signCompare.getSignedAttribs() == null
+						|| signCompare.getSignedAttribs().size() == 0) {
+					contentHash = origHash;
+				} else {
+					if (ID_SHA256.compareTo(hashIdStr) == 0) {
+						hashId = NDX_SHA256;
+						byte[] hashSa = hashSignedAttribSha256(origHash,
+									signCompare.getSigningTime(), cert);
+							contentHash = calcSha256(hashSa);
 
-		return ret;
+					} else {
+						byte[] hashSa = hashSignedAttribSha1(origHash,
+									signCompare.getSigningTime(), cert);
+							contentHash = calcSha1(hashSa);
+					}
+				}
+				
+				ret = signVerifyServ.verify(hashId, contentHash, sign, cert);
+				if(!ret){
+					operationStatus.setStatus(StatusConst.INVALID_SIGN);
+				}
+			}
+
+
+		return operationStatus.getStatus();
 	}
 
 

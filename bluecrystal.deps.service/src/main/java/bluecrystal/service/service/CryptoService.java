@@ -53,7 +53,7 @@ public interface CryptoService {
 	public SignPolicyRef extractVerifyRefence(byte[] policy) throws IOException, ParseException;
 	public boolean validateSignatureByPolicy(SignPolicyRef spr, SignCompare sc);
 	
-	public boolean  validateSign(byte[] sign, byte[] content,
+	public int  validateSign(byte[] sign, byte[] content,
 			Date dtSign, boolean verifyCRL) throws Exception;
 
 	SignCompare2 extractSignCompare2(byte[] sign) throws Exception;

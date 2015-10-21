@@ -30,7 +30,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import bluecrystal.domain.CertStatus;
+import bluecrystal.domain.OperationStatus;
 import bluecrystal.domain.StatusConst;
 import bluecrystal.service.exception.RevokedException;
 import bluecrystal.service.exception.UndefStateException;
@@ -45,7 +45,7 @@ public class CrlValidatorImpl implements CrlValidator {
 		this.lcrLoader = lcrLoader;
 	}
 
-	public CertStatus verifyLCR(X509Certificate nextCert, 
+	public OperationStatus verifyLCR(X509Certificate nextCert, 
 			Date date, List<String> distPoints)
 			throws IOException, CertificateException, CRLException,
 			UndefStateException, RevokedException {
@@ -66,18 +66,18 @@ public class CrlValidatorImpl implements CrlValidator {
 
 				if (lcr.getThisUpdate().before(date)) {
 					Date upd = lcr.getNextUpdate();
-					return new CertStatus(StatusConst.UNKNOWN, upd);
+					return new OperationStatus(StatusConst.UNKNOWN, upd);
 				}
 				Date upd = lcr.getNextUpdate();
-				return new CertStatus(StatusConst.GOOD, upd);
+				return new OperationStatus(StatusConst.GOOD, upd);
 			}
 			else {
 				LOG.error("LCR is NULL");
-				return new CertStatus(StatusConst.UNTRUSTED, null);
+				return new OperationStatus(StatusConst.UNTRUSTED, null);
 			}
 		} else {
 			LOG.error("CRL DP not found");
-			return new CertStatus(StatusConst.UNKNOWN, null);
+			return new OperationStatus(StatusConst.UNKNOWN, null);
 		}
 	}
 }

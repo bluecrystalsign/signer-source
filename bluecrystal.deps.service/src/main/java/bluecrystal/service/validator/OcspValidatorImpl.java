@@ -41,7 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import bluecrystal.bcdeps.helper.DerEncoder;
-import bluecrystal.domain.CertStatus;
+import bluecrystal.domain.OperationStatus;
 import bluecrystal.domain.StatusConst;
 import bluecrystal.service.exception.OCSPQueryException;
 import bluecrystal.service.exception.RevokedException;
@@ -58,7 +58,7 @@ public class OcspValidatorImpl implements OcspValidator {
 		super();
 	}	
 	
-	public CertStatus verifyOCSP(X509Certificate nextCert,
+	public OperationStatus verifyOCSP(X509Certificate nextCert,
 			X509Certificate nextIssuer, Date date) throws IOException,
 			CertificateException, CRLException, UndefStateException,
 			RevokedException {
@@ -79,11 +79,11 @@ public class OcspValidatorImpl implements OcspValidator {
 			if (ocspResponse != null) {
 				Date valid = xtractNextUpdate(ocspResponse);
 				if (valid != null) {
-					return new CertStatus(StatusConst.GOOD, valid);
+					return new OperationStatus(StatusConst.GOOD, valid);
 				} else {
 					Date goodUntil = new Date();
 					goodUntil = new Date(goodUntil.getTime() + MIN_VALID);
-					return new CertStatus(StatusConst.GOOD, goodUntil);
+					return new OperationStatus(StatusConst.GOOD, goodUntil);
 				}
 			}
 
@@ -92,7 +92,7 @@ public class OcspValidatorImpl implements OcspValidator {
 		} catch (OCSPQueryException e) {
 			LOG.error("Error executing OCSP Operation",e);
 		}
-		return new CertStatus(StatusConst.UNKNOWN, null);
+		return new OperationStatus(StatusConst.UNKNOWN, null);
 	}
 
 	private Date xtractNextUpdate(OCSPResp ocspResponse) throws OCSPQueryException {

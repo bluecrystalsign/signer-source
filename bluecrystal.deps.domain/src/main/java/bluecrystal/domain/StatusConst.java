@@ -36,5 +36,8 @@ public class StatusConst {
 	public final static int AACOMPROMISE = 110;
 	public final static int UNSABLEKEY = 1000;
 	public final static int UNTRUSTED = 1001;
-	public final static int LAST_STATUS = UNTRUSTED;
+	
+	public final static int INVALID_SIGN = 9999;
+	
+	public final static int LAST_STATUS = INVALID_SIGN;
 }
