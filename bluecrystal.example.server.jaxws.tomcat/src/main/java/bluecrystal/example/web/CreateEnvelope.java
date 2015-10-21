@@ -21,9 +21,8 @@ package bluecrystal.example.web;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.MessageDigest;
-import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -33,15 +32,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import sun.misc.BASE64Encoder;
+import com.google.gson.Gson;
+
 import bluecrystal.example.web.domain.SignedEnvelope;
 import bluecrystal.example.web.util.Convert;
 import bluecrystal.service.v1.icpbr.Exception_Exception;
 import bluecrystal.service.v1.icpbr.IcpbrService;
 import bluecrystal.service.v1.icpbr.IcpbrService_Service;
-import bluecrystal.service.v1.icpbr.Signature;
-
-import com.google.gson.Gson;
 
 /**
  * Servlet implementation class CreateEnvelope
@@ -106,11 +103,11 @@ public class CreateEnvelope extends HttpServlet {
 		if(alg == null || alg.compareToIgnoreCase("sha256")==0){
 			algSha256 = true;
 
-			List<Signature> signatute = new ArrayList<Signature>();
-			Signature sign = new Signature();
-			sign.setOrigHashB64(hash_valueb64);
-			sign.setSignB64(signedValueb64);
-			sign.setSigningTime(parseDate(timeValue));
+//			List<Signature> signatute = new ArrayList<Signature>();
+//			Signature sign = new Signature();
+//			sign.setOrigHashB64(hash_valueb64);
+//			sign.setSignB64(signedValueb64);
+//			sign.setSigningTime(parseDate(timeValue));
 //			ret = serv.composeCoSignEnvelopeADRB21(signatute );
 
 			ret = serv.composeEnvelopeADRB21(signedValueb64, certb64, hash_valueb64, parseDate(timeValue));
@@ -153,7 +150,8 @@ public class CreateEnvelope extends HttpServlet {
 		hashSum.update(Convert.readFile(filename));
 		byte[] digestResult = hashSum.digest();
 		
-		String digestB64 = (new BASE64Encoder()).encode(digestResult);
+		Base64.Encoder encoder = Base64.getEncoder(); 
+		String digestB64 = new String(encoder.encode(digestResult));
 		return serv.validateSign(ret, digestB64, Convert.asXMLGregorianCalendar(new Date()), false);
 	}
 
