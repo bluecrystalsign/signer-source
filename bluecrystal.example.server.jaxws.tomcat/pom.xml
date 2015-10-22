@@ -49,6 +49,19 @@
 	</dependencies>
 	<build>
 		<finalName>example</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<archiveClasses>true</archiveClasses>
+					<warName>example</warName>
+					<outputDirectory>../dist</outputDirectory>
+				</configuration>
+			</plugin>
+		</plugins>
+
 	</build>
 
 	<parent>

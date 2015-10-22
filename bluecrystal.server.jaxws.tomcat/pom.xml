@@ -41,6 +41,7 @@
 				<configuration>
 					<archiveClasses>true</archiveClasses>
 					<warName>bluc</warName>
+					<outputDirectory>../dist</outputDirectory>
 				</configuration>
 			</plugin>
 		</plugins>
