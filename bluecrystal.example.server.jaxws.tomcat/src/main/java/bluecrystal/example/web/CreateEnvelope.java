@@ -21,7 +21,6 @@ package bluecrystal.example.web;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.MessageDigest;
-import java.util.Base64;
 import java.util.Date;
 
 import javax.servlet.ServletException;
@@ -31,6 +30,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
+
+import org.bouncycastle.util.encoders.Base64;
 
 import com.google.gson.Gson;
 
@@ -150,8 +151,8 @@ public class CreateEnvelope extends HttpServlet {
 		hashSum.update(Convert.readFile(filename));
 		byte[] digestResult = hashSum.digest();
 		
-		Base64.Encoder encoder = Base64.getEncoder(); 
-		String digestB64 = new String(encoder.encode(digestResult));
+//		Base64.Encoder encoder = Base64.getEncoder(); 
+		String digestB64 = new String(Base64.encode(digestResult));
 		return serv.validateSign(ret, digestB64, Convert.asXMLGregorianCalendar(new Date()), false);
 	}
 
