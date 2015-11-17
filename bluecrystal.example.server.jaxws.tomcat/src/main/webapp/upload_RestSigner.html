@@ -20,7 +20,7 @@
 
 <html>
 <head>
-<title>ActiveX - Assinatura com Politica de Assinatura
+<title>Extensão do Chrome - Assinatura com Politica de Assinatura
 	(ICP-Brasil)</title>
 <script type="text/javascript"
 	src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
@@ -70,6 +70,7 @@
 
             function uploadComplete(event) {
                 document.getElementById("status").innerHTML = event.target.responseText;
+                assinar();
             }
         </script>
 <style>
@@ -96,18 +97,7 @@ $(document).ready(function() {
 
 	try
 	{
-	 $.ajax({
-	        type: 'GET',
-	        url: 'http://localhost:8612/test',
-	        data: {},
-	        success: function (data) {
-	        	
-	        	
-	        },
-         error: function (error) {
-             alert('error: Não foi possivel contactar o restSigner');
-         }
-		});
+		isActive();
 	}
 	catch(Err)
 	{
@@ -115,15 +105,25 @@ $(document).ready(function() {
 		alert('Erro (catch): ' + Err);
 	}
 
-	
-	
-	$("#signBtn").click(function(event) {
 
-		<!-- STEP 1: LIST CERT -->
-		event.preventDefault();
-		assinar();
-	});
 });
+
+function isActive(){
+	 $.ajax({
+	        type: 'GET',
+	        url: 'http://localhost:8612/test',
+	        data: {},
+	        success: function (data) {
+	        return true;	
+	        	
+	        },
+      error: function (error) {
+    	  alert('error: Não foi possivel contactar o restSigner');
+          return false;
+      }
+	});
+	
+}
 
 
 function createEnvelope(certificate, payload, hashAlg, time_value, hash_value, sign)
@@ -161,7 +161,7 @@ function createEnvelope(certificate, payload, hashAlg, time_value, hash_value, s
 	
 }
 
-function signRest(certificate, thumbprint, payload, hashAlg, time_value, hash_value)
+function signContent(certificate, thumbprint, payload, hashAlg, time_value, hash_value)
 {
     $.ajax({
         type: 'GET',
@@ -197,7 +197,7 @@ function loadSignature(certificate, thumbprint, hashAlg)
             sa_value = data.sa_value;
             
             
-            signRest(certificate, thumbprint, sa_value,hashAlg, time_value, hash_value);
+            signContent(certificate, thumbprint, sa_value,hashAlg, time_value, hash_value);
 
             <!-- End Sign -->
 	
@@ -209,71 +209,83 @@ function loadSignature(certificate, thumbprint, hashAlg)
 	
 }
 
+var alg = 'sha1';
+var cert_thumb = '';
+var cert_content = '';
+
+function loadCert(){
+	$.ajax({
+	        type: 'GET',
+	        url: 'http://localhost:8612/cert',
+	        data: {},
+	        success: function (data) {
+	        	cert_thumb = data.thumbprint;
+	        	cert_content = data.certificate
+
+			getKeySize(data.thumbprint); 	        	
+        	<!-- parseCert -->
+        	
+        	parseCert(data.certificate);
+        	
+        	<!-- Fim do Cert (1) -->
+        	
+	        }
+	       });
+	
+}
+
+function getKeySize(thumbprint){
+	
+ 	<!-- keySize -->
+  	 $.ajax({
+        type: 'GET',
+        url: 'http://localhost:8612/keySize',
+        data: {thumbprint : thumbprint},
+        success: function (data) {
+        	
+            
+			if(data.size >= 2048){
+				alg = 'sha256';
+			}
+			loadSignature(cert_content, cert_thumb, alg);
+        },
+     error: function (error) {
+         alert('error: Não foi possivel contactar o restSigner');
+     }
+	});
+
+}
+
+function parseCert(certificate){
+	$.ajax({
+        type: 'GET',
+        url: 'ParseCert',
+        data: {cert:  certificate},
+        success: function (data) {
+        	var json = $.parseJSON(data);
+        	var html = '<table><tr><th>Nome</th><th>Valor</th></tr>';
+        	 
+        	for(var i = 0; i < json.length; i++){
+	        	html += '<tr><td>'+json[i].name+'</td><td>'+json[i].value+'</td></tr>';
+        	 }
+        	 html += '</table>';
+        	 $("#parsedCert").html(html);
+
+        },
+        error: function (error) {
+            alert('error: ' + eval(error));
+        }
+	});
+}
+
 function assinar()
 {
 	try
 		{
-		 var alg = 'sha1';
-		 var cert_thumb = '';
-		 var cert_content = '';
+			loadCert();
 		 
     	<!-- 1 do Cert -->
 
-    	$.ajax({
- 	        type: 'GET',
- 	        url: 'http://localhost:8612/cert',
- 	        data: {},
- 	        success: function (data) {
- 	        	cert_thumb = data.thumbprint;
- 	        	cert_content = data.certificate
- 	        	<!-- keySize -->
-	 	      	 $.ajax({
-	 		        type: 'GET',
-	 		        url: 'http://localhost:8612/keySize',
-	 		        data: {thumbprint : data.thumbprint},
-	 		        success: function (data) {
-	 		        	
-	 		            
-	 					if(data.size >= 2048){
-	 						alg = 'sha256';
-	 					}
-	 					loadSignature(cert_content, cert_thumb, alg);
-	 		        },
-	 	         error: function (error) {
-	 	             alert('error: Não foi possivel contactar o restSigner');
-	 	         }
-	 			});
- 	        	
-	        	<!-- parseCert -->
-	        	
-	        	
-	        	$.ajax({
-	    	        type: 'GET',
-	    	        url: 'ParseCert',
-	    	        data: {cert:  data.certificate},
-	    	        success: function (data) {
-	    	        	var json = $.parseJSON(data);
-	    	        	var html = '<table><tr><th>Nome</th><th>Valor</th></tr>';
-	    	        	 
-	    	        	for(var i = 0; i < json.length; i++){
-	    		        	html += '<tr><td>'+json[i].name+'</td><td>'+json[i].value+'</td></tr>';
-	    	        	 }
-	    	        	 html += '</table>';
-	    	        	 $("#parsedCert").html(html);
-
-	    	        },
-	                error: function (error) {
-	                    alert('error: ' + eval(error));
-	                }
-	    		});
-
-	        	
-	        	
-	        	
-	        	<!-- Fim do Cert (1) -->
-	        	
- 	        }
- 	       });
 		}
 		catch(Err)
 		{
@@ -314,7 +326,6 @@ function assinar()
 		selecione o certificado que deseja utilizar e aguarde.</br> Serão exibidos
 		os dados do certificado e em seguida das assinatura.
 	</h1>
-	<button id="signBtn" type="submit">Assinar</button>
 	<p>
 	<h1>Certificado</h1>
 	<br />

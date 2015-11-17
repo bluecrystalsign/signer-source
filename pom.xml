@@ -23,6 +23,7 @@
 		<module>bluecrystal.example.server.jaxws.tomcat</module>
 		<module>bluecrystal.client.applet.pkcs11</module>
 		<module>bluecrystal.client.applet.capi</module>
+		<module>bluecrystal.server.rest.tomcat</module>
 
 	</modules>
 </project>
