@@ -14,19 +14,39 @@
 
 	</dependencies>
 
-<build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>2.3.1</version>
-        <configuration>
-        	<finalName>bluc_capi</finalName> 
-          	<outputDirectory>../bluecrystal.example.server.jaxws.tomcat/src/main/webapp</outputDirectory>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3.1</version>
+				<configuration>
+					<finalName>bluc_capi</finalName>
+					<outputDirectory>../bluecrystal.example.server.jaxws.tomcat/src/main/webapp</outputDirectory>
+					<excludes>
+						<exclude>**/pom.xml</exclude>
+						<exclude>**/pom.properties</exclude>
+					</excludes>
+					<archive>
+					<!-- 
+					Codebase: *
+					Permissions: all-permissions
+					Application-Library-Allowable-Codebase: *
+					Caller-Allowable-Codebase: *
+					Application-Name: BluC pkcs11 signer
+					 -->
+						<manifestEntries>
+							<Codebase>*</Codebase>
+							<Permissions>all-permissions</Permissions>
+							<Application-Library-Allowable-Codebase>*</Application-Library-Allowable-Codebase>
+							<Caller-Allowable-Codebase>*</Caller-Allowable-Codebase>
+							<Application-Name>BluC pkcs11 signer</Application-Name>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 
 	<parent>

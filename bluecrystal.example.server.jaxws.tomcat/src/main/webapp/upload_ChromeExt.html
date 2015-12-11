@@ -20,7 +20,7 @@
 
 <html>
 <head>
-<title>Rest Signer - Assinatura com Politica de Assinatura
+<title>Extensão do Chrome - Assinatura com Politica de Assinatura
 	(ICP-Brasil)</title>
 <script type="text/javascript"
 	src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
@@ -91,7 +91,7 @@
 
 
 
-	<script type="text/javascript">
+<script type="text/javascript">
 
 $(document).ready(function() {
 
@@ -109,20 +109,34 @@ $(document).ready(function() {
 });
 
 function isActive(){
-	 $.ajax({
-	        type: 'GET',
-	        url: 'http://localhost:8612/test',
-	        data: {},
-	        success: function (data) {
-	        return true;	
-	        	
-	        },
-      error: function (error) {
-    	  alert('error: Não foi possivel contactar o restSigner');
-          return false;
-      }
-	});
+	return true;
 	
+}
+
+function bluc_certb64_onchange(){
+	
+	var appCertb64Span = document.querySelector("#bluc_certb64");
+	var certB64enc = appCertb64Span.innerHTML; 
+	parseCert(certB64enc);
+	
+
+}
+
+function bluc_signed_attr_onchange(){
+	
+		
+}
+
+function bluc_signed_envelope_onchange(){
+	
+	var status = document.querySelector("#bluc_status");
+	alert(status.innerHTML);
+}
+
+
+function bluc_error_code_onchange(){
+	var message = document.querySelector("#bluc_error_message");
+	alert(message.innerHTML);
 }
 
 
@@ -163,98 +177,24 @@ function createEnvelope(certificate, payload, hashAlg, time_value, hash_value, s
 
 function signContent(certificate, thumbprint, payload, hashAlg, time_value, hash_value)
 {
-    $.ajax({
-        type: 'GET',
-        dataType: 'json',
-        url: 'http://localhost:8612/sign',
-        data: { certificate: certificate,
-        	thumbprint: thumbprint,
-        	payload: payload,
-        	hashAlg :hashAlg},
-        success: function (data) {
-           
-        	createEnvelope(certificate, payload, hashAlg, time_value, hash_value, data.sign);
-	
-	        },
-            error: function (error) {
-                alert('error: ' + eval(error));
-            }
-     });
+   alert('signContent');
 	
 }
 
-function loadSignature(certificate, thumbprint, hashAlg)
-{
-	$.ajax({
-        type: 'GET',
-        url: 'LoadSignature',
-        data: { cert: certificate,
-        	alg: hashAlg},
-        success: function (data) {
-           
-            hash_value =  data.hash_value;
-            time_value = data.time_value;
-            sa_value = data.sa_value;
-            
-            
-            signContent(certificate, thumbprint, sa_value,hashAlg, time_value, hash_value);
 
-            <!-- End Sign -->
-	
-	        },
-            error: function (error) {
-                alert('error: ' + eval(error));
-            }
-     });
-	
-}
 
 var alg = 'sha1';
 var cert_thumb = '';
 var cert_content = '';
 
 function loadCert(){
-	$.ajax({
-	        type: 'GET',
-	        url: 'http://localhost:8612/cert',
-	        data: {},
-	        success: function (data) {
-	        	cert_thumb = data.thumbprint;
-	        	cert_content = data.certificate
 
-			getKeySize(data.thumbprint); 	        	
-        	<!-- parseCert -->
-        	
-        	parseCert(data.certificate);
-        	
-        	<!-- Fim do Cert (1) -->
-        	
-	        }
-	       });
+	
 	
 }
 
-function getKeySize(thumbprint){
-	
- 	<!-- keySize -->
-  	 $.ajax({
-        type: 'GET',
-        url: 'http://localhost:8612/keySize',
-        data: {thumbprint : thumbprint},
-        success: function (data) {
-        	
-            
-			if(data.size >= 2048){
-				alg = 'sha256';
-			}
-			loadSignature(cert_content, cert_thumb, alg);
-        },
-     error: function (error) {
-         alert('error: Não foi possivel contactar o restSigner');
-     }
-	});
 
-}
+
 
 function parseCert(certificate){
 	$.ajax({
@@ -270,7 +210,7 @@ function parseCert(certificate){
         	 }
         	 html += '</table>';
         	 $("#parsedCert").html(html);
-
+        	
         },
         error: function (error) {
             alert('error: ' + eval(error));
@@ -282,7 +222,7 @@ function assinar()
 {
 	try
 		{
-			loadCert();
+		loadCert();
 		 
     	<!-- 1 do Cert -->
 
@@ -294,7 +234,7 @@ function assinar()
 		}
 }
 </script>
-	ActiveX - Assinatura com Politica de Assinatura(ICP-Brasil)
+	Extensão do Chrome - Assinatura com Politica de Assinatura(ICP-Brasil)
 	<br>Powered by
 	<b>BluC</b>
 	<br>
@@ -315,14 +255,22 @@ function assinar()
 	<a href="upload_java_p11NoSP.html">Applet Java (PKCS#11) -
 		Assinatura sem Politica de Assinatura</a>
 	<br />
-
+	<a href="upload_RestSigner.html">Rest Signer - Assinatura com Politica de Assinatura</a><br/>
+	
+	
+	<br/>
+	<a href="https://chrome.google.com/webstore/detail/blue-crystal-signer/inlgdajmhicinhamnepnpdneamfgjcgl?hl=pt-BR&authuser=2"><h1>Antes de iniciar o processo instale a entensão do Chrome</h1></a><br/>
+	<h1><a href="https://github.com/bluecrystalsign/signer-source-vstudio/tree/master/dist">E o 'native messaging' daqui</a><br/></h1>
+	
+	
 	<h1>Passo 1: Arraste um documento para a area abaixo.</h1>
 	<div id="dropbox">Arraste o arquivo que deseja assinar para
 		aqui...</div>
 	<div id="status"></div>
 
 	<h1>
-		Passo 2: Selecione o botão "Assinar"</br>Passo 3: na janela exibida
+		
+		Passo 3: na janela exibida
 		selecione o certificado que deseja utilizar e aguarde.</br> Serão exibidos
 		os dados do certificado e em seguida das assinatura.
 	</h1>
@@ -334,7 +282,26 @@ function assinar()
 	<p>
 	<h1>Assinatura</h1>
 	<br />
-	<span id="signedEnvelope">...</span>
+	<span id="bluc_signed_envelope">...</span>
 	<p>
+	<div style="display: none;">
+	    <b>response:</b> <div id='response'></div>
+	    <b>error code:</b> <span id="bluc_error_code" onchange="bluc_error_code_onchange();"></span><br/>
+    	<b>error message:</b> <span id="bluc_error_message" ></span><br/>
+    	<b>load icon:</b> <span id="bluc_load_icon" >true</span><br/>
+		<b>status:</b> <span id="bluc_status" ></span><br/>
+		<b>message:</b> <span id="message"></span><br/>
+		<b>certb64:</b> <span id="bluc_certb64" onchange="bluc_certb64_onchange();"></span><br/>
+		<b>thumbprint:</b> <span id="bluc_thumbprint"></span><br/>
+		<b>subject:</b> <span id="bluc_subject"></span><br/>
+		<b>keySize:</b> <span id="bluc_key_size"></span><br/>
+		<b>hash:</b> <span id="bluc_hash"></span><br/>
+		<b>hash alg:</b> <span id="bluc_hash_alg"></span><br/>
+		<b>time:</b> <span id="bluc_time"></span><br/>
+		<b>sa:</b> <span id="bluc_signed_attr" onchange="bluc_signed_attr_onchange();"></span><br/>
+		
+		<b>loadSignatureUrl:</b> <span id="bluc_load_signature_url">http://localhost:8080/example/LoadSignature</span><br/>
+		<b>CreateEnvelopeUrl:</b> <span id="bluc_create_envelope_url">http://localhost:8080/example/CreateEnvelope</span><br/>
+	</div>
 </body>
 </html>
