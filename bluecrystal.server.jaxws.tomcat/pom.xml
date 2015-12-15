@@ -39,7 +39,9 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.6</version>
 				<configuration>
+				<!-- 
 					<archiveClasses>true</archiveClasses>
+				 -->
 					<warName>bluc</warName>
 					<outputDirectory>../dist</outputDirectory>
 				</configuration>
