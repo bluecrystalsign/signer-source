@@ -20,7 +20,7 @@
 				<version>2.3.1</version>
 				<configuration>
 					<finalName>bluc_p11</finalName>
-					<outputDirectory>../bluecrystal.example.server.jaxws.tomcat/src/main/webapp</outputDirectory>
+					<outputDirectory>../dist</outputDirectory>
 					<excludes>
 						<exclude>**/pom.xml</exclude>
 						<exclude>**/pom.properties</exclude>
@@ -31,7 +31,7 @@
 							<Permissions>all-permissions</Permissions>
 							<Application-Library-Allowable-Codebase>*</Application-Library-Allowable-Codebase>
 							<Caller-Allowable-Codebase>*</Caller-Allowable-Codebase>
-							<Application-Name>BluC CAPI signer</Application-Name>
+							<Application-Name>BluC PKCS#11 signer</Application-Name>
 						</manifestEntries>
 					</archive>
 				</configuration>
