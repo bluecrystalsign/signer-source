@@ -19,25 +19,31 @@
 package bluecrystal.service.exception;
 
 public class InvalidSigntureException extends Exception {
+	
+	int status;
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
 
 	public InvalidSigntureException() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public InvalidSigntureException(String message, Throwable cause) {
 		super(message, cause);
-		// TODO Auto-generated constructor stub
 	}
 
 	public InvalidSigntureException(String message) {
 		super(message);
-		// TODO Auto-generated constructor stub
 	}
 
 	public InvalidSigntureException(Throwable cause) {
 		super(cause);
-		// TODO Auto-generated constructor stub
 	}
 
 }

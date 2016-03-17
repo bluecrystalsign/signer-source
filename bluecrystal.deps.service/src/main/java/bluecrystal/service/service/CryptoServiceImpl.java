@@ -38,12 +38,14 @@ import sun.misc.BASE64Decoder;
 import bluecrystal.bcdeps.helper.DerEncoder;
 import bluecrystal.domain.AppSignedInfo;
 import bluecrystal.domain.AppSignedInfoEx;
-import bluecrystal.domain.OperationStatus;
 import bluecrystal.domain.SignCompare;
 import bluecrystal.domain.SignCompare2;
 import bluecrystal.domain.SignPolicyRef;
 import bluecrystal.domain.StatusConst;
+import bluecrystal.service.loader.ExternalLoaderHttp;
 import bluecrystal.service.loader.Messages;
+import bluecrystal.service.loader.SignaturePolicyLoader;
+import bluecrystal.service.loader.SignaturePolicyLoaderImpl;
 
 public class CryptoServiceImpl implements CryptoService {
 	private String validateCert = Messages
@@ -52,6 +54,7 @@ public class CryptoServiceImpl implements CryptoService {
 	private static EnvelopeService serv1024;
 	private static CertificateService certServ;
 	private static SignVerifyService signVerifyServ;
+	private static SignaturePolicyLoader signaturePolicyLoader;
 
 	private static final int NDX_SHA1 = 0;
 	private static final int NDX_SHA224 = 1;
@@ -78,6 +81,7 @@ public class CryptoServiceImpl implements CryptoService {
 		serv1024 = new ADRBService_10();
 		certServ = new CertificateService();
 		signVerifyServ = new SignVerifyService();
+		signaturePolicyLoader = new SignaturePolicyLoaderImpl();
 	}
 
 	/*
@@ -353,4 +357,23 @@ public class CryptoServiceImpl implements CryptoService {
 		byte[] output = md.digest();
 		return output;
 	}
+	
+	public boolean validateSignatureByPolicy(byte[] sign, byte[] ps)
+			throws Exception {
+		try {
+//			byte[] sign = Base64.decode(signb64);
+//			byte[] ps = (psb64 != null && psb64.length() > 0) ? Base64.decode(signb64) : null;
+			SignCompare sc = extractSignCompare(sign);
+			if (ps == null) {
+				ps = signaturePolicyLoader.loadFromUrl(sc.getPsUrl());
+			}
+			SignPolicyRef spr = extractVerifyRefence(ps);
+
+			return validateSignatureByPolicy(spr, sc);
+		} catch (Exception e) {
+			throw e;
+		}
+
+	}	
+	
 }

@@ -57,4 +57,6 @@ public interface CryptoService {
 			Date dtSign, boolean verifyCRL) throws Exception;
 
 	SignCompare2 extractSignCompare2(byte[] sign) throws Exception;
+	
+	public boolean validateSignatureByPolicy(byte[] sign, byte[] ps) throws Exception;
 }

@@ -242,20 +242,35 @@ public class IcpbrServiceImpl implements IcpbrService {
 				+ "\npsb64 (" + psb64 + ")");
 		try {
 			byte[] sign = Base64.decode(signb64);
-			byte[] ps = (psb64 != null && psb64.length() > 0) ? Base64.decode(signb64) : null;
-			SignCompare sc = ccServ.extractSignCompare(sign);
-			if (ps == null) {
-				ps = ExternalLoaderHttp.getfromUrl(sc.getPsUrl());
-			}
-			SignPolicyRef spr = ccServ.extractVerifyRefence(ps);
-
-			return ccServ.validateSignatureByPolicy(spr, sc);
+			byte[] ps = (psb64 != null && psb64.length() > 0) ? Base64
+					.decode(signb64) : null;
+			return ccServ.validateSignatureByPolicy(sign, ps);
 		} catch (Exception e) {
 			LOG.error("ERRO: ", e);
 			throw e;
 		}
-
 	}
+	
+//	public boolean validateSignatureByPolicy(String signb64, String psb64)
+//			throws Exception {
+//		LogDebug("extractSignCompare: " + "\nsignb64 (" + signb64 + ")"
+//				+ "\npsb64 (" + psb64 + ")");
+//		try {
+//			byte[] sign = Base64.decode(signb64);
+//			byte[] ps = (psb64 != null && psb64.length() > 0) ? Base64.decode(signb64) : null;
+//			SignCompare sc = ccServ.extractSignCompare(sign);
+//			if (ps == null) {
+//				ps = ExternalLoaderHttp.getfromUrl(sc.getPsUrl());
+//			}
+//			SignPolicyRef spr = ccServ.extractVerifyRefence(ps);
+//
+//			return ccServ.validateSignatureByPolicy(spr, sc);
+//		} catch (Exception e) {
+//			LOG.error("ERRO: ", e);
+//			throw e;
+//		}
+//
+//	}
 
 	private X509Certificate loadCert(byte[] certEnc)
 			throws FileNotFoundException, CertificateException, IOException {
