@@ -25,26 +25,38 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.cert.CRLException;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.List;
 
-import org.bouncycastle.ocsp.BasicOCSPResp;
-import org.bouncycastle.ocsp.OCSPException;
-import org.bouncycastle.ocsp.OCSPReq;
-import org.bouncycastle.ocsp.OCSPResp;
-import org.bouncycastle.ocsp.OCSPRespStatus;
-import org.bouncycastle.ocsp.RevokedStatus;
-import org.bouncycastle.ocsp.SingleResp;
+import org.bouncycastle.cert.ocsp.BasicOCSPResp;
+import org.bouncycastle.cert.ocsp.OCSPException;
+import org.bouncycastle.cert.ocsp.OCSPReq;
+import org.bouncycastle.cert.ocsp.OCSPResp;
+import org.bouncycastle.cert.ocsp.RevokedStatus;
+import org.bouncycastle.cert.ocsp.SingleResp;
+import org.bouncycastle.operator.OperatorCreationException;
+//import org.bouncycastle.ocsp.BasicOCSPResp;
+//import org.bouncycastle.ocsp.OCSPException;
+//import org.bouncycastle.ocsp.OCSPReq;
+//import org.bouncycastle.ocsp.OCSPResp;
+//import org.bouncycastle.cert.ocsp.OCSPRespStatus;
+//import org.bouncycastle.ocsp.RevokedStatus;
+//import org.bouncycastle.ocsp.SingleResp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import bluecrystal.bcdeps.helper.DerEncoder;
+//import bluecrystal.bcdeps.helper.DerEncoder;
 import bluecrystal.domain.OperationStatus;
 import bluecrystal.domain.StatusConst;
 import bluecrystal.service.exception.OCSPQueryException;
 import bluecrystal.service.exception.RevokedException;
+//import bluecrystal.service.exception.OCSPQueryException;
+//import bluecrystal.service.exception.RevokedException;
+//import bluecrystal.service.exception.UndefStateException;
 import bluecrystal.service.exception.UndefStateException;
 
 public class OcspValidatorImpl implements OcspValidator {
@@ -61,7 +73,7 @@ public class OcspValidatorImpl implements OcspValidator {
 	public OperationStatus verifyOCSP(X509Certificate nextCert,
 			X509Certificate nextIssuer, Date date) throws IOException,
 			CertificateException, CRLException, UndefStateException,
-			RevokedException {
+			RevokedException, OperatorCreationException {
 		try {
 			OCSPReq req = GenOcspReq(nextCert, nextIssuer);
 
@@ -96,18 +108,28 @@ public class OcspValidatorImpl implements OcspValidator {
 	}
 
 	private Date xtractNextUpdate(OCSPResp ocspResponse) throws OCSPQueryException {
-		switch (ocspResponse.getStatus()) {
-		case OCSPRespStatus.SUCCESSFUL:
+		int status = ocspResponse.getStatus();
+		switch (status) {
+//		case OCSPRespStatus.SUCCESSFUL:
+//			break;
+//		case OCSPResp.INTERNAL_ERROR:
+//		case OCSPRespStatus.MALFORMED_REQUEST:
+//		case OCSPRespStatus.SIGREQUIRED:
+//		case OCSPRespStatus.TRY_LATER:
+//		case OCSPRespStatus.UNAUTHORIZED:
+
+		case OCSPResp.SUCCESSFUL:
 			break;
-		case OCSPRespStatus.INTERNAL_ERROR:
-		case OCSPRespStatus.MALFORMED_REQUEST:
-		case OCSPRespStatus.SIGREQUIRED:
-		case OCSPRespStatus.TRY_LATER:
-		case OCSPRespStatus.UNAUTHORIZED:
-			
+		case OCSPResp.INTERNAL_ERROR:
+		case OCSPResp.MALFORMED_REQUEST:
+		case OCSPResp.SIG_REQUIRED:
+		case OCSPResp.TRY_LATER:
+		case OCSPResp.UNAUTHORIZED:
+
+		
 			throw new OCSPQueryException(
 					"OCSP Error: " //$NON-NLS-1$
-					+ Integer.toString(ocspResponse.getStatus()));
+					+ Integer.toString(status));
 		default:
 			throw new OCSPQueryException("***"); //$NON-NLS-1$
 		}
@@ -205,7 +227,7 @@ public class OcspValidatorImpl implements OcspValidator {
 	
 	
 	private OCSPReq GenOcspReq(X509Certificate nextCert,
-			X509Certificate nextIssuer) throws OCSPException {
+			X509Certificate nextIssuer) throws OCSPException, CertificateEncodingException, OperatorCreationException, IOException {
 
 	return DerEncoder.GenOcspReq(nextCert, nextIssuer);
 	}

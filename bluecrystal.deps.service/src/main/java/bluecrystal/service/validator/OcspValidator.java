@@ -24,6 +24,8 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 
+import org.bouncycastle.operator.OperatorCreationException;
+
 import bluecrystal.domain.OperationStatus;
 import bluecrystal.service.exception.RevokedException;
 import bluecrystal.service.exception.UndefStateException;
@@ -32,6 +34,6 @@ public interface OcspValidator {
 	public OperationStatus verifyOCSP(X509Certificate nextCert,
 			X509Certificate nextIssuer, Date date) throws IOException,
 			CertificateException, CRLException, UndefStateException,
-			RevokedException;	
+			RevokedException, OperatorCreationException;	
 
 }

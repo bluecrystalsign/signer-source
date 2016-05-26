@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.bouncycastle.operator.OperatorCreationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,7 +104,7 @@ public class StatusValidatorImpl implements StatusValidator {
 	
 	public OperationStatus verifyStatus(Collection<X509Certificate> certsOnPath, Date date)
 			throws IOException, CertificateException, CRLException,
-			UndefStateException, RevokedException {
+			UndefStateException, RevokedException, OperatorCreationException {
 		Iterator<X509Certificate> it = certsOnPath.iterator();
 		OperationStatus eeCertStatus = new OperationStatus(StatusConst.GOOD, null);
 		OperationStatus nextCertStatus = new OperationStatus(StatusConst.GOOD, null);

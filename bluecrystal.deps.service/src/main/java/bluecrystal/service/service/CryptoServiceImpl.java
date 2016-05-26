@@ -38,6 +38,7 @@ import sun.misc.BASE64Decoder;
 import bluecrystal.bcdeps.helper.DerEncoder;
 import bluecrystal.domain.AppSignedInfo;
 import bluecrystal.domain.AppSignedInfoEx;
+import bluecrystal.domain.OperationStatus;
 import bluecrystal.domain.SignCompare;
 import bluecrystal.domain.SignCompare2;
 import bluecrystal.domain.SignPolicyRef;

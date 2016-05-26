@@ -26,6 +26,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.bouncycastle.operator.OperatorCreationException;
+
 import bluecrystal.domain.OperationStatus;
 import bluecrystal.service.exception.RevokedException;
 import bluecrystal.service.exception.UndefStateException;
@@ -34,7 +36,7 @@ public interface StatusValidator {
 	public void setUseOcsp(boolean useOcsp);
 	public OperationStatus verifyStatus(Collection<X509Certificate> certsOnPath, Date date)
 	throws IOException, CertificateException, CRLException,
-	UndefStateException, RevokedException;	
+	UndefStateException, RevokedException, OperatorCreationException;	
 	public OperationStatus verifyStatusEE(Collection<X509Certificate> certsOnPath, Date date, List<String> crlDist)	throws IOException, CertificateException, CRLException,
 	UndefStateException, RevokedException;	
 }
