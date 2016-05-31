@@ -6,12 +6,27 @@
 		<packaging>war</packaging> -->
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>bluecrystal.server</groupId>
+	<groupId>al.bluecryst</groupId>
 	<artifactId>bluecrystal.server.jaxws.tomcat</artifactId>
 	<packaging>war</packaging>
-	<version>1.4.0</version>
-	<name>bluecrystal.server.jaxws.tomcat Maven Webapp</name>
-	<url>http://maven.apache.org</url>
+	<version>1.4.1</version>
+
+	<name>BluC Jax-WS Server</name>
+	<description>Server to export the system API</description>
+	<url>http://bluecryst.al</url>
+
+	<licenses>
+		<license>
+			<name>GNU Affero General Public License v3</name>
+			<url>http://www.gnu.org/licenses/agpl-3.0.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<url>https://github.com/bluecrystalsign/signer-source.git</url>
+	</scm>
+
 
 	<dependencies>
 		<dependency>
@@ -28,9 +43,9 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>bluecrystal.deps</groupId>
+			<groupId>al.bluecryst</groupId>
 			<artifactId>bluecrystal.deps.service</artifactId>
-			<version>1.4.0</version>
+			<version>1.4.1</version>
 		</dependency>
 
 	</dependencies>
