@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>bluecrystal.deps</groupId>
 	<artifactId>bluecrystal.deps.service</artifactId>
-	<version>1.3.1</version>
+	<version>1.4.0</version>
 
 	<dependencies>
 		<dependency>
@@ -14,7 +14,7 @@
 		<dependency>
 			<groupId>bluecrystal.deps</groupId>
 			<artifactId>bluecrystal.deps.bc_g3</artifactId>
-			<version>1.3.1</version>
+			<version>1.4.0</version>
 		</dependency>
 	</dependencies>
 	<parent>
