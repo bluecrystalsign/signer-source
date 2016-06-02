@@ -23,6 +23,15 @@
 	<version>1.4.1</version>
 
 <!-- SONATYPE BEGIN -->
+<profiles>
+    <profile>
+        <id>release-sign-artifacts</id>
+        <activation>
+            <property>
+                <name>performRelease</name>
+                <value>true</value>
+            </property>
+        </activation>
 	<distributionManagement>
 		<snapshotRepository>
 		    <id>ossrh</id>
@@ -66,6 +75,9 @@
 	  </plugins>
 	</build>
 
+
+    </profile>
+</profiles>
 <!-- SONATYPE BEGIN -->
 
 
