@@ -11,6 +11,13 @@
 		<version>2.0</version>
 		<relativePath>..</relativePath>
 	</parent>
+	<dependencies>
+		<dependency>
+			<groupId>bluecrystal.deps</groupId>
+			<artifactId>bluecrystal.deps.pkcs11</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<plugins>
