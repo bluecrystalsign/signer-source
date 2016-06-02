@@ -21,7 +21,7 @@
 		<url>https://github.com/bluecrystalsign/signer-source.git</url>
 	</scm>
 
-<!-- SONATYPE BEGIN -->
+<!-- SONATYPE BEGIN
 <profiles>
     <profile>
         <id>release-sign-artifacts</id>
@@ -31,6 +31,7 @@
                 <value>true</value>
             </property>
         </activation>
+         -->
 	<distributionManagement>
 		<snapshotRepository>
 		    <id>ossrh</id>
@@ -74,10 +75,10 @@
 	  </plugins>
 	</build>
 
-
+<!-- 
     </profile>
 </profiles>
-<!-- SONATYPE BEGIN -->
+SONATYPE BEGIN -->
 
 
 	<dependencies>
