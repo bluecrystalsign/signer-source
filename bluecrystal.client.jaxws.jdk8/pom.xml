@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>al.bluecryst</groupId>
   <artifactId>bluecrystal.client.jaxws.jdk8</artifactId>
-  <version>1.4.1</version>
+  <version>1.5.0</version>
 
 <name>BluC Client JaxWs JDK 8</name>
   <description>Client based in JDK 8 to acess the server using jax-ws</description>

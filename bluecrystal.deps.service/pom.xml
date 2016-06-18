@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>al.bluecryst</groupId>
 	<artifactId>bluecrystal.deps.service</artifactId>
-	<version>1.4.5</version>
+	<version>1.5.0</version>
 
 	<name>Services provided to applications</name>
 	<description>API that should be used by applications</description>
@@ -87,12 +87,12 @@ SONATYPE BEGIN -->
 		<dependency>
 			<groupId>al.bluecryst</groupId>
 			<artifactId>bluecrystal.deps.domain</artifactId>
-			<version>1.4.5</version>
+			<version>1.5.0</version>
 		</dependency>
 		<dependency>
 			<groupId>al.bluecryst</groupId>
 			<artifactId>bluecrystal.deps.bc_g3</artifactId>
-			<version>1.4.5</version>
+			<version>1.5.0</version>
 		</dependency>
 	</dependencies>
 	<parent>
