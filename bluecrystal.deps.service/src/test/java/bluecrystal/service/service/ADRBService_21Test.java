@@ -1,7 +1,5 @@
 package bluecrystal.service.service;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 public class ADRBService_21Test {

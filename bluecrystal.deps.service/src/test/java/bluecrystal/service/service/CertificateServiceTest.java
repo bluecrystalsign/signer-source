@@ -39,7 +39,7 @@ public class CertificateServiceTest {
 		// fail("Not yet implemented");
 	}
 
-	@Test
+//	@Test
 	public void testCreateFromB64() {
 		try {
 			String x509B64 = ConfigTestParms.getCertB64();

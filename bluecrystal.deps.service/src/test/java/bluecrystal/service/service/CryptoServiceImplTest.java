@@ -53,7 +53,7 @@ public class CryptoServiceImplTest {
 		//  fail("Not yet implemented");
 	}
 
-	@Test
+//	@Test
 	public void testHashSignedAttribSha256() {
 		try {
 			
