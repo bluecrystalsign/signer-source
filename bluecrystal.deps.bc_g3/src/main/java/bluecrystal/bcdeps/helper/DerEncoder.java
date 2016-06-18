@@ -171,7 +171,7 @@ public class DerEncoder {
 	private static final String ELEITOR_OID = "2.16.76.1.3.5";
 	private static final String PJ_PF_ID = "2.16.76.1.3.4";
 
-	// PF 2.16.76.1.3.5 - Titulo de eleitor(12), Zona Eleitoral (3), Seção (4)
+	// PF 2.16.76.1.3.5 - Titulo de eleitor(12), Zona Eleitoral (3), Secao (4)
 	private static final int ELEITOR_INI = 0;
 	private static final int ELEITOR_LEN = 12;
 	private static final int ZONA_INI = ELEITOR_LEN;
@@ -183,9 +183,9 @@ public class DerEncoder {
 	private static final int INSS_INI = 0;
 	private static final int INSS_LEN = 12;
 
-	// 2.16.76.1.4.2.1.1- = nas primeiras 07 (sete) posições os dígitos
-	// alfanuméricos do Número de Inscrição junto a Seccional, e nas 2 (duas)
-	// posições subseqüentes a sigla do Estado da Seccional.–
+	// 2.16.76.1.4.2.1.1- = nas primeiras 07 (sete) posicoes os digitos
+	// alfanuméricos do Numero de Inscricao junto a Seccional, e nas 2 (duas)
+	// posicoes subseqüentes a sigla do Estado da Seccional.–
 	private static final int OAB_REG_INI = 0;
 	private static final int OAB_REG_LEN = 12;
 	private static final int OAB_UF_INI = OAB_REG_LEN;
@@ -461,8 +461,8 @@ public class DerEncoder {
 		// assinados:
 		// a) id-contentType;
 		// b) id-messageDigest;
-		// c.1) Para as versões 1.0, 1.1 e 2.0, id-aa-signingCertificate;
-		// c.2) A partir da versão 2.1, inclusive, id-aa-signingCertificateV2;
+		// c.1) Para as versoes 1.0, 1.1 e 2.0, id-aa-signingCertificate;
+		// c.2) A partir da versao 2.1, inclusive, id-aa-signingCertificateV2;
 		// d) id-aa-ets-sigPolicyId.
 
 		// OPTIONAL
@@ -594,9 +594,9 @@ public class DerEncoder {
 		// O atributo signingCertificate deve conter referência apenas ao
 		// certificado do signatário.
 
-		// 5.2.1.1.4 Certificados Obrigatórios do Caminho de Certificação
-		// Para a versão 1.0: nenhum certificado
-		// Para as versões 1.1, 2.0 e 2.1: o certificado do signatário.
+		// 5.2.1.1.4 Certificados Obrigatórios do Caminho de Certificacao
+		// Para a versao 1.0: nenhum certificado
+		// Para as versoes 1.1, 2.0 e 2.1: o certificado do signatário.
 
 		// ESSCertIDv2 ::= SEQUENCE {
 		// hashAlgorithm AlgorithmIdentifier
@@ -650,9 +650,9 @@ public class DerEncoder {
 					getHashAlg(hashId));
 			essCertIDv2aev.add(hashAlgorithm);
 		}
-		// Nota 4: Para o atributo ESSCertIDv2, utilizada nas versões 2.1 das
-		// políticas de assinatura
-		// baseadas em CAdES, as aplicações NÃO DEVEM codificar o campo
+		// Nota 4: Para o atributo ESSCertIDv2, utilizada nas versoes 2.1 das
+		// politicas de assinatura
+		// baseadas em CAdES, as aplicacoes NaO DEVEM codificar o campo
 		// “hashAlgorithm” caso
 		// utilize o mesmo algoritmo definido como valor default (SHA-256),
 		// conforme ISO 8825-1.
@@ -712,13 +712,13 @@ public class DerEncoder {
 
 	private DERSequence siAddDigestEncryptionAlgorithm(String hashId) {
 
-		// Nota 3: Em atenção à RFC 3370 (Cryptographic Message Syntax (CMS)
+		// Nota 3: Em atencao à RFC 3370 (Cryptographic Message Syntax (CMS)
 		// Algorithms), item
 		// "2.1 SHA-1"; e RFC 5754 (Using SHA2 Algorithms with Cryptographic
 		// Message Syntax),
 		// item "2 - Message Digest Algorithms", recomenda-se a ausência do
 		// campo "parameters" na
-		// estrutura "AlgorithmIdentifier", usada na indicação do algoritmo de
+		// estrutura "AlgorithmIdentifier", usada na indicacao do algoritmo de
 		// hash, presentes nas
 		// estruturas ASN.1 "SignedData.digestAlgorithms",
 		// "SignerInfo.digestAlgorithm" e
@@ -727,13 +727,13 @@ public class DerEncoder {
 		// algorithm OBJECT IDENTIFIER,
 		// parameters ANY DEFINED BY algorithm OPTIONAL }
 
-		// Os processos para criação e verificação de assinaturas segundo esta
+		// Os processos para criacao e verificacao de assinaturas segundo esta
 		// PA devem utilizar o
 		// algoritmo :
-		// a) para a versão 1.0: sha1withRSAEncryption(1 2 840 113549 1 1 5),
-		// b) para a versão 1.1: sha1withRSAEncryption(1 2 840 113549 1 1 5) ou
+		// a) para a versao 1.0: sha1withRSAEncryption(1 2 840 113549 1 1 5),
+		// b) para a versao 1.1: sha1withRSAEncryption(1 2 840 113549 1 1 5) ou
 		// sha256WithRSAEncryption(1.2.840.113549.1.1.11)
-		// c) para as versões 2.0 e 2.1:
+		// c) para as versoes 2.0 e 2.1:
 		// sha256WithRSAEncryption(1.2.840.113549.1.1.11).
 
 		ASN1EncodableVector digestEncVetor = new ASN1EncodableVector();
@@ -888,7 +888,7 @@ public class DerEncoder {
 			break;
 
 		default:
-			throw new Exception("hash alg não identificado:" + hash);
+			throw new Exception("hash alg nao identificado:" + hash);
 
 		}
 		return ret;
@@ -918,7 +918,7 @@ public class DerEncoder {
 			break;
 
 		default:
-			throw new Exception("hash alg não identificado:" + hash);
+			throw new Exception("hash alg nao identificado:" + hash);
 			// break;
 		}
 		return ret;
@@ -2105,29 +2105,29 @@ public class DerEncoder {
 		return ret;
 	}
 
-	// 2.16.76.1.2.1.n Identificação de campos associados a Políticas de
+	// 2.16.76.1.2.1.n Identificacao de campos associados a Politicas de
 	// Certificados
 	// do tipo A1
-	// 2.16.76.1.2.2.n Identificação de campos associados a Políticas de
-	// Certificados c e r t i s i g n . c o m . b r
+	// 2.16.76.1.2.2.n Identificacao de campos associados a Politicas de
+	// Certificados
 	// do tipo A2
-	// 2.16.76.1.2.3.n Identificação de campos associados a Políticas de
+	// 2.16.76.1.2.3.n Identificacao de campos associados a Politicas de
 	// Certificados
 	// do tipo A3
-	// 2.16.76.1.2.4.n Identificação de campos associados a Políticas de
+	// 2.16.76.1.2.4.n Identificacao de campos associados a Politicas de
 	// Certificados
 	// do tipo A4
-	// 2.16.76.1.2.101.n Identificação de campos associados a Políticas de
+	// 2.16.76.1.2.101.n Identificacao de campos associados a Politicas de
 	// Certificados
 	// do tipo S1
-	// 2.16.76.1.2 2.16.76.1.2....102.n... Identificação de campos associados a
-	// Políticas de Certificados
+	// 2.16.76.1.2 2.16.76.1.2....102.n... Identificacao de campos associados a
+	// Politicas de Certificados
 	// do tipo 2
-	// 2.16.76.1.2 2.16.76.1.2....103.n... Identificação de campos associados a
-	// Políticas de Certificados
+	// 2.16.76.1.2 2.16.76.1.2....103.n... Identificacao de campos associados a
+	// Politicas de Certificados
 	// do tipo S3
-	// 2.16.76.1.2 2.16.76.1.2....104.n... Identificação de campos associados a
-	// Políticas de Certificados
+	// 2.16.76.1.2 2.16.76.1.2....104.n... Identificacao de campos associados a
+	// Politicas de Certificados
 	// do tipo S4
 	private static String getCertUsage(String pcOid) {
 		String ret = "";

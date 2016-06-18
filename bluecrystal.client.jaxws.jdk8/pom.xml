@@ -4,23 +4,65 @@
   <artifactId>bluecrystal.client.jaxws.jdk8</artifactId>
   <version>1.5.0</version>
 
-<name>BluC Client JaxWs JDK 8</name>
-  <description>Client based in JDK 8 to acess the server using jax-ws</description>
-  <url>http://bluecryst.al</url>
- 
-  <licenses>
-    <license>
-      <name>GNU Affero General Public License v3</name>
-      <url>http://www.gnu.org/licenses/agpl-3.0.html</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
- 
-  <scm>
-    <url>https://github.com/bluecrystalsign/signer-source.git</url>
-  </scm>
+	<name>BluC Client JaxWs JDK 8</name>
+	<description>Classes shared by several other projects</description>
+	<url>http://bluecryst.al</url>
 
-  
+	<licenses>
+		<license>
+			<name>GNU Affero General Public License v3</name>
+			<url>http://www.gnu.org/licenses/agpl-3.0.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<url>https://github.com/bluecrystalsign/signer-source.git</url>
+	</scm>
+
+	<distributionManagement>
+		<snapshotRepository>
+		    <id>ossrh</id>
+		    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		  </snapshotRepository>
+	</distributionManagement>
+
+	<build>
+	  <plugins>
+	    <plugin>
+	      <groupId>org.sonatype.plugins</groupId>
+	      <artifactId>nexus-staging-maven-plugin</artifactId>
+	      <version>1.6.3</version>
+	      <extensions>true</extensions>
+	      <configuration>
+	        <serverId>ossrh</serverId>
+	        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+	        <autoReleaseAfterClose>false</autoReleaseAfterClose>
+	      </configuration>
+	    </plugin>
+	    
+	    
+	    
+	   
+	 <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-gpg-plugin</artifactId>
+      <version>1.5</version>
+      <executions>
+        <execution>
+          <id>sign-artifacts</id>
+          <phase>verify</phase>
+          <goals>
+            <goal>sign</goal>
+          </goals>
+        </execution>
+      </executions>
+    </plugin>
+	    
+	    
+	  </plugins>
+	</build>
+
 	<parent>
 		<groupId>org.codehaus.mojo</groupId>
 		<artifactId>bluecrystal-parent</artifactId>
