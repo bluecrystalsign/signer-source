@@ -9,7 +9,7 @@
 	<groupId>al.bluecryst</groupId>
 	<artifactId>bluecrystal.server.jaxws.tomcat</artifactId>
 	<packaging>war</packaging>
-	<version>1.4.1</version>
+	<version>1.5.0</version>
 
 	<name>BluC Jax-WS Server</name>
 	<description>Server to export the system API</description>
@@ -45,7 +45,33 @@
 		<dependency>
 			<groupId>al.bluecryst</groupId>
 			<artifactId>bluecrystal.deps.service</artifactId>
-			<version>1.4.1</version>
+			<version>1.4.5</version>
+		</dependency>
+
+		<!-- http://mvnrepository.com/artifact/ch.qos.logback/logback-core -->
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+			<version>1.1.7</version>
+		</dependency>
+
+		<!-- http://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.1.7</version>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.21</version>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.7.21</version>
 		</dependency>
 
 	</dependencies>
@@ -66,7 +92,11 @@
 					<warSourceDirectory>WebContent</warSourceDirectory>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 					<warName>bluc</warName>
+					<outputDirectory>C:\Users\sergio.fonseca\iniciativas\Soft Pub Brasil\sandbox\apache-tomcat-8.0.33\webapps</outputDirectory>
+					
+					<!-- 
 					<outputDirectory>../dist</outputDirectory>
+					-->
 
 				</configuration>
 			</plugin>

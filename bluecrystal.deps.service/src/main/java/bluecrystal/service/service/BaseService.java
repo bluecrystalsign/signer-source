@@ -38,7 +38,6 @@ import bluecrystal.bcdeps.helper.PkiOps;
 import bluecrystal.domain.AppSignedInfo;
 import bluecrystal.domain.AppSignedInfoEx;
 import bluecrystal.domain.SignPolicy;
-import bluecrystal.domain.helper.IttruLoggerFactory;
 import bluecrystal.service.helper.Utils;
 
 public abstract class BaseService implements EnvelopeService {
@@ -46,6 +45,7 @@ public abstract class BaseService implements EnvelopeService {
 	public BaseService() {
 		super();
 		procHash = true;
+		LOG.debug("Constructed");
 	}
 
 	public boolean isProcHash() {
@@ -172,6 +172,7 @@ public abstract class BaseService implements EnvelopeService {
 	
 
 	public byte[] buildCms(List<AppSignedInfoEx> listAsiEx, int attachSize) throws Exception {
+		LOG.debug("buildCms");
 		List<X509Certificate> chain = new ArrayList<X509Certificate>();
 
 		for (AppSignedInfoEx appSignedInfo : listAsiEx) {
@@ -182,6 +183,9 @@ public abstract class BaseService implements EnvelopeService {
 		}
 
 		dedup(chain);
+		for(X509Certificate next : chain){
+			LOG.debug(next.getSubjectDN().toString());
+		}
 		byte[] cmsOut = buildBody(chain, listAsiEx, attachSize);
 		return cmsOut;
 		
@@ -508,7 +512,7 @@ public abstract class BaseService implements EnvelopeService {
 	// TODO
 	// MOVER DER ENCODER :)
 	private byte[] hackSi(byte[] saAsBytes) throws IOException {
-		LOG.debug(Utils.conv(saAsBytes));
+//		LOG.debug(Utils.conv(saAsBytes));
 
 		byte[] saAsBytes2 = new byte[saAsBytes.length - 4];
 
@@ -517,7 +521,7 @@ public abstract class BaseService implements EnvelopeService {
 		for (int i = 2; i < saAsBytes2.length; i++) {
 			saAsBytes2[i] = saAsBytes[i + 4];
 		}
-		LOG.debug(Utils.conv(saAsBytes2));
+//		LOG.debug(Utils.conv(saAsBytes2));
 		return saAsBytes2;
 	}
 

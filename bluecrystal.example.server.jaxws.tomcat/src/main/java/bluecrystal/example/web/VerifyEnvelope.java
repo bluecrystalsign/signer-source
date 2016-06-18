@@ -31,6 +31,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import sun.misc.BASE64Encoder;
 import bluecrystal.example.web.domain.SignedEnvelope;
 import bluecrystal.example.web.util.Convert;
@@ -50,6 +53,7 @@ public class VerifyEnvelope extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private IcpbrService serv;
 	private EnvelopeRebuilderService rebuilder;
+	final static Logger logger = LoggerFactory.getLogger(VerifyEnvelope.class);
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -93,6 +97,22 @@ public class VerifyEnvelope extends HttpServlet {
 		System.out.println("envelope :"+envelope);
 		System.out.println("certb64 :"+certb64);
 		
+		boolean isError = false;
+		if(certb64 == null){
+			logger.error("certb64 é nulo!");
+			isError = true;
+		}
+		
+		if(envelope == null){
+			logger.error("envelope é nulo!");
+			isError = true;
+		}
+
+		
+		if(isError){
+			return;
+		}
+
 	
 		boolean isOk = verifySignature(false, envelope, (String)request.getSession().getAttribute("destPathname"));
 		String certB64 = parseCertFromSignature(envelope);

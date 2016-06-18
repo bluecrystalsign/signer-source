@@ -32,6 +32,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Servlet implementation class UploadServlet
  */
@@ -41,6 +44,9 @@ public class UploadServlet extends HttpServlet {
 //	private static final String UPLOAD_PATH = 
 //			System.getProperty("user.home") +  
 //			Messages.getString("UploadServlet.0"); //$NON-NLS-1$
+	
+	final static Logger logger = LoggerFactory.getLogger(UploadServlet.class);
+
     public UploadServlet() {
 		super();
 //		File f = new File(UPLOAD_PATH);
@@ -57,9 +63,25 @@ public class UploadServlet extends HttpServlet {
 	private void handleUpload(HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
 		Part file = request.getPart(Messages.getString("UploadServlet.1")); //$NON-NLS-1$
+		
+		boolean isError = false;
+		if(file == null){
+			logger.error("file é nulo!");
+			isError = true;
+		}
+
+		
+		if(isError){
+			return;
+		}
+
+		
+		
         String filename = getFilename(file);
+        logger.debug("filename: "+filename);
         InputStream filecontent = file.getInputStream();
         String destPathname = getUploadPath() + File.separator + filename;
+        logger.debug("destPathname: "+destPathname);
 		copyFile(filecontent, new File(destPathname));
 		filecontent.close();
 
@@ -84,7 +106,7 @@ public class UploadServlet extends HttpServlet {
     
 	private String getUploadPath(){
 		String uploadPath = 
-				System.getProperty("user.home") +  
+				System.getProperty("user.home") +  File.separator +
 				Messages.getString("UploadServlet.0"); //$NON-NLS-1$
 		File f = new File(uploadPath);
 		if(!f.exists()){

@@ -31,7 +31,7 @@ import bluecrystal.service.service.CmsWithChainService;
 endpointInterface = "bluecrystal.service.v1.rebuilder.EnvelopeRebuilderService",
 portName = "envelopeRebuilderPort",
 serviceName = "envelopeRebuilderService")
-@HandlerChain(file="handler-chain.xml")
+//@HandlerChain(file="handler-chain.xml")
 public class EnvelopeRebuildServiceImpl implements EnvelopeRebuilderService {
 	static final Logger LOG = LoggerFactory.getLogger(EnvelopeRebuildServiceImpl.class);
 	private CmsWithChainService cmsWithChain = null;

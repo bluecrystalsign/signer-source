@@ -35,7 +35,7 @@ public class SignApplet extends java.applet.Applet implements SignAppletP11 {
 		return active;
 	}
 
-	private Pkcs11 p11 = null;
+	private Pkcs11Wrapper p11 = null;
 	private final MySynch mySynch = new MySynch();
 
 	@Override
@@ -69,19 +69,7 @@ public class SignApplet extends java.applet.Applet implements SignAppletP11 {
 	}
 	public void init(String module, String otherPath) {
 		try {
-//			msg = "digite o PIN e 'Carregar'...'";
-//			URL codebase = getCodeBase();
-//			System.out.println("codebase: " + codebase);
-
-
-//			 System.out.println("PROVIDER: "+Security.getProviders().length);
-//			 for(Provider next : Security.getProviders()){
-//			 System.out.println(next.getName());
-//			 for (String key: next.stringPropertyNames())
-//			 System.out.println("\t" + key + "\t" + next.getProperty(key));
-//			 }
-
-			p11 = new Pkcs11(module, otherPath);
+			p11 = new Pkcs11Wrapper(module, otherPath);
 			createSignThread();
 			createLCThread();
 			createSymetricKeyThread();

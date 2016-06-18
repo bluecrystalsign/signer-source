@@ -33,8 +33,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.bouncycastle.asn1.DERTaggedObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import sun.misc.BASE64Decoder;
 import bluecrystal.bcdeps.helper.DerEncoder;
 import bluecrystal.domain.AppSignedInfo;
 import bluecrystal.domain.AppSignedInfoEx;
@@ -43,12 +44,15 @@ import bluecrystal.domain.SignCompare;
 import bluecrystal.domain.SignCompare2;
 import bluecrystal.domain.SignPolicyRef;
 import bluecrystal.domain.StatusConst;
-import bluecrystal.service.loader.ExternalLoaderHttp;
 import bluecrystal.service.loader.Messages;
 import bluecrystal.service.loader.SignaturePolicyLoader;
 import bluecrystal.service.loader.SignaturePolicyLoaderImpl;
+import sun.misc.BASE64Decoder;
 
 public class CryptoServiceImpl implements CryptoService {
+	static final Logger logger = LoggerFactory.getLogger(CryptoServiceImpl.class);
+
+	
 	private String validateCert = Messages
 			.getString("CryptoService.validateCert");
 	private static EnvelopeService serv2048;
@@ -173,6 +177,8 @@ public class CryptoServiceImpl implements CryptoService {
 		// Validate Certificate Status
 		boolean validateCertB = Boolean.parseBoolean(validateCert);
 		if (validateCertB) {
+			logger.debug("Certificado erá validado");
+
 			if (dtSign != null) {
 				operationStatus = certServ.isValid(dtSign, cert, verifyCRL);
 			} else {
@@ -181,6 +187,7 @@ public class CryptoServiceImpl implements CryptoService {
 			}
 		} else {
 			operationStatus = new OperationStatus(StatusConst.GOOD, new Date());
+			logger.warn("Certificado NÃO será validado! Usar essa opção apenas em AMBIENTE DE TESTES. Altere no bluc.properties.");
 		}
 //			if (!(operationStatus.getStatus() == StatusConst.GOOD || 
 //				operationStatus.getStatus() == StatusConst.UNKNOWN)) {
@@ -211,7 +218,11 @@ public class CryptoServiceImpl implements CryptoService {
 				
 				ret = signVerifyServ.verify(hashId, contentHash, sign, cert);
 				if(!ret){
+					logger.error("Definido status da assinatura como StatusConst.INVALID_SIGN");
 					operationStatus.setStatus(StatusConst.INVALID_SIGN);
+				} else {
+					logger.debug("Assinatura é valida");
+					
 				}
 			}
 

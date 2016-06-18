@@ -19,12 +19,8 @@
 package bluecrystal.service.service;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.security.InvalidAlgorithmParameterException;
@@ -63,10 +59,9 @@ import org.slf4j.LoggerFactory;
 import bluecrystal.bcdeps.helper.DerEncoder;
 import bluecrystal.bcdeps.helper.PkiOps;
 import bluecrystal.domain.CertConstants;
-import bluecrystal.domain.OperationStatus;
 import bluecrystal.domain.CiKeyUsage;
+import bluecrystal.domain.OperationStatus;
 import bluecrystal.domain.StatusConst;
-import bluecrystal.domain.helper.IttruLoggerFactory;
 import bluecrystal.service.exception.RevokedException;
 import bluecrystal.service.exception.UndefStateException;
 import bluecrystal.service.helper.Utils;
@@ -77,7 +72,7 @@ import bluecrystal.service.validator.StatusValidator;
 import bluecrystal.service.validator.StatusValidatorImpl;
 
 public class CertificateService {
-	static final Logger LOG = LoggerFactory.getLogger(CertificateService.class);
+	static final Logger logger = LoggerFactory.getLogger(CertificateService.class);
 
 	private static final String ICP_BRASIL_PF = "ICP-Brasil PF";
 
@@ -263,7 +258,7 @@ public class CertificateService {
 
 		int i = 0;
 		for (X509Certificate next : chain) {
-			LOG.debug("CERT:" + next.getSubjectDN().getName());
+			loggerTrace("CERT:" + next.getSubjectDN().getName());
 			try {
 				String name = "";
 				String value = "";
@@ -330,7 +325,7 @@ public class CertificateService {
 							Object san2 = nextSan.get(1);
 							if (san1 == SAN_OTHER_NAME) {
 								if (san2 instanceof String) {
-									LOG.error("UNSUPORTED OTHERNAME SAN FORMAT");
+									logger.error("UNSUPORTED OTHERNAME SAN FORMAT");
 								} else {
 									Map<String, String> otherNameMap = createSanMap(
 											(byte[]) san2, i);
@@ -343,14 +338,14 @@ public class CertificateService {
 											CertConstants.SAN_EMAIL_D, i);
 									ret.put(name, (String) san2);
 								} else {
-									LOG.error("UNSUPORTED EMAIL SAN FORMAT");
+									logger.error("UNSUPORTED EMAIL SAN FORMAT");
 								}
 							} else {
-								LOG.error("UNSUPORTED SAN");
+								logger.error("UNSUPORTED SAN");
 							}
 
 						} catch (Exception e) {
-							LOG.error("Erroe decoding SAN", e);
+							logger.error("Erroe decoding SAN", e);
 						}
 
 					}
@@ -400,42 +395,42 @@ public class CertificateService {
 				name = String.format(CertConstants.KU_D, i);
 				ret.put(name, value);
 
-				LOG.debug("** getCriticalExtensionOIDs");
+				loggerTrace("** getCriticalExtensionOIDs");
 				Set<String> critOIDs = next.getCriticalExtensionOIDs();
 				if (critOIDs != null) {
 					for (String critOID : critOIDs) {
-						LOG.debug(String.format("%s -> %s", critOID,
+						loggerTrace(String.format("%s -> %s", critOID,
 								next.getExtensionValue(critOID)));
 						if (!shouldIgnore(critOID)) {
-							LOG.debug(" no extension beeing processed.");
+							loggerTrace(" + no extension beeing processed.");
 						} else {
-							LOG.debug(String.format("IGNORE: %s", critOID));
+							loggerTrace(String.format("IGNORE: %s", critOID));
 						}
 					}
 				}
 
-				LOG.debug("** getNonCriticalExtensionOIDs");
+				loggerTrace("** getNonCriticalExtensionOIDs");
 				Set<String> nonCritOIDs = next.getNonCriticalExtensionOIDs();
 				if (nonCritOIDs != null) {
 					for (String nonCritOID : nonCritOIDs) {
-						LOG.debug(String.format("%s -> %s", nonCritOID,
+						loggerTrace(String.format("%s -> %s", nonCritOID,
 								new String(next.getExtensionValue(nonCritOID))));
 
 						if (!shouldIgnore(nonCritOID)) {
-							LOG.debug("no extension beeing processed.");
+							loggerTrace("+ no extension beeing processed.");
 							Map<String, String> extensionMap = processExtension(
 									nonCritOID,
 									next.getExtensionValue(nonCritOID), i);
 							ret.putAll(extensionMap);
 						} else {
-							LOG.debug(String.format("IGNORE: %s", nonCritOID));
+							loggerTrace(String.format("IGNORE: %s", nonCritOID));
 
 						}
 					}
 				}
 
 			} catch (Exception e) {
-				LOG.error("Error decoding X.509 field or exception", e);
+				logger.error("Error decoding X.509 field or exception", e);
 			}
 
 			i++;
@@ -452,7 +447,7 @@ public class CertificateService {
 		try {
 			ret = Utils.conv(pki.calcSha256(next.getEncoded()));
 		} catch (Exception e) {
-			LOG.error("Error calculating cert sha256 ", e);
+			logger.error("Error calculating cert sha256 ", e);
 		}
 		return ret;
 	}
@@ -512,7 +507,7 @@ public class CertificateService {
 						Utils.conv(aki));
 			}
 		} catch (Exception e) {
-			LOG.error("Error processing extension " + nonCritOID, e);
+			logger.error("Error processing extension " + nonCritOID, e);
 		}
 		return nvPair;
 	}
@@ -606,7 +601,7 @@ public class CertificateService {
 			}
 
 		} else {
-			LOG.error("** ERROR:certsOnPath == null " + new Date());
+			logger.error("** ERROR:certsOnPath == null " + new Date());
 			ret = new OperationStatus(StatusConst.UNTRUSTED, null);
 		}
 		return ret;
@@ -637,7 +632,7 @@ public class CertificateService {
 			}
 
 		} catch (Exception e) {
-			LOG.error("Error decoding X.509 cert from bytes ", e);
+			logger.error("Error decoding X.509 cert from bytes ", e);
 		}
 
 		return certs;
@@ -663,12 +658,12 @@ public class CertificateService {
 			Collection<X509Certificate> trustAnchor) throws Exception {
 		List<X509Certificate> certsOnPath = new ArrayList<X509Certificate>();
 
-		LOG.debug("****** Signer Issuer");
-		LOG.debug(signer.getIssuerDN().getName());
+		loggerTrace("****** Signer Issuer");
+		loggerTrace(signer.getIssuerDN().getName());
 		//
-		LOG.debug("****** intermCa");
+		loggerTrace("****** intermCa");
 		Map<String, X509Certificate> mapInterm = buildMap(intermCa);
-		LOG.debug("****** rootCa");
+		loggerTrace("****** rootCa");
 		Map<String, X509Certificate> mapAnchor = buildMap(trustAnchor);
 
 		certsOnPath.add(signer);
@@ -744,10 +739,15 @@ public class CertificateService {
 
 		while (it.hasNext()) {
 			X509Certificate nextCert = it.next();
-			LOG.debug(nextCert.getSubjectDN().getName());
+			loggerTrace(nextCert.getSubjectDN().getName());
 			map.put(nextCert.getSubjectDN().getName(), nextCert);
 		}
 		return map;
+	}
+
+	private static void loggerTrace(String name) {
+//		logger.trace(name);
+		
 	}
 
 	private void verificaCertPath(Collection<X509Certificate> certsOnPath,

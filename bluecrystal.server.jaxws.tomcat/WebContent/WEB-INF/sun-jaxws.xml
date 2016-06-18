@@ -4,8 +4,10 @@
      name="SignWS"
      implementation="bluecrystal.service.v1.icpbr.IcpbrServiceImpl"
      url-pattern="/serv/icpbr_1"/>
+<!-- 
   <endpoint
      name="RebulidWS"
      implementation="bluecrystal.service.v1.rebuilder.EnvelopeRebuildServiceImpl"
      url-pattern="/serv/rebuild_1"/>
+      -->
 </endpoints>  

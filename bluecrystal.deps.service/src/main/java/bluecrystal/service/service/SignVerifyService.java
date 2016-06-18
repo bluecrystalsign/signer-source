@@ -43,7 +43,7 @@ import bluecrystal.domain.helper.IttruLoggerFactory;
 import bluecrystal.service.helper.Utils;
 
 public class SignVerifyService {
-	static final Logger LOG = LoggerFactory.getLogger(SignVerifyService.class);
+	static final Logger logger = LoggerFactory.getLogger(SignVerifyService.class);
 
 	
 	public SignVerifyService() {
@@ -64,15 +64,16 @@ public class SignVerifyService {
 		AlgorithmIdentifier algId = createAlgorithm(hashId);
 		byte[] expected = derEncode(contentHash, algId);
 
-        LOG.debug("Sig:("+sigBytes.length+")"+Utils.conv(sigBytes));
-        LOG.debug("Has:("+contentHash.length+")"+Utils.conv(contentHash));
-        LOG.debug("Sig:("+sig.length+")"+Utils.conv(sig));
-        LOG.debug("Exp:("+expected.length+")"+Utils.conv(expected));
+        logger.debug("Sig:("+sigBytes.length+")"+Utils.conv(sigBytes));
+        logger.debug("Has:("+contentHash.length+")"+Utils.conv(contentHash));
+        logger.debug("Sig:("+sig.length+")"+Utils.conv(sig));
+        logger.debug("Exp:("+expected.length+")"+Utils.conv(expected));
 		
 		
 		if (sig.length == expected.length) {
 			for (int i = 0; i < sig.length; i++) {
 				if (sig[i] != expected[i]) {
+					logger.error("Comprimento da assinatura é invalido.");
 					return false;
 				}
 			}

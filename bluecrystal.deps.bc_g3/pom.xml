@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>al.bluecryst</groupId>
 	<artifactId>bluecrystal.deps.bc_g3</artifactId>
-	<version>1.4.1</version>
+	<version>1.4.5</version>
 
 	<name>Wrapper to Bouncy Castle 1.54</name>
 	<description>Wrapper to Bouncy Castle 1.54</description>

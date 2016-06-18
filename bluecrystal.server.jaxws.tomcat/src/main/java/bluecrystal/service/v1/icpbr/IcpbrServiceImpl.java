@@ -18,19 +18,15 @@
 
 package bluecrystal.service.v1.icpbr;
 
-import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.jws.HandlerChain;
 import javax.jws.WebService;
 
 import org.bouncycastle.util.encoders.Base64;
@@ -40,25 +36,24 @@ import org.slf4j.LoggerFactory;
 import bluecrystal.domain.AppSignedInfo;
 import bluecrystal.domain.NameValue;
 import bluecrystal.domain.SignCompare;
-import bluecrystal.domain.SignPolicyRef;
 import bluecrystal.domain.Signature;
 import bluecrystal.domain.StatusConst;
 import bluecrystal.service.exception.InvalidSigntureException;
-import bluecrystal.service.loader.ExternalLoaderHttp;
 import bluecrystal.service.service.CertificateService;
 import bluecrystal.service.service.CryptoService;
 import bluecrystal.service.service.CryptoServiceImpl;
 import bluecrystal.service.service.SignVerifyService;
 import bluecrystal.service.service.Validator;
 import bluecrystal.service.service.ValidatorSrv;
+import bluecrystal.service.util.LogManager;
 
 @WebService(
 endpointInterface = "bluecrystal.service.v1.icpbr.IcpbrService",
 portName = "icpbrPort",
 serviceName = "icpbrService")
-@HandlerChain(file="handler-chain.xml")
+//@HandlerChain(file="handler-chain.xml")
 public class IcpbrServiceImpl implements IcpbrService {
-	static final Logger LOG = LoggerFactory.getLogger(IcpbrServiceImpl.class);
+	static final Logger logger = LoggerFactory.getLogger(IcpbrServiceImpl.class);
 	private CryptoService ccServ = null;
 	private SignVerifyService verify = null;
 	private CertificateService certServ = null;
@@ -76,28 +71,28 @@ public class IcpbrServiceImpl implements IcpbrService {
 		verify = new SignVerifyService();
 		certServ = new CertificateService();
 		validatorServ = new Validator();
-		LogDebug("SignServiceImpl: " + "(" + ccServ + ")" + "(" + verify + ")"
+		logger.debug("SignServiceImpl: " + "(" + ccServ + ")" + "(" + verify + ")"
 				+ "(" + certServ + ")" + "(" + validatorServ + ")");
 	}
 
 	public String hashSignedAttribADRB10(String origHashB64, Date signingTime,
 			String x509B64) throws Exception {
 
-		LogDebug("hashSignedAttribSha1: " + "\norigHashB64 (" + origHashB64
+		logger.debug("hashSignedAttribSha1: " + "\norigHashB64 (" + origHashB64
 				+ ")" + "\nsigningTime(" + signingTime + ")" + "\nx509B64("
 				+ x509B64 + ")");
 
 		try {
 			byte[] origHash = Base64.decode(origHashB64);
 			byte[] x509 = Base64.decode(x509B64);
-			X509Certificate cert = loadCert(x509);
+			X509Certificate cert = loadCertFromB64(x509);
 
 			byte[] ret = ccServ.hashSignedAttribSha1(origHash, signingTime,
 					cert);
 
 			return new String(  Base64.encode(ret) );
 		} catch (Exception e) {
-			LOG.error("ERRO: ", e);
+			logger.error("ERRO: ", e);
 			throw e;
 		}
 
@@ -105,26 +100,26 @@ public class IcpbrServiceImpl implements IcpbrService {
 
 	public String hashSignedAttribADRB21(String origHashB64, Date signingTime,
 			String x509B64) throws Exception {
-		LogDebug("hashSignedAttribSha256: " + "\norigHashB64 (" + origHashB64
+		logger.debug("hashSignedAttribSha256: " + "\norigHashB64 (" + origHashB64
 				+ ")" + "\nsigningTime(" + signingTime + ")" + "\nx509B64("
 				+ x509B64 + ")");
 		try {
 			byte[] origHash = Base64.decode(origHashB64);
 			byte[] x509 = Base64.decode(x509B64);
-			X509Certificate cert = loadCert(x509);
+			X509Certificate cert = loadCertFromB64(x509);
 
 			byte[] ret = ccServ.hashSignedAttribSha256(origHash, signingTime,
 					cert);
 
 			return new String( Base64.encode(ret) );
 		} catch (Exception e) {
-			LOG.error("ERRO: ", e);
+			logger.error("ERRO: ", e);
 			throw e;
 		}
 	}
 
 	public String extractSignature(String signB64) throws Exception {
-		LogDebug("extractSignature: " + "\nsignB64 (" + signB64 + ")");
+		logger.debug("extractSignature: " + "\nsignB64 (" + signB64 + ")");
 		try {
 			byte[] sign = Base64.decode(signB64);
 
@@ -132,21 +127,21 @@ public class IcpbrServiceImpl implements IcpbrService {
 
 			return new String( Base64.encode(ret) );
 		} catch (Exception e) {
-			LOG.error("ERRO: ", e);
+			logger.error("ERRO: ", e);
 			throw e;
 		}
 	}
 
 	public String composeEnvelopeADRB10(String signB64, String x509B64,
 			String origHashB64, Date signingTime) throws Exception {
-		LogDebug("composeBodySha1: " + "\nsignB64 (" + signB64 + ")"
+		logger.debug("composeBodySha1: " + "\nsignB64 (" + signB64 + ")"
 				+ "\nx509B64 (" + x509B64 + ")" + "\norigHashB64 ("
 				+ origHashB64 + ")" + "\nsigningTime (" + signingTime + ")");
 		try {
 			byte[] sign = Base64.decode(signB64);
 			byte[] origHash = Base64.decode(origHashB64);
 			byte[] x509 = Base64.decode(x509B64);
-			X509Certificate cert = loadCert(x509);
+			X509Certificate cert = loadCertFromB64(x509);
 
 			byte[] ret = ccServ.composeBodySha1(sign, cert, origHash,
 					signingTime);
@@ -160,27 +155,30 @@ public class IcpbrServiceImpl implements IcpbrService {
 
 			return new String (Base64.encode(ret) );
 		} catch (Exception e) {
-			LOG.error("ERRO: ", e);
+			logger.error("ERRO: ", e);
 			throw e;
 		}
 	}
 
 	public String composeEnvelopeADRB21(String signB64, String x509B64,
 			String origHashB64, Date signingTime) throws Exception {
-		LogDebug("composeBodySha256: " + "\nsignB64 (" + signB64 + ")"
+		logger.debug("composeBodySha256: " + "\nsignB64 (" + signB64 + ")"
 				+ "\nx509B64 (" + x509B64 + ")" + "\norigHashB64 ("
 				+ origHashB64 + ")" + "\nsigningTime (" + signingTime + ")");
 		try {
 			byte[] sign = Base64.decode(signB64);
 			byte[] origHash = Base64.decode(origHashB64);
 			byte[] x509 = Base64.decode(x509B64);
-			X509Certificate cert = loadCert(x509);
+			X509Certificate cert = loadCertFromB64(x509);
 
 			byte[] hashSa = ccServ.hashSignedAttribSha256(origHash,
 					signingTime, cert);
 
 			if (!verify.verify(NDX_SHA256, ccServ.calcSha256(hashSa), sign, cert)) {
+				logger.error("Verificação retornou erro, lancando InvalidSigntureException.");
 				throw new InvalidSigntureException();
+			} else {
+				logger.debug("Assinatura verificada com sucesso!");
 			}
 
 			byte[] ret = ccServ.composeBodySha256(sign, cert, origHash,
@@ -188,7 +186,8 @@ public class IcpbrServiceImpl implements IcpbrService {
 
 			return new String( Base64.encode(ret) );
 		} catch (Exception e) {
-			LOG.error("ERRO: ", e);
+			logger.error("ERRO: ", e.getLocalizedMessage());
+			logger.error(LogManager.exceptionToString(e));
 			throw e;
 		}
 	}
@@ -204,7 +203,7 @@ public class IcpbrServiceImpl implements IcpbrService {
 				byte[] sign = Base64.decode(nextSign.getSignB64());
 				byte[] origHash = Base64.decode(nextSign.getOrigHashB64());
 				byte[] x509 = Base64.decode(nextSign.getX509B64());
-				X509Certificate cert = loadCert(x509);
+				X509Certificate cert = loadCertFromB64(x509);
 
 				byte[] hashSa = ccServ.hashSignedAttribSha256(origHash,
 						nextSign.getSigningTime(), cert);
@@ -226,11 +225,11 @@ public class IcpbrServiceImpl implements IcpbrService {
 	}	
 
 	public SignCompare extractSignCompare(String sign) throws Exception {
-		LogDebug("extractSignCompare: " + "\nsign (" + sign + ")");
+		logger.debug("extractSignCompare: " + "\nsign (" + sign + ")");
 		try {
 			return ccServ.extractSignCompare(Base64.decode(sign));
 		} catch (Exception e) {
-			LOG.error("ERRO: ", e);
+			logger.error("ERRO: ", e);
 			throw e;
 		}
 
@@ -238,7 +237,7 @@ public class IcpbrServiceImpl implements IcpbrService {
 
 	public boolean validateSignatureByPolicy(String signb64, String psb64)
 			throws Exception {
-		LogDebug("extractSignCompare: " + "\nsignb64 (" + signb64 + ")"
+		logger.debug("extractSignCompare: " + "\nsignb64 (" + signb64 + ")"
 				+ "\npsb64 (" + psb64 + ")");
 		try {
 			byte[] sign = Base64.decode(signb64);
@@ -246,14 +245,14 @@ public class IcpbrServiceImpl implements IcpbrService {
 					.decode(signb64) : null;
 			return ccServ.validateSignatureByPolicy(sign, ps);
 		} catch (Exception e) {
-			LOG.error("ERRO: ", e);
+			logger.error("ERRO: ", e);
 			throw e;
 		}
 	}
 	
 //	public boolean validateSignatureByPolicy(String signb64, String psb64)
 //			throws Exception {
-//		LogDebug("extractSignCompare: " + "\nsignb64 (" + signb64 + ")"
+//		logger.debug("extractSignCompare: " + "\nsignb64 (" + signb64 + ")"
 //				+ "\npsb64 (" + psb64 + ")");
 //		try {
 //			byte[] sign = Base64.decode(signb64);
@@ -272,29 +271,31 @@ public class IcpbrServiceImpl implements IcpbrService {
 //
 //	}
 
-	private X509Certificate loadCert(byte[] certEnc)
+	private X509Certificate loadCertFromB64(byte[] certB64)
 			throws FileNotFoundException, CertificateException, IOException {
-		InputStream is = new ByteArrayInputStream(certEnc);
-		CertificateFactory cf = CertificateFactory.getInstance("X509");
-		X509Certificate c = (X509Certificate) cf.generateCertificate(is);
-		is.close();
-		return c;
+//		InputStream is = new ByteArrayInputStream(certEnc);
+//		CertificateFactory cf = CertificateFactory.getInstance("X509");
+//		X509Certificate c = (X509Certificate) cf.generateCertificate(is);
+//		is.close();
+//		return c;
+		
+		return certServ.createFromB64(certB64);
 	}
 
 	public String extractSignerCert(String signb64) throws Exception {
-		LogDebug("extractSignCompare: " + "\nsignb64 (" + signb64 + ")");
+		logger.debug("extractSignCompare: " + "\nsignb64 (" + signb64 + ")");
 		try {
 			byte[] sign = Base64.decode(signb64);
 			X509Certificate certEE = certServ.decodeEE(sign);
 			return new String ( Base64.encode(certEE.getEncoded() ));
 		} catch (Exception e) {
-			LOG.error("ERRO: ", e);
+			logger.error("ERRO: ", e);
 			throw e;
 		}
 	}
 
 	public String getCertSubject(String cert) throws Exception {
-		LogDebug("getCertSubject: " + "\ncert (" + cert + ")");
+		logger.debug("getCertSubject: " + "\ncert (" + cert + ")");
 		try {
 
 			Map<String, String> certEE = validatorServ
@@ -302,14 +303,14 @@ public class IcpbrServiceImpl implements IcpbrService {
 
 			return certEE.get("subject0");
 		} catch (Exception e) {
-			LOG.error("ERRO: ", e);
+			logger.error("ERRO: ", e);
 			throw e;
 		}
 
 	}
 
 	public String getCertSubjectCn(String cert) throws Exception {
-		LogDebug("getCertSubject: " + "\ncert (" + cert + ")");
+		logger.debug("getCertSubject: " + "\ncert (" + cert + ")");
 		try {
 
 			Map<String, String> certEE = validatorServ
@@ -328,7 +329,7 @@ public class IcpbrServiceImpl implements IcpbrService {
 
 			return null;
 		} catch (Exception e) {
-			LOG.error("ERRO: ", e);
+			logger.error("ERRO: ", e);
 			throw e;
 		}
 
@@ -337,13 +338,15 @@ public class IcpbrServiceImpl implements IcpbrService {
 //	Validate CMS envelope
 	public boolean validateSign(String signCms, String origHashb64, Date dtSign,
 			boolean verifyCRL) throws Exception {
-		return(validateSignWithStatus(signCms, origHashb64, dtSign, verifyCRL) == StatusConst.GOOD);
+		int validateSignWithStatus = validateSignWithStatus(signCms, origHashb64, dtSign, verifyCRL);
+		logger.debug("Status da assinatura é: "+ StatusConst.getMessageByStatus(validateSignWithStatus));
+		return(validateSignWithStatus == StatusConst.GOOD);
 	}
 
 //	Validate CMS envelope
 	public int validateSignWithStatus(String signCms, String origHashb64, Date dtSign,
 			boolean verifyCRL) throws Exception {
-		LogDebug("validateSign: " + "\n signCms (" + signCms + ")"
+		logger.debug("validateSign: " + "\n signCms (" + signCms + ")"
 				+ "\n content (" + origHashb64 + ")" + "\n dtSign (" + dtSign + ")"
 				+ "\n verifyCRL (" + verifyCRL + ")");
 		try {
@@ -353,7 +356,7 @@ public class IcpbrServiceImpl implements IcpbrService {
 			int validateSign = ccServ.validateSign(sign, origHash, dtSign, verifyCRL);
 			return validateSign;
 		} catch (Exception e) {
-			LOG.error("ERRO: ", e);
+			logger.error("ERRO: ", e);
 			throw e;
 		}
 	}
@@ -361,19 +364,19 @@ public class IcpbrServiceImpl implements IcpbrService {
 	
 	public NameValue[] parseCertificate(String certificate) throws Exception {
 
-		LogDebug("parseCertificate: " + "\n certificate (" + certificate + ")");
+		logger.debug("parseCertificate: " + "\n certificate (" + certificate + ")");
 
 		try {
 			return validatorServ.parseCertificate(certificate);
 		} catch (Exception e) {
-			LOG.error("ERRO: ", e);
+			logger.error("ERRO: ", e);
 			throw e;
 		}
 	}
 
-	private void LogDebug(String str) {
-//		LOG.debug(str);
-		System.out.println(new Date() + " - "+str);
-	}
+//	private void logger.debug(String str) {
+//		logger.debug(str);
+////		System.out.println(new Date() + " - "+str);
+//	}
 
 }

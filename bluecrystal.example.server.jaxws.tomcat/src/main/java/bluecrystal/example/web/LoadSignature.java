@@ -29,6 +29,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import sun.misc.BASE64Encoder;
 import bluecrystal.example.web.domain.SignRef;
 import bluecrystal.example.web.util.Convert;
@@ -40,10 +43,19 @@ import com.google.gson.Gson;
 /**
  * Servlet implementation class LoadSignature
  */
+
+// "GET /example/LoadSignature?
+// cert=MIIFQjCCBCqgAwIBAgIRAM86T9MP6UgerviYQqE96CswDQYJKoZIhvcNAQELBQAwgZsxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAYBgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMUEwPwYDVQQDEzhDT01PRE8gU0hBLTI1NiBDbGllbnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQTAeFw0xNjA0MjUwMDAwMDBaFw0xNzA0MjUyMzU5NTlaMCYxJDAiBgkqhkiG9w0BCQEWFXNlcmdpby5sZWFsQGdtYWlsLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAOPeujEjVvpLqyactBMhXeeWXSPtANZ9rRxNDB77jhrFwrrEl7UVWl5YiIuUpH1%2FhYnCjvxsvyxYFeNeYq8lFTk0hbsyrOq7Y19eWjqVlmvMDLUOLJPOYP0KYwtiJBvYAuZRbj04zPxL3QOGKmVBoHpEU4ZoFeibNYk0h7Y8S2%2BnTBmFUflHAB3VGDZ9FxYrIhDUzr%2BB56MbVXjYVpRZkHEz2ehgyExZpdoLjqYoeeTQoX99P5AQ7IsQ8dn4C5IlpxSH5b4w6w%2BPqFb0j6rsO1siESHXkCtzHoQPhtLWRrYZApeE4FELaTIdw2VvCRyGTeGcyCph6eKASgrIgY5YSBMCAwEAAaOCAfMwggHvMB8GA1UdIwQYMBaAFJJha4LhoqCqT%2Bxn8cKj97SAAMHsMB0GA1UdDgQWBBRugGUmugGwJg8NNlUB8dBerdimozAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH%2FBAIwADAgBgNVHSUEGTAXBggrBgEFBQcDBAYLKwYBBAGyMQEDBQIwEQYJYIZIAYb4QgEBBAQDAgUgMEYGA1UdIAQ%2FMD0wOwYMKwYBBAGyMQECAQEBMCswKQYIKwYBBQUHAgEWHWh0dHBzOi8vc2VjdXJlLmNvbW9kby5uZXQvQ1BTMF0GA1UdHwRWMFQwUqBQoE6GTGh0dHA6Ly9jcmwuY29tb2RvY2EuY29tL0NPTU9ET1NIQTI1NkNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcmwwgZAGCCsGAQUFBwEBBIGDMIGAMFgGCCsGAQUFBzAChkxodHRwOi8vY3J0LmNvbW9kb2NhLmNvbS9DT01PRE9TSEEyNTZDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWlsQ0EuY3J0MCQGCCsGAQUFBzABhhhodHRwOi8vb2NzcC5jb21vZG9jYS5jb20wIAYDVR0RBBkwF4EVc2VyZ2lvLmxlYWxAZ21haWwuY29tMA0GCSqGSIb3DQEBCwUAA4IBAQAMMA7KBsy%2FWFM6uY2C1B8970HskwDl%2F2Zs3HUM7PvWzSaA9WgWk3cRLjZF4ggxZ8ylXEQmtEP01tvKhhIt%2FKtNyj6tg7R9G%2B10mf8TPBX3ELIWFafiLWdOxyLXBnebkUNUJGZ0POyldUMQXrJHT719uNQbZ%2FovJEPe6FDO2YcjbXlC3MNsY8YmHt9QJy0ATwLPH%2BemWeGoXqM%2F1AKrSnuatkp03hHSr4oou23NGpgPG2pdhwTZKAqXpzMxj3%2BHA02uVB62FN1GaIHsqZp6qQRsbhAtC2CfT1S2yN8voROs3DX8%2BMgkpf7mXXBQeQ2GP5%2Fi6sbU4%2FFFPrXHZjIa3FhV
+// alg=sha256 HTTP/1.1" 200 809
+
+
+
 @WebServlet("/LoadSignature")
 public class LoadSignature extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private IcpbrService serv;
+	final static Logger logger = LoggerFactory.getLogger(LoadSignature.class);
+
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -85,6 +97,22 @@ public class LoadSignature extends HttpServlet {
 		System.out.println("certb64 :"+certb64);
 		System.out.println("alg :"+alg);
 
+
+		boolean isError = false;
+		if(certb64 == null){
+			logger.error("certb64 é nulo!");
+			isError = true;
+		}
+		
+		if(alg == null){
+			logger.error("alg é nulo!");
+			isError = true;
+		}
+
+		
+		if(isError){
+			return;
+		}
 		
 		MessageDigest hashSum = null;
 		if(alg == null || alg.compareToIgnoreCase("sha256")==0){

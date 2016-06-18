@@ -2,5 +2,6 @@
     <wb-module deploy-name="bluecrystal.deps.service">
         <wb-resource deploy-path="/" source-path="/src/main/java"/>
         <wb-resource deploy-path="/" source-path="/src/main/resources"/>
+        <wb-resource deploy-path="/" source-path="/src/test/jjava"/>
     </wb-module>
 </project-modules>

@@ -32,6 +32,8 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.bouncycastle.util.encoders.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
@@ -48,6 +50,8 @@ import bluecrystal.service.v1.icpbr.IcpbrService_Service;
 public class CreateEnvelope extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private IcpbrService serv;
+	final static Logger logger = LoggerFactory.getLogger(CreateEnvelope.class);
+
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -89,6 +93,41 @@ public class CreateEnvelope extends HttpServlet {
 		String certb64 = (String) request.getParameter("cert");
 		String alg = (String) request.getParameter("alg");
 		
+		boolean isError = false;
+		if(hash_valueb64 == null){
+			logger.error("hash_valueb64 é nulo!");
+			isError = true;
+		}
+		if(timeValue == null){
+			logger.error("timeValue é nulo!");
+			isError = true;
+		}
+		
+		if(saValueb64 == null){
+			logger.error("saValueb64 é nulo!");
+			isError = true;
+		}
+		
+		if(signedValueb64 == null){
+			logger.error("signedValueb64 é nulo!");
+			isError = true;
+		}
+		
+		if(certb64 == null){
+			logger.error("certb64 é nulo!");
+			isError = true;
+		}
+		
+		if(alg == null){
+			logger.error("alg é nulo!");
+			isError = true;
+		}
+		
+		if(isError){
+			return;
+		}
+
+		
 		
 		System.out.println("CreateEnvelope *****");
 		System.out.println("hash_valueb64 :"+hash_valueb64);
@@ -124,7 +163,27 @@ public class CreateEnvelope extends HttpServlet {
 		String certSubject = getCertSubject(certb64);
 		Gson gson = new Gson();
 		String VerifiedSignJson = gson.toJson(new SignedEnvelope(ret, isOk, certB64, certSubject));
-		System.out.println("retorno: "+ VerifiedSignJson);
+
+		isError = false;
+		if(ret == null){
+			logger.error("ret é nulo!");
+		}
+
+		if(certB64 == null){
+			logger.error("certB64 é nulo!");
+		}
+		if(certSubject == null){
+			logger.error("certSubject é nulo!");
+		}
+		
+		if(isOk == false){
+			logger.error("isOk (assinatura é valida) é falso!");
+			logger.error("ret = "+ret);
+			logger.error("certB64 = "+certB64);
+			logger.error("certSubject = "+certSubject);
+		}
+		
+		logger.debug("retorno: "+ VerifiedSignJson);
 		
 		PrintWriter out = response.getWriter();
 		out.print(VerifiedSignJson);
@@ -145,8 +204,11 @@ public class CreateEnvelope extends HttpServlet {
 		MessageDigest hashSum = null;
 		if(algSha256){
 			hashSum = MessageDigest.getInstance("SHA-256");
+			logger.debug("Validar assinatura SHA-256");
+
 		} else {
 			hashSum = MessageDigest.getInstance("SHA-1");
+			logger.debug("Validar assinatura SHA-1");
 		}
 		hashSum.update(Convert.readFile(filename));
 		byte[] digestResult = hashSum.digest();

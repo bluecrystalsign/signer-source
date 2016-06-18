@@ -930,44 +930,44 @@ public class DerEncoder {
 		String ret = null;
 		ASN1InputStream is = new ASN1InputStream(new ByteArrayInputStream(sign));
 		ASN1Primitive topLevel = is.readObject();
-		LOG.debug("top level:" + topLevel.getClass().getName());
+		LOG.trace("top level:" + topLevel.getClass().getName());
 
 		if (topLevel instanceof org.bouncycastle.asn1.DLSequence) {
 			DLSequence topLevelDLS = (DLSequence) topLevel;
 			if (topLevelDLS.size() == 2) {
 				ASN1Encodable level1 = topLevelDLS.getObjectAt(1);
-				LOG.debug("level1:"
+				LOG.trace("level1:"
 						+ level1.getClass().getName());
 				if (level1 instanceof org.bouncycastle.asn1.DERTaggedObject) {
 					DERTaggedObject level1TO = (DERTaggedObject) level1;
 					ASN1Primitive level2 = level1TO.getObject();
-					LOG.debug("level2:"
+					LOG.trace("level2:"
 							+ level2.getClass().getName());
 					if (level2 instanceof org.bouncycastle.asn1.DERSequence) {
 						DERSequence level2DS = (DERSequence) level2;
-						LOG.debug("level2 len:"
+						LOG.trace("level2 len:"
 								+ level2DS.size());
 						
 						ASN1Encodable level3_1 = level2DS.getObjectAt(1);
-						LOG.debug("level3_1:"
+						LOG.trace("level3_1:"
 								+ level3_1.getClass().getName());
 						
 						if (level3_1 instanceof org.bouncycastle.asn1.DERSet) {
 							DERSet level3_1Set = (DERSet) level3_1;
 							ASN1Encodable level4_1 = level3_1Set.getObjectAt(0);
-							LOG.debug("level4_1:"
+							LOG.trace("level4_1:"
 									+ level4_1.getClass().getName());
 							
 							if (level4_1 instanceof org.bouncycastle.asn1.DERSequence) {
 								DERSequence level4_1Seq = (DERSequence) level4_1;
 								ASN1Encodable level5_0 = level4_1Seq.getObjectAt(0);
 								
-								LOG.debug("level5_0:"
+								LOG.trace("level5_0:"
 										+ level5_0.getClass().getName());
 								
 								if (level5_0 instanceof org.bouncycastle.asn1.ASN1ObjectIdentifier) {
 									ASN1ObjectIdentifier level5_0Seq = (ASN1ObjectIdentifier) level5_0;
-									LOG.debug(level5_0Seq.toString());
+									LOG.trace(level5_0Seq.toString());
 									ret = level5_0Seq.toString();
 									
 								} else {
@@ -1007,41 +1007,41 @@ public class DerEncoder {
 		byte[] ret = null;
 		ASN1InputStream is = new ASN1InputStream(new ByteArrayInputStream(sign));
 		ASN1Primitive topLevel = is.readObject();
-		LOG.debug("top level:"
+		LOG.trace("top level:"
 				+ topLevel.getClass().getName());
 
 		if (topLevel instanceof org.bouncycastle.asn1.DLSequence) {
 			DLSequence topLevelDLS = (DLSequence) topLevel;
 			if (topLevelDLS.size() == 2) {
 				ASN1Encodable level1 = topLevelDLS.getObjectAt(1);
-				LOG.debug("level1:"
+				LOG.trace("level1:"
 						+ level1.getClass().getName());
 				if (level1 instanceof org.bouncycastle.asn1.DERTaggedObject) {
 					DERTaggedObject level1TO = (DERTaggedObject) level1;
 					ASN1Primitive level2 = level1TO.getObject();
-					LOG.debug("level2:"
+					LOG.trace("level2:"
 							+ level2.getClass().getName());
 					if (level2 instanceof org.bouncycastle.asn1.DERSequence) {
 						DERSequence level2DS = (DERSequence) level2;
-						LOG.debug("level2 len:"
+						LOG.trace("level2 len:"
 								+ level2DS.size());
 						ASN1Encodable level3_4 = level2DS.getObjectAt(level2DS
 								.size() - 1);
-						LOG.debug("level3_4:"
+						LOG.trace("level3_4:"
 								+ level3_4.getClass().getName());
 						if (level3_4 instanceof org.bouncycastle.asn1.DERSet) {
 							DERSet level3_4DS = (DERSet) level3_4;
 							ASN1Encodable level3_4_0 = level3_4DS
 									.getObjectAt(0);
-							LOG.debug("level3_4_0:"
+							LOG.trace("level3_4_0:"
 									+ level3_4_0.getClass().getName());
 							if (level3_4_0 instanceof org.bouncycastle.asn1.DERSequence) {
 								DERSequence level3_4_0DS = (DERSequence) level3_4_0;
-								LOG.debug("level3_4_0DS len:"
+								LOG.trace("level3_4_0DS len:"
 												+ level3_4_0DS.size());
 								ASN1Encodable signature = level3_4_0DS
 										.getObjectAt(level3_4_0DS.size() - 1);
-								LOG.debug("signature:"
+								LOG.trace("signature:"
 										+ signature.getClass().getName());
 								if (signature instanceof org.bouncycastle.asn1.DEROctetString) {
 									DEROctetString signDOS = (DEROctetString) signature;
@@ -1082,23 +1082,23 @@ public class DerEncoder {
 		DERTaggedObject ret = null;
 		ASN1InputStream is = new ASN1InputStream(new ByteArrayInputStream(sign));
 		ASN1Primitive topLevel = is.readObject();
-		LOG.debug("top level:"
+		LOG.trace("top level:"
 				+ topLevel.getClass().getName());
 
 		if (topLevel instanceof org.bouncycastle.asn1.DLSequence) {
 			DLSequence topLevelDLS = (DLSequence) topLevel;
 			if (topLevelDLS.size() == 2) {
 				ASN1Encodable level1 = topLevelDLS.getObjectAt(1);
-				LOG.debug("level1:"
+				LOG.trace("level1:"
 						+ level1.getClass().getName());
 				if (level1 instanceof org.bouncycastle.asn1.DERTaggedObject) {
 					DERTaggedObject level1TO = (DERTaggedObject) level1;
 					ASN1Primitive level2 = level1TO.getObject();
-					LOG.debug("level2:"
+					LOG.trace("level2:"
 							+ level2.getClass().getName());
 					if (level2 instanceof org.bouncycastle.asn1.DERSequence) {
 						DERSequence level2DS = (DERSequence) level2;
-						LOG.debug("level2 len:"
+						LOG.trace("level2 len:"
 								+ level2DS.size());
 						signCompare.setNumCerts(extractCertCount(level2DS));
 						ret = extractSignedAttributes(level2DS);
@@ -1141,23 +1141,23 @@ public class DerEncoder {
 		DERTaggedObject ret = null;
 		ASN1InputStream is = new ASN1InputStream(new ByteArrayInputStream(sign));
 		ASN1Primitive topLevel = is.readObject();
-		LOG.debug("top level:"
+		LOG.trace("top level:"
 				+ topLevel.getClass().getName());
 
 		if (topLevel instanceof org.bouncycastle.asn1.DLSequence) {
 			DLSequence topLevelDLS = (DLSequence) topLevel;
 			if (topLevelDLS.size() == 2) {
 				ASN1Encodable level1 = topLevelDLS.getObjectAt(1);
-				LOG.debug("level1:"
+				LOG.trace("level1:"
 						+ level1.getClass().getName());
 				if (level1 instanceof org.bouncycastle.asn1.DERTaggedObject) {
 					DERTaggedObject level1TO = (DERTaggedObject) level1;
 					ASN1Primitive level2 = level1TO.getObject();
-					LOG.debug("level2:"
+					LOG.trace("level2:"
 							+ level2.getClass().getName());
 					if (level2 instanceof org.bouncycastle.asn1.DERSequence) {
 						DERSequence level2DS = (DERSequence) level2;
-						LOG.debug("level2 len:"
+						LOG.trace("level2 len:"
 								+ level2DS.size());
 						signCompare.setNumCerts(extractCertCount(level2DS));
 						ret = extractSignedAttributes(level2DS);
@@ -1185,23 +1185,23 @@ public class DerEncoder {
 		List<byte[]> ret = null;
 		ASN1InputStream is = new ASN1InputStream(new ByteArrayInputStream(sign));
 		ASN1Primitive topLevel = is.readObject();
-		LOG.debug("top level:"
+		LOG.trace("top level:"
 				+ topLevel.getClass().getName());
 
 		if (topLevel instanceof org.bouncycastle.asn1.DLSequence) {
 			DLSequence topLevelDLS = (DLSequence) topLevel;
 			if (topLevelDLS.size() == 2) {
 				ASN1Encodable level1 = topLevelDLS.getObjectAt(1);
-				LOG.debug("level1:"
+				LOG.trace("level1:"
 						+ level1.getClass().getName());
 				if (level1 instanceof org.bouncycastle.asn1.DERTaggedObject) {
 					DERTaggedObject level1TO = (DERTaggedObject) level1;
 					ASN1Primitive level2 = level1TO.getObject();
-					LOG.debug("level2:"
+					LOG.trace("level2:"
 							+ level2.getClass().getName());
 					if (level2 instanceof org.bouncycastle.asn1.DERSequence) {
 						DERSequence level2DS = (DERSequence) level2;
-						LOG.debug("level2 len:"
+						LOG.trace("level2 len:"
 								+ level2DS.size());
 						ret = extractCertArray(level2DS);
 					} else {
@@ -1300,19 +1300,19 @@ public class DerEncoder {
 		DERTaggedObject ret = null;
 
 		ASN1Encodable level3_4 = level2DS.getObjectAt(level2DS.size() - 1);
-		LOG.debug("level3_4:"
+		LOG.trace("level3_4:"
 				+ level3_4.getClass().getName());
 		if (level3_4 instanceof org.bouncycastle.asn1.DERSet) {
 			DERSet level3_4DS = (DERSet) level3_4;
 			ASN1Encodable level3_4_0 = level3_4DS.getObjectAt(0);
-			LOG.debug("level3_4_0:"
+			LOG.trace("level3_4_0:"
 					+ level3_4_0.getClass().getName());
 			if (level3_4_0 instanceof org.bouncycastle.asn1.DERSequence) {
 				DERSequence level3_4_0DS = (DERSequence) level3_4_0;
-				LOG.debug("level3_4_0DS len:"
+				LOG.trace("level3_4_0DS len:"
 						+ level3_4_0DS.size());
 				ASN1Encodable signedAttribs = level3_4_0DS.getObjectAt(3);
-				LOG.debug("signature:"
+				LOG.trace("signature:"
 						+ signedAttribs.getClass().getName());
 				if (signedAttribs instanceof org.bouncycastle.asn1.DERTaggedObject) {
 					DERTaggedObject signedAttribsDTO = (DERTaggedObject) signedAttribs;
@@ -1767,7 +1767,7 @@ public class DerEncoder {
 				System.err.println("FORMAT OF SAN: UNRECOGNIZED -> "
 						+ derObjB.getClass().getCanonicalName());
 			}
-			LOG.debug(sanOid + " -> " + contentStr);
+			LOG.trace(sanOid + " -> " + contentStr);
 
 			String value = "";
 			String name = "";
@@ -2213,7 +2213,7 @@ public class DerEncoder {
 	public static List<String> extractOCSPUrl(X509Certificate nextCert)
 			throws CRLException {
 		List<String> OCSPUrl = new ArrayList<String>();
-		// LOG.debug("MISSING!!");
+		// LOG.trace("MISSING!!");
 
 		ASN1Primitive aiaExt = getExtensionValue(nextCert,
 				X509Extensions.AuthorityInfoAccess.getId());
