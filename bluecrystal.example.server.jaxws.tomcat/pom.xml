@@ -104,11 +104,7 @@
 					<warSourceDirectory>WebContent</warSourceDirectory>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 					<warName>example</warName>
-					<outputDirectory>C:\Users\sergio.fonseca\iniciativas\Soft Pub Brasil\sandbox\apache-tomcat-8.0.33\webapps</outputDirectory>
-					
-					<!-- 
 					<outputDirectory>../dist</outputDirectory>
-					-->
 				</configuration>
 			</plugin>
 		</plugins>
