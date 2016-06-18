@@ -591,7 +591,7 @@ public class DerEncoder {
 		// *** BEGIN ***
 
 		// 5.2.1.1.3 Certificados Obrigatoriamente Referenciados
-		// O atributo signingCertificate deve conter referência apenas ao
+		// O atributo signingCertificate deve conter referencia apenas ao
 		// certificado do signatário.
 
 		// 5.2.1.1.4 Certificados Obrigatórios do Caminho de Certificacao
@@ -716,7 +716,7 @@ public class DerEncoder {
 		// Algorithms), item
 		// "2.1 SHA-1"; e RFC 5754 (Using SHA2 Algorithms with Cryptographic
 		// Message Syntax),
-		// item "2 - Message Digest Algorithms", recomenda-se a ausência do
+		// item "2 - Message Digest Algorithms", recomenda-se a ausencia do
 		// campo "parameters" na
 		// estrutura "AlgorithmIdentifier", usada na indicacao do algoritmo de
 		// hash, presentes nas
