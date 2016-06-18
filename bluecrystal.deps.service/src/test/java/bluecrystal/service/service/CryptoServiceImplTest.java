@@ -19,7 +19,7 @@ import org.junit.Test;
 public class CryptoServiceImplTest {
 	private static CryptoService ccServ = null;
 
-	@BeforeClass
+//	@BeforeClass
 	public static void oneTimeSetUp() {
 		// one-time initialization code
 		System.out.println("@BeforeClass - oneTimeSetUp");
@@ -31,7 +31,7 @@ public class CryptoServiceImplTest {
 		}
 	}
 
-	@AfterClass
+//	@AfterClass
 	public static void oneTimeTearDown() {
 		// one-time cleanup code
 		System.out.println("@AfterClass - oneTimeTearDown");

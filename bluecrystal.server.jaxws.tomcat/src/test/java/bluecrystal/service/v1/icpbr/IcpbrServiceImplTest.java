@@ -25,7 +25,7 @@ public class IcpbrServiceImplTest {
 	private static CertificateService certServ = null;
 	private static ValidatorSrv validatorServ = null;
 
-	@BeforeClass
+//	@BeforeClass
 	public static void oneTimeSetUp() {
 		// one-time initialization code
 		System.out.println("@BeforeClass - oneTimeSetUp");
@@ -40,7 +40,7 @@ public class IcpbrServiceImplTest {
 		}
 	}
 
-	@AfterClass
+//	@AfterClass
 	public static void oneTimeTearDown() {
 		// one-time cleanup code
 		System.out.println("@AfterClass - oneTimeTearDown");
@@ -61,7 +61,7 @@ public class IcpbrServiceImplTest {
 		// fail("Not yet implemented");
 	}
 
-	@Test
+//	@Test
 	public void testHashSignedAttribADRB21() {
 
 		try {
