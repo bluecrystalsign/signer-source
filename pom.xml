@@ -59,10 +59,12 @@
 		<module>bluecrystal.deps.bc_g3</module>
 		<module>bluecrystal.deps.service</module>
 		<module>bluecrystal.server.jaxws.tomcat</module>
-		<module>bluecrystal.server.rest.jboss63</module>
 		<module>bluecrystal.client.jaxws.jdk8</module>
 		<module>bluecrystal.example.server.jaxws.tomcat</module>
+		<!-- 
 		<module>bluecrystal.client.applet.pkcs11</module>
 		<module>bluecrystal.client.applet.capi</module>
+		<module>bluecrystal.server.rest.jboss63</module>
+		 -->
 	</modules>
 </project>
