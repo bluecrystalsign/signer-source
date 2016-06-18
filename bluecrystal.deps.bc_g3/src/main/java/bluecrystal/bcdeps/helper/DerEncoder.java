@@ -712,7 +712,7 @@ public class DerEncoder {
 
 	private DERSequence siAddDigestEncryptionAlgorithm(String hashId) {
 
-		// Nota 3: Em atencao à RFC 3370 (Cryptographic Message Syntax (CMS)
+		// Nota 3: Em atencao aa RFC 3370 (Cryptographic Message Syntax (CMS)
 		// Algorithms), item
 		// "2.1 SHA-1"; e RFC 5754 (Using SHA2 Algorithms with Cryptographic
 		// Message Syntax),
