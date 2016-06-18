@@ -184,8 +184,8 @@ public class DerEncoder {
 	private static final int INSS_LEN = 12;
 
 	// 2.16.76.1.4.2.1.1- = nas primeiras 07 (sete) posicoes os digitos
-	// alfanuméricos do Numero de Inscricao junto a Seccional, e nas 2 (duas)
-	// posicoes subseqüentes a sigla do Estado da Seccional.–
+	// alfanumericos do Numero de Inscricao junto a Seccional, e nas 2 (duas)
+	// posicoes subsequentes a sigla do Estado da Seccional.–
 	private static final int OAB_REG_INI = 0;
 	private static final int OAB_REG_LEN = 12;
 	private static final int OAB_UF_INI = OAB_REG_LEN;
@@ -456,7 +456,7 @@ public class DerEncoder {
 		String hashId = getHashAlg(hashNdx);
 		final ASN1EncodableVector desSeq = new ASN1EncodableVector();
 
-		// As assinaturas feitas segundo esta PA definem como obrigatórios as
+		// As assinaturas feitas segundo esta PA definem como obrigatorios as
 		// seguintes atributos
 		// assinados:
 		// a) id-contentType;
@@ -592,11 +592,11 @@ public class DerEncoder {
 
 		// 5.2.1.1.3 Certificados Obrigatoriamente Referenciados
 		// O atributo signingCertificate deve conter referencia apenas ao
-		// certificado do signatário.
+		// certificado do signatario.
 
-		// 5.2.1.1.4 Certificados Obrigatórios do Caminho de Certificacao
+		// 5.2.1.1.4 Certificados Obrigatorios do Caminho de Certificacao
 		// Para a versao 1.0: nenhum certificado
-		// Para as versoes 1.1, 2.0 e 2.1: o certificado do signatário.
+		// Para as versoes 1.1, 2.0 e 2.1: o certificado do signatario.
 
 		// ESSCertIDv2 ::= SEQUENCE {
 		// hashAlgorithm AlgorithmIdentifier
@@ -653,7 +653,7 @@ public class DerEncoder {
 		// Nota 4: Para o atributo ESSCertIDv2, utilizada nas versoes 2.1 das
 		// politicas de assinatura
 		// baseadas em CAdES, as aplicacoes NaO DEVEM codificar o campo
-		// “hashAlgorithm” caso
+		// hashAlgorithm” caso
 		// utilize o mesmo algoritmo definido como valor default (SHA-256),
 		// conforme ISO 8825-1.
 

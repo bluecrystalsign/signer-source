@@ -292,7 +292,7 @@ public class PkiOps {
 			IOException {
 		File f = new File(envPath);
 		if (!f.exists()) {
-			(IttruLoggerFactory.get()).println("Não existe: " + envPath);
+			(IttruLoggerFactory.get()).println("Nao existe: " + envPath);
 		}
 		byte[] buffer = new byte[(int) f.length()];
 		DataInputStream in = new DataInputStream(new FileInputStream(f));
