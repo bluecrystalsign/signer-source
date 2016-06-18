@@ -653,7 +653,7 @@ public class DerEncoder {
 		// Nota 4: Para o atributo ESSCertIDv2, utilizada nas versoes 2.1 das
 		// politicas de assinatura
 		// baseadas em CAdES, as aplicacoes NaO DEVEM codificar o campo
-		// hashAlgorithm” caso
+		// hashAlgorithm caso
 		// utilize o mesmo algoritmo definido como valor default (SHA-256),
 		// conforme ISO 8825-1.
 
