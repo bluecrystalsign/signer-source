@@ -185,7 +185,7 @@ public class DerEncoder {
 
 	// 2.16.76.1.4.2.1.1- = nas primeiras 07 (sete) posicoes os digitos
 	// alfanumericos do Numero de Inscricao junto a Seccional, e nas 2 (duas)
-	// posicoes subsequentes a sigla do Estado da Seccional.–
+	// posicoes subsequentes a sigla do Estado da Seccional.
 	private static final int OAB_REG_INI = 0;
 	private static final int OAB_REG_LEN = 12;
 	private static final int OAB_UF_INI = OAB_REG_LEN;
