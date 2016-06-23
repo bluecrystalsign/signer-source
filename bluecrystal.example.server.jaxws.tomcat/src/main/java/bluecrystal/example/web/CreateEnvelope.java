@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
+import bluecrystal.domain.StatusConst;
 import bluecrystal.example.web.domain.SignedEnvelope;
 import bluecrystal.example.web.util.Convert;
 import bluecrystal.service.v1.icpbr.Exception_Exception;
@@ -158,11 +159,14 @@ public class CreateEnvelope extends HttpServlet {
 
 		
 		
-		boolean isOk = verifySignature(algSha256, ret, (String)request.getSession().getAttribute("destPathname"));
+//		boolean isOk = verifySignature(algSha256, ret, (String)request.getSession().getAttribute("destPathname"));
+		int signStatus = validateSignWithStatus(algSha256, ret, (String)request.getSession().getAttribute("destPathname"));
+		
+		
 		String certB64 = parseCertFromSignature(ret);
 		String certSubject = getCertSubject(certb64);
 		Gson gson = new Gson();
-		String VerifiedSignJson = gson.toJson(new SignedEnvelope(ret, isOk, certB64, certSubject));
+		String VerifiedSignJson = gson.toJson(new SignedEnvelope(ret, signStatus,StatusConst.getMessageByStatus(signStatus), certB64, certSubject));
 
 		isError = false;
 		if(ret == null){
@@ -176,8 +180,10 @@ public class CreateEnvelope extends HttpServlet {
 			logger.error("certSubject é nulo!");
 		}
 		
-		if(isOk == false){
-			logger.error("isOk (assinatura é valida) é falso!");
+		if(signStatus != StatusConst.GOOD){
+			logger.error("Assinatura  NÂO é valida!");
+			logger.error("status ="+signStatus);
+			logger.error("descr = "+ StatusConst.getMessageByStatus(signStatus));
 			logger.error("ret = "+ret);
 			logger.error("certB64 = "+certB64);
 			logger.error("certSubject = "+certSubject);
@@ -218,6 +224,26 @@ public class CreateEnvelope extends HttpServlet {
 		return serv.validateSign(ret, digestB64, Convert.asXMLGregorianCalendar(new Date()), false);
 	}
 
+	private int validateSignWithStatus(Boolean algSha256, String ret, String filename) throws Exception {
+		
+		MessageDigest hashSum = null;
+		if(algSha256){
+			hashSum = MessageDigest.getInstance("SHA-256");
+			logger.debug("Validar assinatura SHA-256");
+
+		} else {
+			hashSum = MessageDigest.getInstance("SHA-1");
+			logger.debug("Validar assinatura SHA-1");
+		}
+		hashSum.update(Convert.readFile(filename));
+		byte[] digestResult = hashSum.digest();
+		
+//		Base64.Encoder encoder = Base64.getEncoder(); 
+		String digestB64 = new String(Base64.encode(digestResult));
+		return serv.validateSignWithStatus(ret, digestB64, Convert.asXMLGregorianCalendar(new Date()), false);
+	}
+
+	
 	private XMLGregorianCalendar parseDate(String timeValue) throws DatatypeConfigurationException {
 		Date signDate = new Date();
 		signDate.setTime(Long.parseLong(timeValue));

@@ -587,6 +587,7 @@ public class CertificateService {
 			CertificateException, CRLException, UndefStateException,
 			RevokedException {
 		OperationStatus ret = new OperationStatus(StatusConst.UNKNOWN, null);
+		logger.debug("Status inicial: "+StatusConst.UNKNOWN);
 		List<X509Certificate> certsOnPath = buildPath(cert);
 		if (certsOnPath != null) {
 
@@ -604,6 +605,7 @@ public class CertificateService {
 			logger.error("** ERROR:certsOnPath == null " + new Date());
 			ret = new OperationStatus(StatusConst.UNTRUSTED, null);
 		}
+		logger.debug("Status retornado: "+ret);
 		return ret;
 	}
 

@@ -18,9 +18,12 @@
 
 package bluecrystal.example.web.domain;
 
+import bluecrystal.domain.StatusConst;
+
 public class SignedEnvelope {
 	private String signedContent;
-	private boolean isOk;
+	private int signStatus;
+	private String statusMessage;
 	private String certB64;
 	private String certSubject;
 	public String getSignedContent() {
@@ -30,11 +33,16 @@ public class SignedEnvelope {
 		this.signedContent = signedContent;
 	}
 	public boolean isOk() {
-		return isOk;
+		return signStatus == StatusConst.GOOD;
 	}
-	public void setOk(boolean isOk) {
-		this.isOk = isOk;
+	public int getSignStatus() {
+		return signStatus;
 	}
+	
+	public String getStatusMessage() {
+		return statusMessage;
+	}
+
 	public String getCertB64() {
 		return certB64;
 	}
@@ -47,11 +55,13 @@ public class SignedEnvelope {
 	public void setCertSubject(String certSubject) {
 		this.certSubject = certSubject;
 	}
-	public SignedEnvelope(String signedContent, boolean isOk, String certB64,
+	public SignedEnvelope(String signedContent, int signStatus, String statusMessage, 
+			String certB64,
 			String certSubject) {
 		super();
 		this.signedContent = signedContent;
-		this.isOk = isOk;
+		this.signStatus = signStatus;
+		this.statusMessage = statusMessage;
 		this.certB64 = certB64;
 		this.certSubject = certSubject;
 	}

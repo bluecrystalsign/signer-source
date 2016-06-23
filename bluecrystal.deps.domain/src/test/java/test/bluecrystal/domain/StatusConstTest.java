@@ -1,6 +1,6 @@
 package test.bluecrystal.domain;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -8,7 +8,7 @@ import bluecrystal.domain.StatusConst;
 
 public class StatusConstTest {
 
-	//@Test
+	@Test
 	public void testGetMessageByStatus() {
 		try {
 			String message = StatusConst.getMessageByStatus(StatusConst.AACOMPROMISE);

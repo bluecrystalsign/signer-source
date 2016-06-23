@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import sun.misc.BASE64Encoder;
+import bluecrystal.domain.StatusConst;
 import bluecrystal.example.web.domain.SignedEnvelope;
 import bluecrystal.example.web.util.Convert;
 import bluecrystal.service.v1.icpbr.Exception_Exception;
@@ -114,12 +115,24 @@ public class VerifyEnvelope extends HttpServlet {
 		}
 
 	
-		boolean isOk = verifySignature(false, envelope, (String)request.getSession().getAttribute("destPathname"));
+//		boolean isOk = verifySignature(false, envelope, (String)request.getSession().getAttribute("destPathname"));
+		int signStatus = verifySignature(false, envelope, (String)request.getSession().getAttribute("destPathname"));
+
 		String certB64 = parseCertFromSignature(envelope);
 		String certSubject = getCertSubject(certb64);
 		Gson gson = new Gson();
-		String VerifiedSignJson = gson.toJson(new SignedEnvelope(envelope, isOk, certB64, certSubject));
-		System.out.println("retorno: "+ VerifiedSignJson);
+		String VerifiedSignJson = gson.toJson(new SignedEnvelope(envelope, signStatus,StatusConst.getMessageByStatus(signStatus), certB64, certSubject));
+
+		if(signStatus != StatusConst.GOOD){
+			logger.error("Assinatura  NÂO é valida!");
+			logger.error("status = ("+signStatus + ") "+ StatusConst.getMessageByStatus(signStatus));
+			logger.error("envelope = "+envelope);
+			logger.error("certB64 = "+certB64);
+			logger.error("certSubject = "+certSubject);
+		}
+		
+		logger.debug("retorno: "+ VerifiedSignJson);
+
 		
 		PrintWriter out = response.getWriter();
 		out.print(VerifiedSignJson);
@@ -135,7 +148,7 @@ public class VerifyEnvelope extends HttpServlet {
 		return serv.getCertSubject(certb64);
 	}
 
-	private boolean verifySignature(Boolean algSha256, String envelope, String filename) throws Exception {
+	private int verifySignature(Boolean algSha256, String envelope, String filename) throws Exception {
 		
 		MessageDigest hashSum = null;
 		if(algSha256){
@@ -148,7 +161,7 @@ public class VerifyEnvelope extends HttpServlet {
 		
 		String digestB64 = (new BASE64Encoder()).encode(digestResult);
 		String envelopeRebuilt = rebuilder.rebuildEnvelope(0, envelope);
-		boolean validateSign = serv.validateSign(envelopeRebuilt, digestB64, null, false);
+		int validateSign = serv.validateSignWithStatus(envelopeRebuilt, digestB64, null, false);
 		return validateSign;
 	}
 

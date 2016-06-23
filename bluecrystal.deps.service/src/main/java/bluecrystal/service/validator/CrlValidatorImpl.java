@@ -37,7 +37,7 @@ import bluecrystal.service.exception.UndefStateException;
 import bluecrystal.service.loader.LCRLoader;
 
 public class CrlValidatorImpl implements CrlValidator {
-	static final Logger LOG = LoggerFactory.getLogger(CrlValidatorImpl.class);
+	static final Logger logger = LoggerFactory.getLogger(CrlValidatorImpl.class);
 	private LCRLoader lcrLoader;
 
 	public CrlValidatorImpl(LCRLoader lcrLoader) {
@@ -65,6 +65,8 @@ public class CrlValidatorImpl implements CrlValidator {
 				}
 
 				if (lcr.getThisUpdate().before(date)) {
+					logger.debug("LCR é anterior a data da assinatura, não tenho como ter certeza do status: UNKOWN");
+
 					Date upd = lcr.getNextUpdate();
 					return new OperationStatus(StatusConst.UNKNOWN, upd);
 				}
@@ -72,11 +74,11 @@ public class CrlValidatorImpl implements CrlValidator {
 				return new OperationStatus(StatusConst.GOOD, upd);
 			}
 			else {
-				LOG.error("LCR is NULL");
+				logger.error("LCR is NULL");
 				return new OperationStatus(StatusConst.UNTRUSTED, null);
 			}
 		} else {
-			LOG.error("CRL DP not found");
+			logger.error("CRL DP not found");
 			return new OperationStatus(StatusConst.UNKNOWN, null);
 		}
 	}

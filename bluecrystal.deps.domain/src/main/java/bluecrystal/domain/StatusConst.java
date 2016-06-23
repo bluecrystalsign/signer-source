@@ -42,10 +42,10 @@ public class StatusConst {
 	public final static int LAST_STATUS = INVALID_SIGN;
 	
 	public static String getMessageByStatus(int status){
-		
-		String ret = Messages.getString("StatusConst."+status); //$NON-NLS-1$
-		
-		return ret;
+
+		return "status";
+//		String ret = Messages.getString("StatusConst."+status); //$NON-NLS-1$
+//		return ret;
 		
 	}
 }
