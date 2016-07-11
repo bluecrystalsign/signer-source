@@ -1764,7 +1764,7 @@ public class DerEncoder {
 				DERPrintableString derOCStr = (DERPrintableString) derObjB;
 				contentStr = new String(derOCStr.getOctets(), "UTF8");
 			} else {
-				System.err.println("FORMAT OF SAN: UNRECOGNIZED -> "
+				LOG.info("FORMAT OF SAN: UNRECOGNIZED -> "
 						+ derObjB.getClass().getCanonicalName());
 			}
 			LOG.trace(sanOid + " -> " + contentStr);
@@ -1895,7 +1895,7 @@ public class DerEncoder {
 					ret.put(name, value);
 				}
 			} else {
-				System.err.println("SAN:OTHER NAME NOT RECOGNIZED");
+				LOG.error("SAN:OTHER NAME NOT RECOGNIZED");
 			}
 
 		} catch (Exception e) {

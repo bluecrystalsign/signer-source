@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>al.bluecryst</groupId>
 	<artifactId>bluecrystal.deps.service</artifactId>
-	<version>1.5.0</version>
+	<version>1.5.4</version>
 
 	<name>Services provided to applications</name>
 	<description>API that should be used by applications</description>
@@ -22,88 +22,83 @@
 	</scm>
 
 
-<!-- SONATYPE BEGIN
-<profiles>
-    <profile>
-        <id>release-sign-artifacts</id>
-        <activation>
-            <property>
-                <name>performRelease</name>
-                <value>true</value>
-            </property>
-        </activation>
-   -->
+	<!-- SONATYPE BEGIN <profiles> <profile> <id>release-sign-artifacts</id> 
+		<activation> <property> <name>performRelease</name> <value>true</value> </property> 
+		</activation> -->
 	<distributionManagement>
 		<snapshotRepository>
-		    <id>ossrh</id>
-		    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		  </snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
 	</distributionManagement>
 
 	<build>
-	  <plugins>
-	    <plugin>
-	      <groupId>org.sonatype.plugins</groupId>
-	      <artifactId>nexus-staging-maven-plugin</artifactId>
-	      <version>1.6.3</version>
-	      <extensions>true</extensions>
-	      <configuration>
-	        <serverId>ossrh</serverId>
-	        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-	        <autoReleaseAfterClose>false</autoReleaseAfterClose>
-	      </configuration>
-	    </plugin>
-	    
-	    
-	    
-	   
-	 <plugin>
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-gpg-plugin</artifactId>
-      <version>1.5</version>
-      <executions>
-        <execution>
-          <id>sign-artifacts</id>
-          <phase>verify</phase>
-          <goals>
-            <goal>sign</goal>
-          </goals>
-        </execution>
-      </executions>
-    </plugin>
-	    
+		<plugins>
 			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.5</version>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.6.3</version>
+				<extensions>true</extensions>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-					<encoding>ISO-8859-1</encoding>
+					<serverId>ossrh</serverId>
+					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+					<autoReleaseAfterClose>false</autoReleaseAfterClose>
 				</configuration>
 			</plugin>
 
 
-	    
-	  </plugins>
+
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.5</version>
+				<configuration>
+					<source>${maven.compiler.source}</source>
+					<target>${maven.compiler.target}</target>
+					<encoding>ISO-8859-1</encoding>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
 	</build>
 
-<!-- 
-    </profile>
-</profiles>
-SONATYPE BEGIN -->
+	<!-- </profile> </profiles> SONATYPE BEGIN -->
 
 
 
 	<dependencies>
 		<dependency>
 			<groupId>al.bluecryst</groupId>
-			<artifactId>bluecrystal.deps.domain</artifactId>
-			<version>1.5.0</version>
-		</dependency>
-		<dependency>
-			<groupId>al.bluecryst</groupId>
 			<artifactId>bluecrystal.deps.bc_g3</artifactId>
-			<version>1.5.0</version>
+			<version>1.5.4</version>
 		</dependency>
 	</dependencies>
 	<parent>
