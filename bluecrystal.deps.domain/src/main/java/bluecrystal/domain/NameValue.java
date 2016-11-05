@@ -19,6 +19,10 @@
 package bluecrystal.domain;
 
 public class NameValue {
+	@Override
+	public String toString() {
+		return "NameValue [name=" + name + ", value=" + value + "]";
+	}
 	private String name;
 	private String value;
 	public String getName() {

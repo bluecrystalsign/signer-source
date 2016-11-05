@@ -20,6 +20,8 @@ package bluecrystal.domain;
 
 public class CertConstants {
 	
+	public static final String THUMBPRINT_SHA256_D = "thumbprint_sha256%d";
+
 	public static final String EKU_D = "eku%d";
 
 	public static final String KU_D = "ku%d";
@@ -69,4 +71,10 @@ public class CertConstants {
 	public static final String OAB_UF_D = "oab_uf%d";
 	public static final String PROFESSIONAL_D = "professional%d";
 	public static final String UPN_D = "upn%d";
+	public static String  getSubject(int i){
+		return String.format(CertConstants.SUBJECT_D, i);
+	}
+	public static String getIssuer(int i){
+		return String.format(CertConstants.ISSUER_D, i);
+	}
 }
