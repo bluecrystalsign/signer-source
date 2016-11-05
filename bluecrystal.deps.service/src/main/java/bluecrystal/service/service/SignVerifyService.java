@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import bluecrystal.bcdeps.helper.DerEncoder;
 import bluecrystal.domain.helper.IttruLoggerFactory;
-import bluecrystal.service.helper.Utils;
+import bluecrystal.service.helper.UtilsLocal;
 
 public class SignVerifyService {
 	static final Logger logger = LoggerFactory.getLogger(SignVerifyService.class);
@@ -64,10 +64,10 @@ public class SignVerifyService {
 		AlgorithmIdentifier algId = createAlgorithm(hashId);
 		byte[] expected = derEncode(contentHash, algId);
 
-        logger.debug("Sig:("+sigBytes.length+")"+Utils.conv(sigBytes));
-        logger.debug("Has:("+contentHash.length+")"+Utils.conv(contentHash));
-        logger.debug("Sig:("+sig.length+")"+Utils.conv(sig));
-        logger.debug("Exp:("+expected.length+")"+Utils.conv(expected));
+        logger.debug("Sig:("+sigBytes.length+")"+UtilsLocal.conv(sigBytes));
+        logger.debug("Has:("+contentHash.length+")"+UtilsLocal.conv(contentHash));
+        logger.debug("Sig:("+sig.length+")"+UtilsLocal.conv(sig));
+        logger.debug("Exp:("+expected.length+")"+UtilsLocal.conv(expected));
 		
 		
 		if (sig.length == expected.length) {

@@ -31,20 +31,37 @@ import java.security.cert.X509CRL;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LCRLoaderImpl implements LCRLoader {
 	static final Logger LOG = LoggerFactory.getLogger(LCRLoaderImpl.class);
-
+	private static CacheManager localCache = null;
+	
+	private static String cacheType = Messages.getString("LCRLoader.cacheType");
+	static {
+		try {
+			localCache = (CacheManager) Class
+			        .forName(cacheType)
+			        .newInstance();
+//			if(repoLoader==null){
+//				LOG.error("Could not load Repoloader ");
+//			}
+		} catch (Exception e) {
+//			LOG.error("Could not load Repoloader ", e);
+			e.printStackTrace();
+		}
+	}
+	
+	
 	
 	public LCRLoaderImpl() {
 		super();
 	}
-	Map<String, X509CRL> cache = new HashMap<String, X509CRL>();
 	
+
+
 	public X509CRL get(byte[] dists, Date date) throws CertificateException, CRLException, IOException {
 		String url = new String(dists);
 		return get(url, date);
@@ -65,10 +82,9 @@ public class LCRLoaderImpl implements LCRLoader {
 	}
 	private X509CRL get(String dists, Date date) throws CertificateException, CRLException, IOException {
 		String url = new String(dists);
-		X509CRL ret = null;
-		if( checkInCache(url, date)){
+		X509CRL ret = getInCache(url, date);;
+		if( ret != null){
 			LOG.debug(":: LCR encontrada no cache: "+url);
-			ret =  getInCache(url);
 		}else{
 			LOG.debug(":: LCR tentando baixar : "+url);
 			X509CRL crl = getFresh(url);
@@ -85,10 +101,6 @@ public class LCRLoaderImpl implements LCRLoader {
 	}	
 
 
-	private void addToCache(String key, X509CRL crl) {
-		cache.put(key, crl);
-		
-	}
 	private X509CRL getFresh(String url) throws CertificateException, CRLException, IOException {
 		byte [] encoded = getFromServer(url);
 		return decode(encoded);
@@ -103,17 +115,15 @@ public class LCRLoaderImpl implements LCRLoader {
 	private byte[] getFromServer(String url) throws MalformedURLException, IOException {
 		return ExternalLoaderHttp.getfromUrl(url);
 	}
-	private X509CRL getInCache(String url) {
-		return cache.get(url);
+	private X509CRL getInCache(String url, Date date) {
+		return localCache.getInCache(url, date);
 	}
-	private boolean checkInCache(String url, Date date) {
-		if( cache.containsKey(url)){
-			X509CRL cachedCRL = cache.get(url);
-			if(cachedCRL.getNextUpdate().after(date)){
-				return true;
-			}
-		}
-		return false;
+//	private boolean checkInCache(String url, Date date) {
+//		return localCache.checkInCache(url, date);
+//	}
+	private void addToCache(String key, X509CRL crl) {
+		localCache.addToCache(key, crl);
+		
 	}
 
 }

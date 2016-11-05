@@ -38,7 +38,8 @@ import bluecrystal.bcdeps.helper.PkiOps;
 import bluecrystal.domain.AppSignedInfo;
 import bluecrystal.domain.AppSignedInfoEx;
 import bluecrystal.domain.SignPolicy;
-import bluecrystal.service.helper.Utils;
+import bluecrystal.service.helper.UtilsLocal;
+import bluecrystal.service.helper.UtilsRepo;
 
 public abstract class BaseService implements EnvelopeService {
 	static final Logger LOG = LoggerFactory.getLogger(BaseService.class);
@@ -364,10 +365,10 @@ public abstract class BaseService implements EnvelopeService {
 			throws Exception {
 		X509Certificate x509;
 		try {
-			x509 = Utils.createCert(Utils.convHexToByte(appSignedInfo
+			x509 = UtilsLocal.createCert(UtilsLocal.convHexToByte(appSignedInfo
 					.getCertId()));
 		} catch (Exception e) {
-			x509 = Utils.loadCertFromRepo(appSignedInfo
+			x509 = UtilsRepo.loadCertFromRepo(appSignedInfo
 					.getCertId());
 		}
 		return x509;

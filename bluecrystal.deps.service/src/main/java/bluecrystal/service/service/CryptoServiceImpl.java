@@ -149,6 +149,7 @@ public class CryptoServiceImpl implements CryptoService {
 		return DerEncoder.extractDTOSignPolicyOid(sign, signCompare);
 	}
 
+	@Override
 	public int validateSignByContent(byte[] signCms, byte[] content,
 			Date dtSign, boolean verifyCRL) throws Exception {
 		byte[] origHash = null;

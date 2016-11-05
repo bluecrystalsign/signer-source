@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import bluecrystal.domain.NameValue;
-import bluecrystal.service.helper.Utils;
+import bluecrystal.service.helper.UtilsLocal;
 
 
 public class Validator extends BaseService implements ValidatorSrv {
@@ -52,7 +52,7 @@ public class Validator extends BaseService implements ValidatorSrv {
 	public Map<String, String> parseCertificateAsMap(String certificate)
 			throws Exception {
 		Map<String, String> ret;
-		X509Certificate cert = Utils.createCert(certificate);
+		X509Certificate cert = UtilsLocal.createCert(certificate);
 		
 		CertificateService certServ = new CertificateService();
 		List<X509Certificate> chain = new ArrayList<X509Certificate>();

@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.security.InvalidAlgorithmParameterException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.Security;
@@ -53,6 +54,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
+
+import org.bouncycastle.util.encoders.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +69,9 @@ import bluecrystal.domain.OperationStatus;
 import bluecrystal.domain.StatusConst;
 import bluecrystal.service.exception.RevokedException;
 import bluecrystal.service.exception.UndefStateException;
-import bluecrystal.service.helper.Utils;
+import bluecrystal.service.helper.UtilsLocal;
+import bluecrystal.service.helper.UtilsRepo;
+import bluecrystal.service.loader.LCRLoader;
 import bluecrystal.service.loader.LCRLoaderImpl;
 import bluecrystal.service.validator.CrlValidatorImpl;
 import bluecrystal.service.validator.OcspValidatorImpl;
@@ -73,6 +80,24 @@ import bluecrystal.service.validator.StatusValidatorImpl;
 
 public class CertificateService {
 	static final Logger logger = LoggerFactory.getLogger(CertificateService.class);
+	
+	private static LCRLoader lcrLoader;
+//	private static String loaderType = Messages.getString("LCRLoader.loaderType");
+//	
+//	static {
+//		try {
+//			lcrLoader = (LCRLoader) Class
+//			        .forName(loaderType)
+//			        .newInstance();
+////			if(repoLoader==null){
+////				LOG.error("Could not load Repoloader ");
+////			}
+//		} catch (Exception e) {
+////			LOG.error("Could not load Repoloader ", e);
+//			e.printStackTrace();
+//		}
+//	}
+
 
 	private static final String ICP_BRASIL_PF = "ICP-Brasil PF";
 
@@ -190,6 +215,8 @@ public class CertificateService {
 
 	};
 
+
+
 	// 5.2.3.1.1.2 Tamanho Mínimo de Chave
 	// O tamanho mínimo de chaves para criação de assinaturas segundo esta PA é
 	// de :
@@ -200,8 +227,7 @@ public class CertificateService {
 	public CertificateService() {
 		super();
 		OcspValidatorImpl ocspValidator = new OcspValidatorImpl();
-		// OcspValidatorImpl ocspValidator = null;
-		LCRLoaderImpl lcrLoader = new LCRLoaderImpl();
+		lcrLoader = new LCRLoaderImpl();
 		CrlValidatorImpl crlValidator = new CrlValidatorImpl(lcrLoader);
 		statusValidator = new StatusValidatorImpl(crlValidator, ocspValidator);
 		statusValidator.setUseOcsp(true);
@@ -221,7 +247,7 @@ public class CertificateService {
 
 	public List<X509Certificate> getIntermCaList() throws Exception {
 		if (intermCa == null) {
-			intermCa = Utils.listCertFromRepo("interm");
+			intermCa = UtilsRepo.listCertFromRepo("interm");
 			mapInterm = buildMap(intermCa);
 		}
 		return intermCa;
@@ -229,7 +255,7 @@ public class CertificateService {
 
 	public List<X509Certificate> getTrustAnchorList() throws Exception {
 		if (trustAnchor == null) {
-			trustAnchor = Utils.listCertFromRepo("root");
+			trustAnchor = UtilsRepo.listCertFromRepo("root");
 			mapAnchor = buildMap(trustAnchor);
 		}
 		return trustAnchor;
@@ -263,6 +289,11 @@ public class CertificateService {
 				String name = "";
 				String value = "";
 
+				value = createThumbprintsha256(next.getEncoded());
+				name = String.format(CertConstants.THUMBPRINT_SHA256_D, i);
+				ret.put(name, value);
+				
+				
 				value = next.getSubjectDN().getName();
 				name = String.format(CertConstants.SUBJECT_D, i);
 				ret.put(name, value);
@@ -440,12 +471,24 @@ public class CertificateService {
 
 	}
 
+	private String createThumbprintsha256(byte[] encoded) throws NoSuchAlgorithmException {
+		MessageDigest hashSum = MessageDigest.getInstance("SHA-256");
+//			logger.debug("Validar assinatura SHA-256");
+
+
+		hashSum.update(encoded);
+		byte[] digestResult = hashSum.digest();
+		
+		String digestB64 = new String(Base64.encode(digestResult));
+		return digestB64;
+	}
+
 	private String calcCertSha256(X509Certificate next) {
 		String ret = "";
 		PkiOps pki = new PkiOps();
 		String certSha256;
 		try {
-			ret = Utils.conv(pki.calcSha256(next.getEncoded()));
+			ret = UtilsLocal.conv(pki.calcSha256(next.getEncoded()));
 		} catch (Exception e) {
 			logger.error("Error calculating cert sha256 ", e);
 		}
@@ -504,7 +547,7 @@ public class CertificateService {
 			} else if (nonCritOID.compareTo(AKI_OID) == 0) {
 				byte[] aki = getAKI(extensionValue, index);
 				nvPair.put(String.format(CertConstants.AKI_FMT, index),
-						Utils.conv(aki));
+						UtilsLocal.conv(aki));
 			}
 		} catch (Exception e) {
 			logger.error("Error processing extension " + nonCritOID, e);

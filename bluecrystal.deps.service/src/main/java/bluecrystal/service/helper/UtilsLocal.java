@@ -37,25 +37,8 @@ import bluecrystal.service.loader.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Utils {
-	static final Logger LOG = LoggerFactory.getLogger(Utils.class);
-	
-	static private	RepoLoader repoLoader;
-	private static String loaderType = Messages.getString("RepoLoader.loaderType");
-	
-	
-	static {
-		try {
-			repoLoader = (RepoLoader) Class
-			        .forName(loaderType)
-			        .newInstance();
-			if(repoLoader==null){
-				LOG.error("Could not load Repoloader ");
-			}
-		} catch (Exception e) {
-			LOG.error("Could not load Repoloader ", e);
-		}
-	}
+public class UtilsLocal {
+	static final Logger LOG = LoggerFactory.getLogger(UtilsLocal.class);
 	
 	protected static final String ID_SHA1 = "1.3.14.3.2.26";
 	
@@ -64,62 +47,6 @@ public class Utils {
 	protected static final int ALG_SHA256 = 2;
 	protected static final int ALG_SHA384 = 3;
 	protected static final int ALG_SHA512 = 4;	
-	
-	
-	
-	public static X509Certificate loadCertFromRepo(String certFilePath)
-	throws Exception {
-		List<X509Certificate> certList = listCertFromRepo(certFilePath);
-		return certList.get(0);
-	}
-	public static List<X509Certificate> listCertFromRepo(String certFilePath)
-			throws Exception {
-		String[] fileList =  null;
-		if(!repoLoader.exists(certFilePath)){
-			if(!repoLoader.exists(certFilePath+".txt")){
-				if(!repoLoader.exists(certFilePath+".cer")){
-					throw new FileNotFoundException(repoLoader.getFullPath(certFilePath));
-				} else {
-					certFilePath = certFilePath+".cer";
-				}
-			} else {
-				certFilePath = certFilePath+".txt";
-			}
-		}
-		
-		if(repoLoader.isDir(certFilePath)  ){
-			fileList = repoLoader.list(certFilePath);
-		} else {
-			fileList = new String[1];
-			fileList[0] = certFilePath;
-		}
-		List<X509Certificate> retList = new ArrayList<X509Certificate>();
-		for(String next : fileList){
-			try {
-				retList.addAll(listCertFromFile(next));
-			} catch (Exception e) {
-				LOG.error("Could not add certs from Repo "+next, e);
-			}
-		}
-		return retList;
-	}	
-	
-	public static List<X509Certificate> listCertFromFile(String certFilePath)
-			throws Exception {
-		InputStream is = null;
-		List<X509Certificate> retList = new ArrayList<X509Certificate>();
-		try {
-			is = repoLoader.load(certFilePath);
-		} catch (LicenseNotFoundExeception e) {
-		}
-		 CertificateFactory cf = CertificateFactory.getInstance("X509");
-		 Collection<? extends Certificate> c = 
-		 cf.generateCertificates(is);
-		 for(Certificate next: c){
-			 retList.add((X509Certificate)next);
-		 }
-		return retList;
-	}	
 	
 	
 	public static String conv(byte[] byteArray){

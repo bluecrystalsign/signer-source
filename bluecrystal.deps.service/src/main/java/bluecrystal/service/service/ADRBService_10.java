@@ -26,7 +26,7 @@ import java.util.Date;
 import org.bouncycastle.asn1.ASN1Set;
 
 import bluecrystal.bcdeps.helper.DerEncoder;
-import bluecrystal.service.helper.Utils;
+import bluecrystal.service.helper.UtilsLocal;
 
 public class ADRBService_10 extends BaseService {
 
@@ -45,7 +45,7 @@ public class ADRBService_10 extends BaseService {
 		signingCertFallback = true;
 		signedAttr = true;
 		version = 3;
-		policyHash = Utils
+		policyHash = UtilsLocal
 				.convHexToByte(SIG_POLICY_HASH);
 		policyId = SIG_POLICY_BES_ID;
 		policyUri = SIG_POLICY_URI;
