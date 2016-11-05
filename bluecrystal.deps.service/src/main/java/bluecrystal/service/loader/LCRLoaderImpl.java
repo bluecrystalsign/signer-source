@@ -29,7 +29,6 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509CRL;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -113,7 +112,7 @@ public class LCRLoaderImpl implements LCRLoader {
 		 return crl;
 	}
 	private byte[] getFromServer(String url) throws MalformedURLException, IOException {
-		return ExternalLoaderHttp.getfromUrl(url);
+		return ExternalLoaderHttp2.getfromUrl(url);
 	}
 	private X509CRL getInCache(String url, Date date) {
 		return localCache.getInCache(url, date);

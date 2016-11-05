@@ -31,7 +31,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ExternalLoaderHttp {
+public class ExternalLoaderHttp  {
 	static final Logger LOG = LoggerFactory.getLogger(ExternalLoaderHttp.class);
 	private static final int BUFFER_SIZE = 64 * 1024;
 
@@ -39,6 +39,9 @@ public class ExternalLoaderHttp {
 		super();
 	}
 
+	/* (non-Javadoc)
+	 * @see bluecrystal.service.loader.ExternalLoaderHttp#getfromUrl(java.lang.String)
+	 */
 	public static byte[] getfromUrl(String url) throws MalformedURLException,
 			IOException {
 		URLConnection conn = createConn(url);
