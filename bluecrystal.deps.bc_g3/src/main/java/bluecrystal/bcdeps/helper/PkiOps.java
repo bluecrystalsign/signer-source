@@ -18,6 +18,7 @@
 
 package bluecrystal.bcdeps.helper;
 
+import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,16 +26,22 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
+import java.security.KeyFactory;
 import java.security.KeyStoreException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.Security;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.security.UnrecoverableKeyException;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -48,6 +55,7 @@ import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.util.Store;
+import org.bouncycastle.util.encoders.Base64;
 
 import bluecrystal.domain.helper.IttruLoggerFactory;
 
@@ -265,6 +273,30 @@ public class PkiOps {
 			}
 		}
 		return pk;
+	}
+	
+	public PublicKey createPublicKey(String pubKey) throws Exception{
+		byte[] pkBytes = Base64.decode(pubKey);
+		PublicKey publicKey = null;
+		try {
+			createPubKey(pkBytes);		
+		} catch (Exception e) {
+				publicKey = createPubKeyFromCertificate(pkBytes);
+		}
+		return publicKey;
+	}
+
+	private PublicKey createPubKeyFromCertificate(byte[] pkBytes) throws CertificateException {
+		PublicKey publicKey;
+		CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+		Certificate certificate = certificateFactory.generateCertificate(new ByteArrayInputStream(pkBytes));
+		publicKey = certificate.getPublicKey();
+		return publicKey;
+	}
+
+	private void createPubKey(byte[] pkBytes) throws InvalidKeySpecException, NoSuchAlgorithmException {
+		PublicKey publicKey;
+		publicKey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(pkBytes));
 	}
 	
 	
