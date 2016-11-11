@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" >
+
+<!--
+    Blue Crystal: Document Digital Signature
+    Copyright (C) 2007-2015  Sergio Leal
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<html>
+<head>
+<title>Java Applet MS_CAPI - Assinatura com Politica de Assinatura
+	(ICP-Brasil)</title>
+
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<script type="text/javascript"
+	src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+
+
+<!-- Bootstrap -->
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+	integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+	crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
+	integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r"
+	crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+	integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+	crossorigin="anonymous"></script>
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+	integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+	crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
+	integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r"
+	crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+	integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+	crossorigin="anonymous"></script>
+	
+	<script src="download.js"></script>
+	<script src="bluc_example.js"></script>
+	<link rel="stylesheet" type="text/css" href="bluc_example.css">
+
+<script>
+provider = "appletCapi";
+$(document).ready(function() {
+	initBlueCrystal();
+});</script>
+
+</head>
+<body>
+<!-- INICIO dos componentes visuais de mensagens -->
+
+	<nav class="navbar navbar-default navbar-fixed-top">
+	<div class="container-fluid">
+		<div class="navbar-header"></div>
+		<div class="collapse navbar-collapse"
+			id="bs-example-navbar-collapse-1">
+			<ul class="nav navbar-nav">
+
+				<!-- menu tecnologia -->
+
+				<li class="dropdown">
+					<li class="dropdown"><a href="#" class="dropdown-toggle"
+					data-toggle="dropdown" role="button" aria-haspopup="true"
+					aria-expanded="false">Tecnologia <span class="caret"></span></a>
+						<ul class="dropdown-menu">
+								<li><a href="index.html">Pagina inicial</a></li>
+								<li><a href="upload_activex.html">ActiveX</a></li>
+								<li><a href="upload_activexNoSP.html">ActiveX - Assinatura sem Politica
+									de Assinatura</a></li>
+								<li><a href="upload_java_capi.html">Applet Java (MS-CAPI) - Assinatura
+									com Politica de Assinatura(ICP-Brasil)</a></li>
+								<li><a href="upload_java_capiNoSP.html">Applet Java (MS-CAPI) -
+									Assinatura sem Politica de Assinatura</a></li>
+								<li><a href="upload_java_p11.html">Applet Java (PKCS#11) - Assinatura
+									com Politica de Assinatura(ICP-Brasil)</a></li>
+								<li><a href="upload_java_p11NoSP.html">Applet Java (PKCS#11) -
+									Assinatura sem Politica de Assinatura</a></li>
+								<li><a href="upload_ChromeExt.html">Extensão do Chrome - Assinatura com Politica de Assinatura</a></li>
+								<li><a href="upload_RestSigner.html">Rest Signer - Assinatura com Politica de Assinatura</a></li>
+						</ul>
+					</li>
+				</li>
+
+				<!-- menu Conteudo -->
+				<li class="dropdown">
+					<li class="dropdown"><a href="#" class="dropdown-toggle"
+					data-toggle="dropdown" role="button" aria-haspopup="true"
+					aria-expanded="false">Conteudo <span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li><a href="http://www.bluecryst.al/" target="_blank">Blue Crystal</a></li>
+							<li><a href="https://github.com/bluecrystalsign/" target="_blank">Fontes e binários</a></li>
+						</ul>
+					</li>
+				</li>
+
+				<li id="alert_box">
+				</li>
+
+			</ul>
+		</div>
+
+	</div>
+	</nav>
+	<!-- FIM dos componentes visuais de mensagens -->
+
+	<Applet Code="bluecrystal.applet.capi.SignApplet.class"
+		archive="bluc_capi.jar,platform-4.1.0.jar,jna-4.1.0.jar" width=1
+		Height=1 id="signer">
+		<param name="name" value="Blue Crystal Signer">
+	</Applet>
+
+
+	<h1>Java Applet MS_CAPI</h1><br/>
+	<h3>Assinatura com Politica de Assinatura (ICP-Brasil)<br/>
+	Powered by <b>Blue Crystal - Software Livre</b>
+	<br></h3>
+	<h4><a href="https://github.com/bluecrystalsign/signer-source-vstudio/tree/master/dist">Antes de inicicar o processo instale o ActiveX daqui</a><br/></h4>
+
+	<h4>Passo 1: Arraste um documento para a area abaixo.</h4>
+	<div id="dropbox">Arraste o arquivo que deseja assinar para
+		aqui...</div>
+	<div id="status"></div>
+
+	<h4>Passo 2: na janela exibida
+		selecione o certificado que deseja utilizar e aguarde.</br> Serão exibidos
+		os dados do certificado e em seguida das assinatura.
+	</h4>
+	<p>
+	<h4><span class="label label-success">Certificado</span></h4>
+	<br />
+	<span id="parsedCert"><h5>Aqui serao exibidos os dados do certificado usado na assinatura.</h5></span>
+	<p>
+	<p>
+	<h4>
+		<span class="label label-success">Assinatura</span><button id="bt_download" type="button" class="btn btn-primary" disabled="true">Baixar</button>
+	</h4>
+	<br />
+	<span id="signedEnvelope"><h5>Aqui aparecera assinatura digital em foramto base 64</h5></span>
+	<p>
+</body>
+</html>

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<!--
+    Blue Crystal: Document Digital Signature
+    Copyright (C) 2007-2015  Sergio Leal
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<html>
+<head>
+<title>Tecnologia Cliente</title>
+
+<script type="text/javascript"
+	src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+
+
+<!-- Bootstrap -->
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+	integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+	crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
+	integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r"
+	crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+	integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+	crossorigin="anonymous"></script>
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+	integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+	crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
+	integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r"
+	crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+	integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+	crossorigin="anonymous"></script>
+<script src="bluc_example.js"></script>
+<script src="download.js"></script>
+<link rel="stylesheet" type="text/css" href="bluc_example.css">
+
+
+</head>
+<body>
+	<script>
+		provider = "index-tech";
+	</script>
+
+	<script type="text/javascript">
+		// eventos disparados de acordo com o fluxo de execução da assinatura
+			$(document).ready(function() {
+		initBlueCrystal();
+	});
+
+
+		function bluc_status_onchange() {
+			showWarning($("bluc_status").text());
+		}
+
+		function bluc_load_native_onchange() {
+			$("#msg_install_native").hide();
+			$("#native_alert").hide();
+			mapProviders["chromeExtension"].isActive = true;
+			refreshProviers();
+		}
+	</script>
+
+	<!-- INICIO dos componentes visuais de mensagens -->
+
+	<nav class="navbar navbar-default navbar-fixed-top">
+	<div class="container-fluid">
+		<div class="navbar-header"></div>
+		<div class="collapse navbar-collapse"
+			id="bs-example-navbar-collapse-1">
+			<ul class="nav navbar-nav">
+
+				<!-- menu tecnologia -->
+
+				<li class="dropdown">
+				<li class="dropdown"><a href="#" class="dropdown-toggle"
+					data-toggle="dropdown" role="button" aria-haspopup="true"
+					aria-expanded="false">Tecnologia <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="index.html">Pagina inicial</a></li>
+						<li><a href="upload_activex.html">ActiveX</a></li>
+						<li><a href="upload_activexNoSP.html">ActiveX -
+								Assinatura sem Politica de Assinatura</a></li>
+						<li><a href="upload_java_capi.html">Applet Java (MS-CAPI)
+								- Assinatura com Politica de Assinatura(ICP-Brasil)</a></li>
+						<li><a href="upload_java_capiNoSP.html">Applet Java
+								(MS-CAPI) - Assinatura sem Politica de Assinatura</a></li>
+						<li><a href="upload_java_p11.html">Applet Java (PKCS#11)
+								- Assinatura com Politica de Assinatura(ICP-Brasil)</a></li>
+						<li><a href="upload_java_p11NoSP.html">Applet Java
+								(PKCS#11) - Assinatura sem Politica de Assinatura</a></li>
+						<li><a href="upload_ChromeExt.html">Extensão do Chrome -
+								Assinatura com Politica de Assinatura</a></li>
+						<li><a href="upload_RestSigner.html">Rest Signer -
+								Assinatura com Politica de Assinatura</a></li>
+					</ul></li>
+				</li>
+
+				<!-- menu Conteudo -->
+				<li class="dropdown">
+				<li class="dropdown"><a href="#" class="dropdown-toggle"
+					data-toggle="dropdown" role="button" aria-haspopup="true"
+					aria-expanded="false">Conteudo <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="http://www.bluecryst.al/" target="_blank">Blue
+								Crystal</a></li>
+						<li><a href="https://github.com/bluecrystalsign/"
+							target="_blank">Fontes e binários</a></li>
+					</ul></li>
+				</li>
+
+
+			</ul>
+		</div>
+
+	</div>
+	</nav>
+
+	<!-- FIM dos componentes visuais de mensagens -->
+
+	Lista de componentes tecnologicos
+	<br>Powered by
+	<a target== "_blank" href="http://www.bluecryst.al">Blue Crystal </a>
+	<br>
+	<h2>
+		Exemplo de uso das tecnologias do Blue Crystal<br />
+	</h2>
+	<h3>Veja abaixo as tecnologias compativeis com o seu ambiente.</h3>
+	<br />
+	<br />
+<!-- 
+	<Applet Code="bluecrystal.applet.capi.SignApplet.class"
+		archive="bluc_capi.jar,platform-4.1.0.jar,jna-4.1.0.jar" width=1
+		Height=1 id="signerCapi">
+		<param name="name" value="Blue Crystal Signer">
+	</Applet>
+
+	<Applet Code="bluecrystal.applet.sign.SignApplet.class"
+		archive="bluc_p11.jar" width=1 Height=1 id="signerP11">
+		<PARAM name="module"
+			value="aetpkss1.dll;eTPKCS11.dll;asepkcs.dll;libaetpkss.dylib;libeTPkcs11.dylib" />
+		<PARAM name="otherPath" value="/usr/local/lib" />
+		<param name="name" value="Blue Crystal Signer">
+	</Applet>
+
+	
+	<div id="listProviders"></div>
+-->
+<p><h3><span class="label label-danger">IMPORTANTE</span><br/>Se você tem interesse na solução Java Applet veja a analise completa <a href="index2.html">aqui</a><br/>
+Removemos essa analise da pagina inicial porque o Internet Explorer dava crash!</h3>
+</p>
+
+	<table class="table table-condensed">
+		<tr>
+			<th>Tecnologia</th>
+			<th>Disponivel</th>
+			<th>Entenda</th>
+		</tr>
+		<tr id="chromeExtension_row">
+			<td>Extensão do Chrome</td>
+			<td><span id="chromeExtension_avail"></span></td>
+			<td><h5>
+					Requisitos:<br />Windows, Chrome e a instalacao da extensão no
+					Chrome e no componente Native Messaging. <b>Click para saber
+						mais</b>
+				</h5></td>
+		</tr>
+		<tr id="appletCapi_row">
+			<td>Java Applet com MSCAPI</td>
+			<td><span class="label label-warning">Não analisado</span></td>
+			<td><h5>
+					Requisitos:<br />Windows, Firefox e a instalacao do Java no
+					navegador. <b>Click para saber mais</b>
+				</h5></td>
+		</tr>
+		<tr id="appletP11_row">
+			<td>Java Applet com PKCS#11 e *.p12/pfx</td>
+			<td><span class="label label-warning">Não analisado</span></td>
+			<td><h5>
+					Requisitos:<br />Firefox, driver PKCS#11 do cartão / token
+					instalado (se aplicavel) e a instalacao do Java no navegador. <br />
+					<b>Click para saber mais</b>
+				</h5></td>
+		</tr>
+		<tr id="activeX_row">
+			<td>Componente ActiveX</td>
+			<td><span id="activeX_avail"></span></td>
+			<td><h5>
+					Requisitos:<br />Windows, Internet Explorer e a instalacao do
+					ActiveX <b>Click para saber mais</b>
+				</h5></td>
+
+		</tr>
+		<tr id="restSigner_row">
+			<td>Rest Signer</td>
+			<td><span id="restSigner_avail"></span></td>
+			<td><h5>
+					Requisitos:<br />Windows, Internet Explorer e a instalacao do
+					RestSigner<br /> <b>Click para saber mais</b>
+				</h5></td>
+		</tr>
+
+	</table>
+
+
+	<div class="jumbotron" id="chromeExtension_banner">
+		<h3 class="text-primary">Extensão do Chrome</h3>
+		<h4>
+			A extensão do Chrome é compativel com seu ambiente. Ela exige a
+			execução no Chrome sendo compatível apena com o Windows, pois depende
+			de um componente nativo.<br /> Os coponentes nativos para o MacOS e o
+			Linux estão em desenvolvimento.<br /> A extensão para o Chrome é
+			considerada a solução mais sólida para uso caso seu ambiente permita.
+			Para isso você deve <a
+				href="https://chrome.google.com/webstore/detail/blue-crystal-signer/inlgdajmhicinhamnepnpdneamfgjcgl?hl=pt-BR&authuser=2"
+				target=_blank>instalar a extensão. </a><br /> Alem disso <a
+				href="https://github.com/bluecrystalsign/signer-distibution/blob/master/instaladores%20windows/single%20image/instalador.msi">instale
+				os componentes clientes. Selecione a opção 'download'. </a>
+		</h4>
+		<br />
+		<p>
+			<a class="btn btn-primary btn-lg" href="upload_ChromeExt.html"
+				role="button">Use agora</a>
+		</p>
+	</div>
+
+
+	<div class="jumbotron" id="appletCapi_banner">
+		<h3 class="text-primary">Java Applet com MSCAPI</h3>
+		<h4>
+			O componente depende da instalação do Java no seu ambiente e
+			habilitado no seu navegador. <br/> 
+			Ele é compatível com Windows Firefox e Interneer Explorer.
+			<br/>Você poderá utilizar qualquer certificado que esteja no repositório do Windows e que tenha a chave privada disponivel. <br/>
+			<a href='https://www.java.com/en/download/installed.jsp'
+				target=_blank>Teste aqui o funcionamento do Java no seu
+				navegador</a>
+		</h4>
+		<p>
+			<a class="btn btn-primary btn-lg" href="upload_java_p11.html"
+				role="button">Use agora</a>
+		</p>
+	</div>
+
+	<div class="jumbotron" id="appletP11_banner">
+		<h3 class="text-primary">Java Applet com PKCS#11 e *.p12/pfx</h3>
+		<h4>
+			O componente depende da instalação do Java no seu ambiente e
+			habilitado no seu navegador. <br/> 
+			Ele é compatível com Windows,
+			Linux e MacOS e funciona nos navegadores Firefox e Internet Explorer.
+			<br/> 
+			Para usá-lo você precisará ter o driver PKS#11 do seu token
+			ou cartão instalado e funcional no seu commputador. <br/>
+			Alternativamente utilize-o caso deseje utilizar arquivos em formato
+			*.p12/pfx.<br/>
+			<a href='https://www.java.com/en/download/installed.jsp'
+				target=_blank>Teste aqui o funcionamento do Java no seu
+				navegador</a>
+		</h4>
+		<p>
+			<a class="btn btn-primary btn-lg" href="upload_java_p11.html"
+				role="button">Use agora</a>
+		</p>
+	</div>
+
+	<div class="jumbotron" id="activeX_banner">
+		<h3 class="text-primary">Component ActiveX</h3>
+		<h4>
+			O ActiveX é um tecnologia antiga (descontinuada) da Microsoft e só
+			funciona no Internet Explorer rodando no Windows. <br /> Para isso
+			você deve <a
+				href="https://github.com/bluecrystalsign/signer-distibution/blob/master/instaladores%20windows/single%20image/instalador.msi">instalar
+				os componentes clientes. Selecione a opção 'download'. </a>
+		</h4>
+		<br />
+		<p>
+			<a class="btn btn-primary btn-lg" href="upload_activex.html"
+				role="button">Use agora</a>
+		</p>
+	</div>
+
+	<div class="jumbotron" id="restSigner_banner">
+		<h3 class="text-primary">Rest Signer</h3>
+		<h4>
+			O Rest Signer é a solução que funciona no navegador 'em contato' com
+			uma aplicação que roda na 'tray' do Windwos. Funciona com qualquer
+			navegador, mas apenas se a aplicação no servidor rodar com HTTP e não
+			HTTPS. <br /> Para isso você deve <a
+				href="https://github.com/bluecrystalsign/signer-distibution/blob/master/instaladores%20windows/single%20image/instalador.msi">instalar
+				os componentes clientes. Selecione a opção 'download'. </a>
+		</h4>
+		<br />
+		<p>
+			<a class="btn btn-primary btn-lg" href="upload_RestSigner.html"
+				role="button">Use agora</a>
+		</p>
+	</div>
+
+
+	<!-- Esse div contém uma série de variáveis utilizadas pela extensão e portanto não deve ser exibido -->
+	<div style="display: none;">
+		<b>response:</b>
+		<div id='response'></div>
+
+		<!-- Paginas que contenham a funcionalidade do Blue Crystal deve ter essa variavel com o valor 'true'. 
+		Isso indica para a extensão que ela deve se colocar disponivel -->
+		<b>load icon:</b> <span id="bluc_load_icon">true</span><br />
+
+
+		<!-- Mensagens e codigos de erro são exibidos quando atualizadas as 2 variaveis abaixo -->
+		<b>error code:</b> <span id="bluc_error_code"
+			onchange="bluc_error_code_onchange();"></span><br /> <b>error
+			message:</b> <span id="bluc_error_message"></span><br />
+
+		<!--  Quando a extensão é carregada essa variavel é alterada para gerar um evento e não solicitar que o usuário instale a extensão -->
+		<b>load extension:</b> <span id="bluc_load_extension"
+			onchange="bluc_load_extension_onchange();">false</span><br />
+
+		<!--  Quando o componente nativo está disponivel essa variavel é alterada para gerar um evento e não solicitar que o usuário instale a extensão -->
+		<b>is native:</b> <span id="bluc_load_native"
+			onchange="bluc_load_native_onchange();">false</span><br />
+
+
+		<!-- indica qual o passo do processo em que a assinatura está -->
+		<b>status:</b> <span id="bluc_status"
+			onchange="bluc_status_onchange();"></span><br /> <b>message:</b> <span
+			id="message"></span><br />
+
+		<!-- o conteudo do certificado em base64 -->
+		<b>certb64:</b> <span id="bluc_certb64"
+			onchange="bluc_certb64_onchange();"></span><br />
+
+		<!-- thumprint do certificado digitai -->
+		<b>thumbprint:</b> <span id="bluc_thumbprint"></span><br />
+
+		<!-- subject / assuntoo / titular do certificado digitai -->
+		<b>subject:</b> <span id="bluc_subject"></span><br />
+
+		<!-- tamanho (em bits) do certificado digitai -->
+		<b>keySize:</b> <span id="bluc_key_size"></span><br /> <b>hash:</b> <span
+			id="bluc_hash"></span><br />
+
+		<!-- algoritmo usado na assinatura -->
+		<b>hash alg:</b> <span id="bluc_hash_alg"></span><br />
+
+		<!-- horario da geração assinatura -->
+		<b>time:</b> <span id="bluc_time"></span><br />
+
+		<!-- atributos assinados, e ao final a assinatura gerada -->
+		<b>sa:</b> <span id="bluc_signed_attr"
+			onchange="bluc_signed_attr_onchange();"></span><br />
+
+		<!-- url utilizada para a operação inicial de geração dos atributos assinavies -->
+		<b>loadSignatureUrl:</b> <span id="bluc_load_signature_url">http://localhost:8080/example/LoadSignature</span><br />
+
+		<!-- url utilizada para a criação do envelope -->
+		<b>CreateEnvelopeUrl:</b> <span id="bluc_create_envelope_url">http://localhost:8080/example/CreateEnvelope</span><br />
+	</div>
+
+
+
+
+
+</body>
+</html>

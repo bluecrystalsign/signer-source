@@ -48,10 +48,9 @@ import javax.security.auth.login.FailedLoginException;
 import javax.smartcardio.CardTerminal;
 import javax.smartcardio.TerminalFactory;
 
+import bluecrystal.applet.sign.util.Base64Coder;
 import bluecrystal.deps.pkcs11.Pkcs11Ref;
 import bluecrystal.deps.pkcs11.Pkcs11Util;
-import bluecrystal.deps.pkcs11.PkiHelper;
-import bluecrystal.deps.pkcs11.util.Base64Coder;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 import sun.security.pkcs.ContentInfo;

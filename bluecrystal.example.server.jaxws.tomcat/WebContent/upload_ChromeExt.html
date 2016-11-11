@@ -63,210 +63,86 @@
 	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
 	integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
 	crossorigin="anonymous"></script>
-
-
-<script>
-	window.onload = function() {
-		var dropbox = document.getElementById("dropbox");
-		dropbox.addEventListener("dragenter", noop, false);
-		dropbox.addEventListener("dragexit", noop, false);
-		dropbox.addEventListener("dragover", noop, false);
-		dropbox.addEventListener("drop", dropUpload, false);
-	}
-
-	function noop(event) {
-		event.stopPropagation();
-		event.preventDefault();
-	}
-
-	function dropUpload(event) {
-		noop(event);
-		var files = event.dataTransfer.files;
-
-		for (var i = 0; i < files.length; i++) {
-			upload(files[i]);
-		}
-	}
-
-	function upload(file) {
-		document.getElementById("status").innerHTML = "Uploading " + file.name;
-
-		var formData = new FormData();
-		formData.append("file", file);
-
-		var xhr = new XMLHttpRequest();
-		xhr.upload.addEventListener("progress", uploadProgress, false);
-		xhr.addEventListener("load", uploadComplete, false);
-		xhr.open("POST", "uploadServlet", true); // If async=false, then you'll miss progress bar support.
-		xhr.send(formData);
-	}
-
-	function uploadProgress(event) {
-		// Note: doesn't work with async=false.
-		var progress = Math.round(event.loaded / event.total * 100);
-		document.getElementById("status").innerHTML = "Progress " + progress
-				+ "%";
-	}
-
-	function uploadComplete(event) {
-		//document.getElementById("status").innerHTML = event.target.responseText;        	 	
-
-		showSucess(event.target.responseText);
-	}
-</script>
-<style>
-#dropbox {
-	width: 300px;
-	height: 200px;
-	border: 1px solid gray;
-	border-radius: 5px;
-	padding: 5px;
-	color: gray;
-}
-</style>
-
+<script src="bluc_example.js"></script>
+<script src="download.js"></script>
+<link rel="stylesheet" type="text/css" href="bluc_example.css">
 
 
 </head>
 <body>
-
-	<script type="text/javascript">
+	<script>
+		provider = "chromeExtension";
 		$(document).ready(function() {
-
-			try {
-				isActive();
-				$("#alert_box_sucess").hide();
-				$("#alert_box_warning").hide();
-				$("#alert_box_error").hide();
-				$("#msg_install_ext_chrome").show();
-				$("#extension_alert").show();
-				$("#native_alert").show();
-
-			} catch (Err) {
-
-				alert('Erro (catch): ' + Err);
-			}
-
+			initBlueCrystal();
+			showCxExtensionAlert();
 		});
 
-		function isActive() {
-			return true;
+	</script>
 
-		}
+	<script type="text/javascript">
+		// init visual components
+		$(document).ready(
+				function() {
+					$("#bt_download").click(
+							function() {
 
-		function showSucess(msg) {
-			$("#alert_conten_sucess").text(msg);
-			$("#alert_box_sucess").show();
-			$("#alert_box_warning").hide();
-			$("#alert_box_error").hide();
+								download($("#bluc_signed_envelope").text(),
+										'signature.p7s',
+										"application/pkcs7-mime");
+							});
+				});
 
-		}
-
-		function showWarning(msg) {
-			$("#alert_conten_warning").text(msg);
-			$("#alert_box_sucess").hide();
-			$("#alert_box_warning").show();
-			$("#alert_box_error").hide();
-
-		}
-
-		function showError(msg) {
-			$("#alert_conten_error").text(msg);
-			$("#alert_box_sucess").hide();
-			$("#alert_box_warning").hide();
-			$("#alert_box_error").show();
-
-		}
+		// eventos disparados de acordo com o fluxo de execução da assinatura
 
 		function bluc_certb64_onchange() {
-
 			var appCertb64Span = document.querySelector("#bluc_certb64");
 			var certB64enc = appCertb64Span.innerHTML;
-
 			parseCert(certB64enc);
-
 		}
 
+
 		function bluc_signed_envelope_onchange() {
-			showSucess('assinatura exibida.');
+			showSucess('assinatura criada com sucesso!');
+			$("#bt_download").prop('disabled', false);
+			var errorCodeHtml = document.querySelector("#bluc_error_code");
+			var errorCode = errorCodeHtml.innerHTML
+			
+			showSignMessageByStatus(errorCode);
+//			if (errorCode == 0) {
+//				showSucess(statusMessage[errorCode]);
+//			} else if (errorCode == 1) {
+//				showWarning(statusMessage[errorCode]);
+//			} else {
+//				showError(statusMessage[errorCode]);
+//			}
 		}
 
 		function bluc_signed_attr_onchange() {
-
+			// usado para disparar eventos
 		}
 
 		function bluc_status_onchange() {
-			
-			showWarning( $("bluc_status").text() );
-
+			Console.log($("bluc_status").text());
 		}
 
 		function bluc_error_code_onchange() {
 			var message = document.querySelector("#bluc_error_message");
 			alert(message.innerHTML);
-
 		}
 
+		// detectam se a extensão e o componente nativo estão instalados
 		function bluc_load_extension_onchange() {
-			$("#msg_install_ext_chrome").hide();
-			$("#extension_alert").hide();
+			showCxNativeAlert();
+			mapProviders["chromeExtension"] = false;
 		}
 
 		function bluc_load_native_onchange() {
-			$("#msg_install_native").hide();
-			$("#native_alert").hide();
+			hideMessage();
+			mapProviders["chromeExtension"] = true;
+			refreshProviers();
 		}
 
-		
-		
-		function createEnvelope(certificate, payload, hashAlg, time_value,
-				hash_value, sign) {
-
-			$.ajax({
-				type : 'GET',
-				url : 'CreateEnvelope',
-				data : {
-					hash_value : hash_value,
-					time_value : time_value,
-					sa_value : payload,
-					signed_value : sign,
-					cert : certificate,
-					alg : hashAlg
-				},
-				success : function(data) {
-					var json = $.parseJSON(data);
-					var signedContent = json.signedContent;
-					var signStatus = json.signStatus;
-					var statusMessage = json.statusMessage;
-					var certB64 = json.certB64;
-					var certSubject = json.certSubject;
-					if (signStatus == 0) {
-						$("#signedEnvelope").text(signedContent);
-					}
-					alert("Status da Assinatura: " + statusMessage);
-				},
-				error : function(error) {
-					alert('error: ' + eval(error));
-				}
-
-			});
-
-		}
-
-		function signContent(certificate, thumbprint, payload, hashAlg,
-				time_value, hash_value) {
-			alert('signContent');
-
-		}
-
-		var alg = 'sha1';
-		var cert_thumb = '';
-		var cert_content = '';
-
-		function loadCert() {
-
-		}
-
+		// metodo privado, unico acesso ao servidor que nao é obrigatoriamente feito na extensão
 		function parseCert(certificate) {
 			$.ajax({
 				type : 'GET',
@@ -292,183 +168,168 @@
 				}
 			});
 		}
-
-		function assinar() {
-			try {
-				loadCert();
-
-			} catch (Err) {
-
-				alert('Erro (catch): ' + Err);
-			}
-		}
 	</script>
 
-	<div class="alert alert-warning" id="extension_alert"  style="display:none">
-		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-		<strong>Aviso</strong> <span id="alert_conten_warning">
-		Parece que seu navegador ainda não tem a extensão Blue Crystal instalada. <a href="https://chrome.google.com/webstore/detail/blue-crystal-signer/inlgdajmhicinhamnepnpdneamfgjcgl?hl=pt-BR&authuser=2">
-		Antes de iniciar o processo instale a entensao.</a>
-		</span>
+	<!-- INICIO dos componentes visuais de mensagens -->
+
+	<nav class="navbar navbar-default navbar-fixed-top">
+	<div class="container-fluid">
+		<div class="navbar-header"></div>
+		<div class="collapse navbar-collapse"
+			id="bs-example-navbar-collapse-1">
+			<a class="navbar-brand" rel="home" href="http://www.bluecryst.al/" target="_blank"
+				title="Blue Crustal"> <img
+				style="max-width: 100px; "
+				src="bluecrystal1.png">
+			</a>
+			<ul class="nav navbar-nav">
+
+				<!-- menu tecnologia -->
+
+				<li class="dropdown">
+				<li class="dropdown"><a href="#" class="dropdown-toggle"
+					data-toggle="dropdown" role="button" aria-haspopup="true"
+					aria-expanded="false">Tecnologia <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="index.html">Pagina inicial</a></li>
+						<li><a href="upload_activex.html">ActiveX</a></li>
+						<li><a href="upload_activexNoSP.html">ActiveX -
+								Assinatura sem Politica de Assinatura</a></li>
+						<li><a href="upload_java_capi.html">Applet Java (MS-CAPI)
+								- Assinatura com Politica de Assinatura(ICP-Brasil)</a></li>
+						<li><a href="upload_java_capiNoSP.html">Applet Java
+								(MS-CAPI) - Assinatura sem Politica de Assinatura</a></li>
+						<li><a href="upload_java_p11.html">Applet Java (PKCS#11)
+								- Assinatura com Politica de Assinatura(ICP-Brasil)</a></li>
+						<li><a href="upload_java_p11NoSP.html">Applet Java
+								(PKCS#11) - Assinatura sem Politica de Assinatura</a></li>
+						<li><a href="upload_ChromeExt.html">Extensão do Chrome -
+								Assinatura com Politica de Assinatura</a></li>
+						<li><a href="upload_RestSigner.html">Rest Signer -
+								Assinatura com Politica de Assinatura</a></li>
+					</ul></li>
+				</li>
+
+				<!-- menu Conteudo -->
+				<li class="dropdown">
+				<li class="dropdown"><a href="#" class="dropdown-toggle"
+					data-toggle="dropdown" role="button" aria-haspopup="true"
+					aria-expanded="false">Conteudo <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="http://www.bluecryst.al/" target="_blank">Blue
+								Crystal</a></li>
+						<li><a href="https://github.com/bluecrystalsign/"
+							target="_blank">Fontes e binários</a></li>
+					</ul></li>
+				</li>
+				<li id="alert_box">
+				</li>
+
+			</ul>
+		</div>
+
 	</div>
+	</nav>
 
-	<div class="alert alert-warning" id="native_alert"  style="display:none">
-		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-		<strong>Aviso</strong> <span id="alert_conten_warning">
-		Parece que seu computador ainda não tem o componente nativo Blue Crystal instalada. <a id="msg_install_ext_native" href="https://github.com/bluecrystalsign/signer-source-vstudio/tree/master/dist">Instale o 'native messaging' daqui</a>
-		</span>
-	</div>
+	<!-- FIM dos componentes visuais de mensagens -->
 
 
-
-	<div class="alert alert-success" id="alert_box_sucess">
-		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-		<strong>Successo!</strong> <span id="alert_conten_sucess"></span>
-	</div>
-
-	<div class="alert alert-warning" id="alert_box_warning">
-		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-		<strong>Aviso</strong> <span id="alert_conten_warning"></span>
-	</div>
-
-	<div class="alert alert-danger" id="alert_box_error">
-		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-		<strong>Erro</strong> <span id="alert_conten_error"></span>
-	</div>
-
-	Extensao do Chrome - Assinatura com Politica de Assinatura(ICP-Brasil)
-	<br>Powered by
-	<a target== "_blank" href="http://www.bluecryst.al">Blue Crystal </a>
-	<br>
-
-	<h4>Para testar com outra tecnologia escolha um dos links abaixo.</h4>
-	<a href="upload_activexNoSP.html">ActiveX - Assinatura sem Politica
-		de Assinatura</a>
+	<h1>
+		<span class=".bg-primary">Extensao do Chrome</span>
+	</h1>
 	<br />
-	<a href="upload_java_capi.html">Applet Java (MS-CAPI) - Assinatura
-		com Politica de Assinatura(ICP-Brasil)</a>
-	<br />
-	<a href="upload_java_capiNoSP.html">Applet Java (MS-CAPI) -
-		Assinatura sem Politica de Assinatura</a>
-	<br />
-	<a href="upload_java_p11.html">Applet Java (PKCS#11) - Assinatura
-		com Politica de Assinatura(ICP-Brasil)</a>
-	<br />
-	<a href="upload_java_p11NoSP.html">Applet Java (PKCS#11) -
-		Assinatura sem Politica de Assinatura</a>
-	<br />
-	<a href="upload_RestSigner.html">Rest Signer - Assinatura com
-		Politica de Assinatura</a>
-	<br />
-	<br />
-	<br />
-	<span id="msg_install_ext_chrome" style="display:none">
-	<span class="label label-danger">IMPORTANTE:</span>
-	Parece que seu navegador ainda não tem a extensão Blue Crystal instalada. 
-	<br/>
-	<a 
-		href="https://chrome.google.com/webstore/detail/blue-crystal-signer/inlgdajmhicinhamnepnpdneamfgjcgl?hl=pt-BR&authuser=2">
-		Antes de iniciar o processo instale a entensao.</a> e o componente nativo 	<a 
-		href="https://github.com/bluecrystalsign/signer-source-vstudio/tree/master/dist">E
-		instale daqui</a>
-	</span>
-	<br />
-	
-	<span id="msg_install_native" style="display:none">
-	<span class="label label-danger">IMPORTANTE:</span>
-	Parece que seu computador ainda não tem o componente nativo Blue Crystal instalada. <a id="msg_install_ext_native"
-		href="https://github.com/bluecrystalsign/signer-source-vstudio/tree/master/dist">Instale o 'native messaging' daqui</a>
-	</span>
-	<br />
-
+	<h3>
+		Assinatura com Politica de Assinatura (ICP-Brasil)<br /> Powered by <b>Blue
+			Crystal - Software Livre</b> <br>
+	</h3>
 
 	<h4>Passo 1: Arraste um documento para a area abaixo.</h4>
 	<div id="dropbox">Arraste o arquivo que deseja assinar para
 		aqui...</div>
 	<div id="status"></div>
 
-	<h5>
-
+	<h4>
 		Passo 2: na janela exibida selecione o certificado que deseja utilizar
-		e aguarde.</br> Serïao exibidos os dados do certificado e em seguida a assinatura.
-	</h5>
+		e aguarde.</br> Serïao exibidos os dados do certificado e em seguida a
+		assinatura.
+	</h4>
 	<p>
 	<h4>
 		<span class="label label-success">Certificado</span>
 	</h4>
-	Abaixo pararecerao os dados do certificado usado na assinatura.
 	<br />
-	<span id="parsedCert">...</span>
+	<span id="parsedCert"><h5>Aqui serao exibidos os dados do
+			certificado usado na assinatura.</h5></span>
 	<p>
 	<p>
 	<h4>
-		<span class="label label-success">Assinatura</span>
+		<span class="label label-success">Assinatura</span><br />
+		<br />
+		<button id="bt_download" type="button" class="btn btn-primary"
+			disabled="true">Baixar</button>
 	</h4>
-	abaixo aparecera assinatura digital em foramto base 64
 	<br />
 	<span id="bluc_signed_envelope"
-		onchange="bluc_signed_envelope_onchange();">...</span>
-	<p>
+		onchange="bluc_signed_envelope_onchange();"><h5>Aqui
+			aparecera assinatura digital em foramto base 64</h5></span>
+	<br />
+
 	<!-- Esse div contém uma série de variáveis utilizadas pela extensão e portanto não deve ser exibido -->
 	<div style="display: none;">
 		<b>response:</b>
 		<div id='response'></div>
-		
+
 		<!-- Paginas que contenham a funcionalidade do Blue Crystal deve ter essa variavel com o valor 'true'. 
 		Isso indica para a extensão que ela deve se colocar disponivel -->
-		<b>load
-			icon:</b> <span id="bluc_load_icon">true</span><br /> 
+		<b>load icon:</b> <span id="bluc_load_icon">true</span><br />
 
-		
+
 		<!-- Mensagens e codigos de erro são exibidos quando atualizadas as 2 variaveis abaixo -->
 		<b>error code:</b> <span id="bluc_error_code"
-			onchange="bluc_error_code_onchange();"></span><br /> 
-		<b>error
+			onchange="bluc_error_code_onchange();"></span><br /> <b>error
 			message:</b> <span id="bluc_error_message"></span><br />
-			
-		<!--  Quando a extensão é carregada essa variavel é alterada para gerar um evento e não solicitar que o usuário instale a extensão --> 
-		<b>load
-			extension:</b> <span id="bluc_load_extension" onchange="bluc_load_extension_onchange();">false</span><br /> 
 
-		<!--  Quando o componente nativo está disponivel essa variavel é alterada para gerar um evento e não solicitar que o usuário instale a extensão --> 
-		<b>is native:</b> <span id="bluc_load_native" onchange="bluc_load_native_onchange();">false</span><br />
-		
-		 
-		 <!-- indica qual o passo do processo em que a assinatura está -->
-		<b>status:</b> <span
-			id="bluc_status" onchange="bluc_status_onchange();"></span><br /> 
-		<b>message:</b> <span id="message"></span><br />
-		
+		<!--  Quando a extensão é carregada essa variavel é alterada para gerar um evento e não solicitar que o usuário instale a extensão -->
+		<b>load extension:</b> <span id="bluc_load_extension"
+			onchange="bluc_load_extension_onchange();">false</span><br />
+
+		<!--  Quando o componente nativo está disponivel essa variavel é alterada para gerar um evento e não solicitar que o usuário instale a extensão -->
+		<b>is native:</b> <span id="bluc_load_native"
+			onchange="bluc_load_native_onchange();">false</span><br />
+
+
+		<!-- indica qual o passo do processo em que a assinatura está -->
+		<b>status:</b> <span id="bluc_status"
+			onchange="bluc_status_onchange();"></span><br /> <b>message:</b> <span
+			id="message"></span><br />
+
 		<!-- o conteudo do certificado em base64 -->
 		<b>certb64:</b> <span id="bluc_certb64"
-			onchange="bluc_certb64_onchange();"></span><br /> 
-			
+			onchange="bluc_certb64_onchange();"></span><br />
+
 		<!-- thumprint do certificado digitai -->
-		<b>thumbprint:</b>
-			<span id="bluc_thumbprint"></span><br /> 
-			
+		<b>thumbprint:</b> <span id="bluc_thumbprint"></span><br />
+
 		<!-- subject / assuntoo / titular do certificado digitai -->
-		<b>subject:</b> <span
-			id="bluc_subject"></span><br /> 
-			
+		<b>subject:</b> <span id="bluc_subject"></span><br />
+
 		<!-- tamanho (em bits) do certificado digitai -->
-		<b>keySize:</b> <span
-			id="bluc_key_size"></span><br /> <b>hash:</b> <span id="bluc_hash"></span><br />
+		<b>keySize:</b> <span id="bluc_key_size"></span><br /> <b>hash:</b> <span
+			id="bluc_hash"></span><br />
 
 		<!-- algoritmo usado na assinatura -->
-		<b>hash alg:</b> <span id="bluc_hash_alg"></span><br /> 
-		
+		<b>hash alg:</b> <span id="bluc_hash_alg"></span><br />
+
 		<!-- horario da geração assinatura -->
-		<b>time:</b> <span id="bluc_time"></span><br /> 
-		
+		<b>time:</b> <span id="bluc_time"></span><br />
+
 		<!-- atributos assinados, e ao final a assinatura gerada -->
 		<b>sa:</b> <span id="bluc_signed_attr"
-			onchange="bluc_signed_attr_onchange();"></span><br /> 
-		
-		<!-- url utilizada para a operação inicial de geração dos atributos assinavies -->	
-		<b>loadSignatureUrl:</b>
-		<span id="bluc_load_signature_url">http://localhost:8080/example/LoadSignature</span><br />
-		
+			onchange="bluc_signed_attr_onchange();"></span><br />
+
+		<!-- url utilizada para a operação inicial de geração dos atributos assinavies -->
+		<b>loadSignatureUrl:</b> <span id="bluc_load_signature_url">http://localhost:8080/example/LoadSignature</span><br />
+
 		<!-- url utilizada para a criação do envelope -->
 		<b>CreateEnvelopeUrl:</b> <span id="bluc_create_envelope_url">http://localhost:8080/example/CreateEnvelope</span><br />
 	</div>

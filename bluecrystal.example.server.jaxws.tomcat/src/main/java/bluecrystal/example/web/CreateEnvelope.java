@@ -130,13 +130,13 @@ public class CreateEnvelope extends HttpServlet {
 
 		
 		
-		System.out.println("CreateEnvelope *****");
-		System.out.println("hash_valueb64 :"+hash_valueb64);
-		System.out.println("timeValue :"+timeValue);
-		System.out.println("saValueb64 :"+saValueb64);
-		System.out.println("signedValueb64 :"+signedValueb64);
-		System.out.println("certb64 :"+certb64);
-		System.out.println("alg :"+alg);
+		logger.debug("CreateEnvelope *****");
+		logger.debug("hash_valueb64 :"+hash_valueb64);
+		logger.debug("timeValue :"+timeValue);
+		logger.debug("saValueb64 :"+saValueb64);
+		logger.debug("signedValueb64 :"+signedValueb64);
+		logger.debug("certb64 :"+certb64);
+		logger.debug("alg :"+alg);
 		
 		String ret = "";
 		
@@ -180,13 +180,13 @@ public class CreateEnvelope extends HttpServlet {
 			logger.error("certSubject é nulo!");
 		}
 		
-		if(signStatus != StatusConst.GOOD){
-			logger.error("Assinatura  NÂO é valida!");
-			logger.error("status ="+signStatus);
-			logger.error("descr = "+ StatusConst.getMessageByStatus(signStatus));
-			logger.error("ret = "+ret);
-			logger.error("certB64 = "+certB64);
-			logger.error("certSubject = "+certSubject);
+		if(signStatus != StatusConst.GOOD || signStatus != StatusConst.UNKNOWN){
+			logger.warn("Assinatura  NÂO é valida!");
+			logger.warn("status ="+signStatus);
+			logger.warn("descr = "+ StatusConst.getMessageByStatus(signStatus));
+			logger.warn("certB64 = "+certB64);
+			logger.warn("certSubject = "+certSubject);
+			logger.warn("ret = "+ret);
 		}
 		
 		logger.debug("retorno: "+ VerifiedSignJson);

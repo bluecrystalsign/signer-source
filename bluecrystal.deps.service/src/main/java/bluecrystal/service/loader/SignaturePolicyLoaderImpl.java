@@ -18,7 +18,7 @@ public class SignaturePolicyLoaderImpl implements SignaturePolicyLoader {
 		if(policies.containsKey(url)){
 			return policies.get(url);
 		} else {
-			sp = ExternalLoaderHttp2.getfromUrl(url);
+			sp = ExternalLoaderHttpNio.getfromUrl(url);
 			policies.put(url, sp);
 		}
 		return sp;

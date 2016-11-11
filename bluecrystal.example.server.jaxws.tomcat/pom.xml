@@ -4,7 +4,7 @@
 	<groupId>al.bluecryst</groupId>
 	<artifactId>bluecrystal.example.server.jaxws.tomcat</artifactId>
 	<packaging>war</packaging>
-	<version>1.5.0</version>
+	<version>1.5.4</version>
 
 	<name>Web App Exampls</name>
 	<description>Web App that shows how to use BluC</description>
@@ -46,7 +46,7 @@
 		<dependency>
 			<groupId>al.bluecryst</groupId>
 			<artifactId>bluecrystal.deps.service</artifactId>
-			<version>1.5.0</version>
+			<version>1.5.4</version>
 		</dependency>
 
 		<dependency>
@@ -105,18 +105,18 @@
 					<warSourceDirectory>WebContent</warSourceDirectory>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 					<warName>example</warName>
-					<outputDirectory>../dist</outputDirectory>
+					<outputDirectory>../dist</outputDirectory>					
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
-
+<!-- 
 	<parent>
 		<groupId>org.codehaus.mojo</groupId>
 		<artifactId>bluecrystal-parent</artifactId>
 		<version>2.0</version>
 		<relativePath>..</relativePath>
 	</parent>
-
+ -->
 
 </project>

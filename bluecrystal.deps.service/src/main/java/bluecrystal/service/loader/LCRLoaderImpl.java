@@ -112,7 +112,7 @@ public class LCRLoaderImpl implements LCRLoader {
 		 return crl;
 	}
 	private byte[] getFromServer(String url) throws MalformedURLException, IOException {
-		return ExternalLoaderHttp2.getfromUrl(url);
+		return ExternalLoaderHttpNio.getfromUrl(url);
 	}
 	private X509CRL getInCache(String url, Date date) {
 		return localCache.getInCache(url, date);

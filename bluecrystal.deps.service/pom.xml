@@ -2,7 +2,6 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>bluecrystal.deps.service</artifactId>
-
 	<name>Services provided to applications</name>
 	<description>API that should be used by applications</description>
 	<url>http://bluecryst.al</url>
@@ -38,7 +37,7 @@
 	<parent>
 		<groupId>al.bluecryst</groupId>
 		<artifactId>bluecrystal-parent</artifactId>
-		<version>1.8.3</version>
+		<version>1.8.4</version>
 		<relativePath>..</relativePath>
 	</parent>
 

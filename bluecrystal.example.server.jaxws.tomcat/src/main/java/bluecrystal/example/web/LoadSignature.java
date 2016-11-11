@@ -93,9 +93,9 @@ public class LoadSignature extends HttpServlet {
 		String certb64 = (String) request.getParameter("cert");
 		String alg = (String) request.getParameter("alg");
 		
-		System.out.println("LoadSignature *****");
-		System.out.println("certb64 :"+certb64);
-		System.out.println("alg :"+alg);
+		logger.info("LoadSignature *****");
+		logger.info("certb64 :"+certb64);
+		logger.info("alg :"+alg);
 
 
 		boolean isError = false;
