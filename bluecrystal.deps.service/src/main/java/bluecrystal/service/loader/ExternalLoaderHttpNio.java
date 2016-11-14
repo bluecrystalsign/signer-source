@@ -42,17 +42,14 @@ public class ExternalLoaderHttpNio {
 		URL url = new URL(urlName);
 		ReadableByteChannel rbc = Channels.newChannel(url.openStream());
 		ByteBuffer buf = ByteBuffer.allocateDirect(BUFFER_SIZE);
-		boolean foundEnd = false;
-		while(!foundEnd){
-			int bytesRead = rbc.read(buf);
-			totalRead += bytesRead;
-			foundEnd = (bytesRead == 0 || bytesRead == -1);
-		}
+	
+	    while (rbc.read(buf) != -1) {
+	    }
+	    buf.flip();
+	    totalRead = buf.limit();
 		LOG.debug("baixado: " + totalRead + " bytes de [" + urlName + "]");
-		buf.rewind();
 		byte[] b = new byte[totalRead];
 		buf.get(b, 0, totalRead);
-
 		rbc.close();
 		return b;
 	}
