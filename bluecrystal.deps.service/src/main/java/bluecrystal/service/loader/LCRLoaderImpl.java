@@ -49,7 +49,8 @@ public class LCRLoaderImpl implements LCRLoader {
 //			}
 		} catch (Exception e) {
 //			LOG.error("Could not load Repoloader ", e);
-			e.printStackTrace();
+//			e.printStackTrace();
+			localCache = new bluecrystal.service.loader.MapCacheManager();
 		}
 	}
 	
@@ -115,14 +116,21 @@ public class LCRLoaderImpl implements LCRLoader {
 		return ExternalLoaderHttpNio.getfromUrl(url);
 	}
 	private X509CRL getInCache(String url, Date date) {
-		return localCache.getInCache(url, date);
+		return getLocalCache().getInCache(url, date);
 	}
 //	private boolean checkInCache(String url, Date date) {
 //		return localCache.checkInCache(url, date);
 //	}
 	private void addToCache(String key, X509CRL crl) {
-		localCache.addToCache(key, crl);
+		getLocalCache().addToCache(key, crl);
 		
+	}
+
+	public static CacheManager getLocalCache() {
+		if(localCache == null){
+			localCache = new bluecrystal.service.loader.MapCacheManager();
+		}
+		return localCache;
 	}
 
 }

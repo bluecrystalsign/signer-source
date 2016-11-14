@@ -21,7 +21,6 @@ package bluecrystal.service.helper;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
@@ -31,13 +30,12 @@ import java.util.Collection;
 import java.util.List;
 
 import org.bouncycastle.util.encoders.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import bluecrystal.service.exception.LicenseNotFoundExeception;
 import bluecrystal.service.interfaces.RepoLoader;
 import bluecrystal.service.loader.Messages;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class UtilsRepo {
 	static final Logger LOG = LoggerFactory.getLogger(UtilsRepo.class);
@@ -53,10 +51,15 @@ public class UtilsRepo {
 			        .newInstance();
 			if(repoLoader==null){
 				LOG.error("Could not load Repoloader ");
+				loadDefault();
 			}
 		} catch (Exception e) {
 			LOG.error("Could not load Repoloader ", e);
+			loadDefault();
 		}
+	}
+	private static void loadDefault() {
+		repoLoader = new bluecrystal.service.loader.FSRepoLoader();
 	}
 	
 	protected static final String ID_SHA1 = "1.3.14.3.2.26";
@@ -77,10 +80,10 @@ public class UtilsRepo {
 	public static List<X509Certificate> listCertFromRepo(String certFilePath)
 			throws Exception {
 		String[] fileList =  null;
-		if(!repoLoader.exists(certFilePath)){
-			if(!repoLoader.exists(certFilePath+".txt")){
-				if(!repoLoader.exists(certFilePath+".cer")){
-					throw new FileNotFoundException(repoLoader.getFullPath(certFilePath));
+		if(!getRepoLoader().exists(certFilePath)){
+			if(!getRepoLoader().exists(certFilePath+".txt")){
+				if(!getRepoLoader().exists(certFilePath+".cer")){
+					throw new FileNotFoundException(getRepoLoader().getFullPath(certFilePath));
 				} else {
 					certFilePath = certFilePath+".cer";
 				}
@@ -89,8 +92,8 @@ public class UtilsRepo {
 			}
 		}
 		
-		if(repoLoader.isDir(certFilePath)  ){
-			fileList = repoLoader.list(certFilePath);
+		if(getRepoLoader().isDir(certFilePath)  ){
+			fileList = getRepoLoader().list(certFilePath);
 		} else {
 			fileList = new String[1];
 			fileList[0] = certFilePath;
@@ -111,7 +114,7 @@ public class UtilsRepo {
 		InputStream is = null;
 		List<X509Certificate> retList = new ArrayList<X509Certificate>();
 		try {
-			is = repoLoader.load(certFilePath);
+			is = getRepoLoader().load(certFilePath);
 		} catch (LicenseNotFoundExeception e) {
 		}
 		 CertificateFactory cf = CertificateFactory.getInstance("X509");
@@ -257,6 +260,12 @@ public class UtilsRepo {
 //		}
 //		return ret;
 //	}	
+	public static RepoLoader getRepoLoader() {
+		if(repoLoader == null){
+			loadDefault();
+		}
+		return repoLoader;
+	}
 
 
 //	public static List<X509Certificate> listCertFromS3(String string) {
