@@ -37,7 +37,7 @@
 	<parent>
 		<groupId>al.bluecryst</groupId>
 		<artifactId>bluecrystal-parent</artifactId>
-		<version>1.8.4</version>
+		<version>1.9.1</version>
 		<relativePath>..</relativePath>
 	</parent>
 

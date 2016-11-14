@@ -30,12 +30,25 @@ public class ExternalLoaderHttpTest {
 	
 
 	@Test
-	public void testGetfromUrlNio3() {
+	public void testGetfromUrlNio() {
 		try {
 			
 			
 			byte[] ret = ExternalLoaderHttpNio.getfromUrl("https://p5.icpedu.rnp.br/crl");
 			System.out.println("resultado: "+ Base64.getEncoder().encodeToString(ret));
+			
+		} catch (Exception e) {
+			fail(e.getLocalizedMessage());
+		}
+	}
+
+	@Test
+	public void testGetfromUrlNio2() {
+		try {
+			
+			
+			byte[] ret = ExternalLoaderHttpNio.getfromUrl("http://lcr.caixa.gov.br/accaixajusv2.crl");
+			System.out.println("resultado: ("+ret.length+")"+ Base64.getEncoder().encodeToString(ret));
 			
 		} catch (Exception e) {
 			fail(e.getLocalizedMessage());
