@@ -1,11 +1,15 @@
 package bluecrystal.chrome.sign;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import bluecrystal.deps.pkcs11.util.Base64Coder;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 public class NativeClient {
 
@@ -15,6 +19,7 @@ public class NativeClient {
 		String alias = null;
 		String certificate = null;
 		String subject = null;
+		String userPIN = null;
 		int keySize = 0;
 	}
 
@@ -91,105 +96,141 @@ public class NativeClient {
 	private static String test() {
 		TestResponse testresponse = new TestResponse();
 		testresponse.provider = "Assijus Signer Extension - PKCS#11";
-		testresponse.version = "1.2.9.0";
+		testresponse.version = "1.2.9.0-P11";
 		testresponse.status = "OK";
 		return gson.toJson(testresponse);
 	}
 
 	private static String currentcert() {
-
-		CertificateResponse certificateresponse = new CertificateResponse();
-		certificateresponse.subject = current.subject;
-		if (sorn(certificateresponse.subject) != null) {
-			certificateresponse.certificate = getCertificate(
-					"Assinatura Digital",
-					"Escolha o certificado que será utilizado na assinatura.",
-					certificateresponse.subject, "");
+		try {
+			CertificateResponse certificateresponse = new CertificateResponse();
 			certificateresponse.subject = current.subject;
-		}
+			// if (sorn(certificateresponse.subject) != null) {
+			// certificateresponse.certificate = getCertificate(
+			// "Assinatura Digital",
+			// "Escolha o certificado que será utilizado na assinatura.",
+			// certificateresponse.subject, "");
+			// certificateresponse.subject = current.subject;
+			// }
 
-		if (sorn(certificateresponse.subject) == null) {
-			certificateresponse.subject = null;
-			certificateresponse.errormsg = "Nenhum certificado ativo no momento.";
-		}
+			if (sorn(certificateresponse.subject) == null) {
+				certificateresponse.subject = null;
+				certificateresponse.errormsg = "Nenhum certificado ativo no momento.";
+			}
 
-		return gson.toJson(certificateresponse);
+			return gson.toJson(certificateresponse);
+		} catch (Exception ex) {
+			clearCurrentCertificate();
+			throw ex;
+		}
 	}
 
-	private static String cert(RequestData req) {
-		String subjectRegEx = "ICP-Brasil";
+	private static String cert(RequestData req) throws Exception {
+		try {
+			String subjectRegEx = "ICP-Brasil";
 
-		if (req != null && sorn(req.subject) != null) {
-			subjectRegEx = req.subject;
+			if (req != null && sorn(req.subject) != null) {
+				subjectRegEx = req.subject;
+			}
+
+			CertificateResponse certificateresponse = new CertificateResponse();
+
+			String json = signer.listCerts(0, current.userPIN);
+			Type listType = new TypeToken<List<AliasAndSubject>>() {
+			}.getType();
+			List<AliasAndSubject> list = new Gson().fromJson(json, listType);
+			if (list.size() > 0) {
+				current.alias = list.get(0).alias;
+				current.subject = list.get(0).subject;
+				current.certificate = signer.getCertificate(current.alias);
+				current.keySize = signer.getKeySize(current.alias);
+			}
+
+			// certificateresponse.certificate = getCertificate(
+			// "Assinatura Digital",
+			// "Escolha o certificado que será utilizado na assinatura.",
+			// subjectRegEx, "");
+
+			certificateresponse.subject = current.subject;
+
+			if (sorn(certificateresponse.certificate) == null) {
+				certificateresponse.errormsg = "Nenhum certificado encontrado.";
+			}
+
+			return gson.toJson(certificateresponse);
+		} catch (Exception ex) {
+			clearCurrentCertificate();
+			throw ex;
 		}
 
-		CertificateResponse certificateresponse = new CertificateResponse();
-		certificateresponse.certificate = getCertificate("Assinatura Digital",
-				"Escolha o certificado que será utilizado na assinatura.",
-				subjectRegEx, "");
-		certificateresponse.subject = current.subject;
-
-		if (sorn(certificateresponse.certificate) == null) {
-			certificateresponse.errormsg = "Nenhum certificado encontrado.";
-		}
-
-		return gson.toJson(certificateresponse);
 	}
 
-	private static String  token(RequestData req) {
-    try {
-        if ( req.subject != null)  {
-            String s = getCertificateBySubject(req.subject);
-        }
+	private static String token(RequestData req) throws Exception {
+		try {
+			if (current.userPIN == null)
+				throw new Exception("PIN não informado");
+			if (req.subject != null) {
+				String s = getCertificateBySubject(req.subject);
+			}
 
-        if (! req.token.startsWith("TOKEN-")) 
-            throw new Exception("Token should start with TOKEN-.");
-        
-        if (req.token.length() > 128 || req.token.length() < 16) 
-            throw new Exception("Token too long or too shor.");
+			if (!req.token.startsWith("TOKEN-"))
+				throw new Exception("Token should start with TOKEN-.");
 
-        byte[] datetime = req.token.getBytes(StandardCharsets.UTF_8);
-        String payloadAsString = new String(Base64Coder.encode(datetime));
+			if (req.token.length() > 128 || req.token.length() < 16)
+				throw new Exception("Token too long or too shor.");
 
-           TokenResponse tokenresponse = new TokenResponse();
-        tokenresponse.sign = signer.sign(0, 99,current.userPIN, current.alias, payloadAsString);
+			byte[] datetime = req.token.getBytes(StandardCharsets.UTF_8);
+			String payloadAsString = new String(Base64Coder.encode(datetime));
 
-        tokenresponse.subject = current.subject;
-        tokenresponse.token = req.token;
+			TokenResponse tokenresponse = new TokenResponse();
+			tokenresponse.sign = signer.sign(0, 99, current.userPIN,
+					current.alias, payloadAsString);
 
-        return gson.toJson(tokenresponse);
-    catch (Exception ex ) {
-        clearCurrentCertificate();
-        throw ex;
-    }
-}
+			tokenresponse.subject = current.subject;
+			tokenresponse.token = req.token;
 
-	private static String sign(RequestData req) {
-		if (req.subject == null) {
-			String s = getCertificateBySubject(req.subject);
+			return gson.toJson(tokenresponse);
+		} catch (Exception ex) {
+			clearCurrentCertificate();
+			throw ex;
+		}
+	}
+
+	private static String sign(RequestData req) throws Exception {
+		try {
+			if (current.userPIN == null)
+				throw new Exception("PIN não informado");
+			if (req.subject == null) {
+				String s = getCertificateBySubject(req.subject);
+			}
+
+			int keySize = current.keySize;
+			SignResponse signresponse = new SignResponse();
+			if ("PKCS7".equals(req.policy))
+				signresponse.sign = signer.sign(0, 99, current.userPIN,
+						current.alias, req.payload);
+			else if (keySize < 2048)
+				signresponse.sign = signer.sign(0, 0, current.userPIN,
+						current.alias, req.payload);
+			else
+				signresponse.sign = signer.sign(0, 2, current.userPIN,
+						current.alias, req.payload);
+
+			signresponse.subject = current.subject;
+
+			return gson.toJson(signresponse);
+		} catch (Exception ex) {
+			clearCurrentCertificate();
+			throw ex;
 		}
 
-		int keySize = current.keySize;
-		SignResponse signresponse = new SignResponse();
-		if ("PKCS7".equals(req.policy))
-			signresponse.sign = signer.sign(0, 99, current.userPIN,
-					current.alias, req.payload);
-		else if (keySize < 2048)
-			signresponse.sign = signer.sign(0, 0, current.userPIN,
-					current.alias, req.payload);
-		else
-			signresponse.sign = signer.sign(0, 2, current.userPIN,
-					current.alias, req.payload);
-
-		signresponse.subject = current.subject;
-
-		return gson.toJson(signresponse);
 	}
 
 	private static void clearCurrentCertificate() {
 		current.alias = null;
 		current.certificate = null;
 		current.subject = null;
+		current.userPIN = null;
 		current.keySize = 0;
 	}
 
@@ -210,6 +251,11 @@ public class NativeClient {
 		if (s.trim().length() == 0)
 			return null;
 		return s;
+	}
+
+	private static class AliasAndSubject {
+		String alias;
+		String subject;
 	}
 
 	private static class RequestData {
