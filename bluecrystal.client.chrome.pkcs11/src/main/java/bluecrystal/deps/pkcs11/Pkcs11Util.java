@@ -11,10 +11,16 @@ import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import bluecrystal.chrome.sign.Pkcs11Wrapper;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
 public class Pkcs11Util {
+	static final Logger LOG = LoggerFactory.getLogger(Pkcs11Util.class);
+
 	public static final String[] DIGITAL_SIGNATURE_ALGORITHM_NAME = {
 			"SHA1withRSA", "SHA224withRSA", "SHA256withRSA", "SHA384withRSA",
 			"SHA512withRSA" };
@@ -27,9 +33,9 @@ public class Pkcs11Util {
 						lastFilePath2, userPIN2);
 				X509Certificate certificate = PkiHelper.loadCertFromP12(
 						lastFilePath2, userPIN2);
-				System.out.println("Certificate: ");
-				System.out.println(certificate.getSubjectDN().getName());
-				System.out.println(certificate.getNotBefore() + " -> "+certificate.getNotAfter());
+				LOG.debug("Certificate: ");
+				LOG.debug(certificate.getSubjectDN().getName());
+				LOG.debug(certificate.getNotBefore() + " -> "+certificate.getNotAfter());
 				
 			
 				return performSign(privateKey, certificate,alg, orig);
@@ -48,8 +54,8 @@ public class Pkcs11Util {
 				byte[] dataSignature = sig.sign();
 			
 				String result = b64enc.encode(dataSignature);
-				System.out.print("Assinatura: ");
-				System.out.println(result);
+				LOG.debug("Assinatura: ");
+				LOG.debug(result);
 			
 				// Verify signature
 				Signature verificacion = Signature
@@ -57,9 +63,9 @@ public class Pkcs11Util {
 				verificacion.initVerify(certificate);
 				verificacion.update(decodeOrig);
 				if (verificacion.verify(dataSignature)) {
-					System.out.println("Signature verification Succeeded!");
+					LOG.debug("Signature verification Succeeded!");
 				} else {
-					System.out.println("Signature verification FAILED!");
+					LOG.debug("Signature verification FAILED!");
 				}
 				return result;
 			}

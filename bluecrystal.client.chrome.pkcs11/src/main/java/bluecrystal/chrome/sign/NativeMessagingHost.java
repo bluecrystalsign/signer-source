@@ -6,45 +6,84 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import bluecrystal.deps.pkcs11.util.Base64Coder;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-public class NativeClient {
+public class NativeMessagingHost {
+	static {
+		System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY,
+				"DEBUG");
+		System.setProperty(org.slf4j.impl.SimpleLogger.LOG_FILE_KEY,
+				"/Users/nato/Library/Assijus/log.txt");
+	}
+	static final Logger LOG = LoggerFactory
+			.getLogger(NativeMessagingHost.class);
 
-	private static SignApplet signer = new SignApplet();
+	private static P11Manager signer;
 
 	private static class CurrentCert {
 		String alias = null;
 		String certificate = null;
 		String subject = null;
-		String userPIN = null;
+		String userPIN = "";
 		int keySize = 0;
 	}
 
 	private static CurrentCert current = new CurrentCert();
 
 	public static void main(String[] args) throws Exception {
+		signer = new P11Manager();
+		// TODO: esse init deve ser executado pelo GET de um método chamado
+		// /init
+		signer.init(
+				"aetpkss1.dll;eTPKCS11.dll;asepkcs.dll;libaetpkss.dylib;libeTPkcs11.dylib",
+				"/usr/local/lib");
 		for (;;) {
-			byte[] bytes = read(4);
-			int requestLength = bytes[0] + bytes[1] * (256 ^ 1) + bytes[2]
-					* (256 ^ 2) + bytes[3] * (256 ^ 3);
+
+			byte[] bytes;
+			try {
+				bytes = read(4);
+			} catch (IndexOutOfBoundsException iobe) {
+				break;
+			}
+			int requestLength = getInt(bytes);
 
 			if (requestLength == 0)
 				break;
 
 			byte[] request = read(requestLength);
-			String s = new String(request, StandardCharsets.UTF_8);
-			byte[] response = run(s).getBytes(StandardCharsets.UTF_8);
+			String sReq = new String(request, StandardCharsets.UTF_8);
+			LOG.debug("mensagem recebida:" + sReq);
+			String sResp = run(sReq);
+			LOG.debug("mensagem enviada: " + sResp);
+			byte[] response = sResp.getBytes(StandardCharsets.UTF_8);
 			write(response);
 		}
+	}
+
+	private static int getInt(byte[] bytes) {
+		return (bytes[3] << 24) & 0xff000000 | (bytes[2] << 16) & 0x00ff0000
+				| (bytes[1] << 8) & 0x0000ff00 | (bytes[0] << 0) & 0x000000ff;
+	}
+
+	private static byte[] getBytes(int length) {
+		byte[] bytes = new byte[4];
+		bytes[0] = (byte) (length & 0xFF);
+		bytes[1] = (byte) ((length >> 8) & 0xFF);
+		bytes[2] = (byte) ((length >> 16) & 0xFF);
+		bytes[3] = (byte) ((length >> 24) & 0xFF);
+		return bytes;
 	}
 
 	private static byte[] read(int count) throws IOException {
 		byte[] bytes = new byte[count];
 		int off = 0;
-		int len = 4;
+		int len = count;
 		while (len > 0) {
 			int read = System.in.read(bytes, off, len);
 			off += read;
@@ -53,13 +92,9 @@ public class NativeClient {
 		return bytes;
 	}
 
-	public static void write(byte[] bytes) {
+	public static void write(byte[] bytes) throws IOException {
 		int l = bytes.length;
-		for (int i = 0; i < 4; i++) {
-			int j = l % 256;
-			l = l / 256;
-			System.out.write(j);
-		}
+		System.out.write(getBytes(l));
 		System.out.write(bytes, 0, bytes.length);
 	}
 
@@ -85,8 +120,10 @@ public class NativeClient {
 				return "{\"success\":false,\"data\":{\"errormsg\":\"Error 404: file not found\"}}";
 			return "{\"success\":true,\"data\":" + jsonOut + "}";
 		} catch (Exception ex) {
+			// LOG.error("Mensagem não pode ser processada", ex);
 			String message = ex.getMessage();
-			if (message.startsWith("O conjunto de chaves não"))
+			if (message != null
+					&& message.startsWith("O conjunto de chaves não"))
 				message = "Não localizamos nenhum Token válido no computador. Por favor, verifique se foi corretamente inserido.";
 			return "{\"success\":false,\"status\":500,\"data\":{\"errormsg\":\""
 					+ jsonStringSafe(message) + "\"}}";
@@ -127,6 +164,9 @@ public class NativeClient {
 
 	private static String cert(RequestData req) throws Exception {
 		try {
+			if (current.userPIN == null)
+				throw new Exception("PIN não informado");
+
 			String subjectRegEx = "ICP-Brasil";
 
 			if (req != null && sorn(req.subject) != null) {
@@ -151,6 +191,7 @@ public class NativeClient {
 			// "Escolha o certificado que será utilizado na assinatura.",
 			// subjectRegEx, "");
 
+			certificateresponse.certificate = current.certificate;
 			certificateresponse.subject = current.subject;
 
 			if (sorn(certificateresponse.certificate) == null) {
@@ -169,6 +210,7 @@ public class NativeClient {
 		try {
 			if (current.userPIN == null)
 				throw new Exception("PIN não informado");
+
 			if (req.subject != null) {
 				String s = getCertificateBySubject(req.subject);
 			}
@@ -183,9 +225,21 @@ public class NativeClient {
 			String payloadAsString = new String(Base64Coder.encode(datetime));
 
 			TokenResponse tokenresponse = new TokenResponse();
-			tokenresponse.sign = signer.sign(0, 99, current.userPIN,
-					current.alias, payloadAsString);
-
+			for (int i = 0;; i++) {
+				try {
+					LOG.debug("tentanto gerar token.");
+					tokenresponse.sign = signer.sign(0, 99, current.userPIN,
+							current.alias, payloadAsString);
+					break;
+				} catch (Exception e) {
+					if (i > 10)
+						throw e;
+					if (!"Private keys must be instance of RSAPrivate(Crt)Key or have PKCS#8 encoding"
+							.equals(e.getMessage())) {
+						throw e;
+					}
+				}
+			}
 			tokenresponse.subject = current.subject;
 			tokenresponse.token = req.token;
 
@@ -200,21 +254,35 @@ public class NativeClient {
 		try {
 			if (current.userPIN == null)
 				throw new Exception("PIN não informado");
+
 			if (req.subject == null) {
 				String s = getCertificateBySubject(req.subject);
 			}
 
 			int keySize = current.keySize;
 			SignResponse signresponse = new SignResponse();
-			if ("PKCS7".equals(req.policy))
-				signresponse.sign = signer.sign(0, 99, current.userPIN,
-						current.alias, req.payload);
-			else if (keySize < 2048)
-				signresponse.sign = signer.sign(0, 0, current.userPIN,
-						current.alias, req.payload);
-			else
-				signresponse.sign = signer.sign(0, 2, current.userPIN,
-						current.alias, req.payload);
+			for (int i = 0;; i++) {
+				try {
+					LOG.debug("tentanto assinar.");
+					if ("PKCS7".equals(req.policy))
+						signresponse.sign = signer.sign(0, 99, current.userPIN,
+								current.alias, req.payload);
+					else if (keySize < 2048)
+						signresponse.sign = signer.sign(0, 0, current.userPIN,
+								current.alias, req.payload);
+					else
+						signresponse.sign = signer.sign(0, 2, current.userPIN,
+								current.alias, req.payload);
+					break;
+				} catch (Exception e) {
+					if (i > 10)
+						throw e;
+					if (!"Private keys must be instance of RSAPrivate(Crt)Key or have PKCS#8 encoding"
+							.equals(e.getMessage())) {
+						throw e;
+					}
+				}
+			}
 
 			signresponse.subject = current.subject;
 
@@ -227,11 +295,11 @@ public class NativeClient {
 	}
 
 	private static void clearCurrentCertificate() {
-		current.alias = null;
-		current.certificate = null;
-		current.subject = null;
-		current.userPIN = null;
-		current.keySize = 0;
+		// current.alias = null;
+		// current.certificate = null;
+		// current.subject = null;
+		// current.userPIN = null;
+		// current.keySize = 0;
 	}
 
 	private static String getCertificateBySubject(String sub) {
@@ -240,6 +308,8 @@ public class NativeClient {
 	}
 
 	private static String jsonStringSafe(String s) {
+		if (s == null)
+			return "null";
 		s = s.replace("\r", " ");
 		s = s.replace("\n", " ");
 		return s;

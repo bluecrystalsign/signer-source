@@ -18,14 +18,12 @@
 
 package bluecrystal.chrome.sign;
 
-public class SignApplet implements SignAppletP11 {
+public class P11Manager implements IP11Manager {
 	private Pkcs11Wrapper p11 = null;
 
 	@Override
 	public void init(String module, String otherPath) throws Exception {
 		p11 = new Pkcs11Wrapper(module, otherPath);
-		p11.loadKeyStore();
-		p11.refreshCerts();
 	}
 
 	@Override
@@ -49,6 +47,9 @@ public class SignApplet implements SignAppletP11 {
 	@Override
 	public String listCerts(int store, String userPIN) throws Exception {
 		p11.setUserPIN(userPIN);
+		p11.loadKeyStore();
+		p11.setUserPIN(userPIN);
+		p11.refreshCerts();
 		p11.setStore(store);
 
 		String ret = "";

@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: nato
+Build-Jdk: 1.7.0_80
+Application-Library-Allowable-Codebase: *
+Application-Name: BluC Chrome Extension PKCS#11
+Caller-Allowable-Codebase: *
+Codebase: *
+Permissions: all-permissions
+mainClass: bluecrystal.chrome.sign.NativeMessagingHost
+

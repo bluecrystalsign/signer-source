@@ -1,0 +1,31 @@
+{
+  "name": "Assijus Signer",
+  "version": "1.2.9.1",
+  "background": { "scripts": ["background.js"] },
+  "content_scripts": [
+    {
+      "matches": ["https://assijus.trf2.jus.br/assijus/*","https://assijus.jfrj.jus.br/assijus/*",
+        "*://sigat.jfrj.jus.br/assijus/*","*://csis-trf-10.corp.jfrj.gov.br/assijus/*","*://localhost/assijus/*"],
+      "js": ["contentscript.js"]
+    }
+  ],
+  "permissions": ["nativeMessaging", "tabs"],
+  "externally_connectable": {
+    "matches": ["https://assijus.trf2.jus.br/assijus/*","https://assijus.jfrj.jus.br/assijus/*",
+    "*://sigat.jfrj.jus.br/assijus/*","*://csis-trf-10.corp.jfrj.gov.br/assijus/*","*://localhost/assijus/*"]
+  },
+  "browser_action": {
+    "default_icon": {
+      "16": "icon16.png",
+      "32": "icon32.png",
+      "96": "icon96.png"
+    },
+    "default_title": "Assijus Signer"
+  },
+  "icons": {
+    "16": "icon16.png",
+    "32": "icon32.png",
+    "96": "icon96.png"
+  },
+  "manifest_version": 2
+}

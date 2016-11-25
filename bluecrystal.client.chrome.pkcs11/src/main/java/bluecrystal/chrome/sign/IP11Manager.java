@@ -18,7 +18,7 @@
 
 package bluecrystal.chrome.sign;
 
-public interface SignAppletP11 {
+public interface IP11Manager {
 	void init(String module, String otherPath) throws Exception;
 
 	public abstract String sign(int store, int alg, String userPIN,

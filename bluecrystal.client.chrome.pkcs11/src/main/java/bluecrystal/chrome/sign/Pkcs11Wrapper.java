@@ -48,10 +48,9 @@ import javax.security.auth.login.FailedLoginException;
 import javax.smartcardio.CardTerminal;
 import javax.smartcardio.TerminalFactory;
 
-import bluecrystal.deps.pkcs11.Pkcs11Ref;
-import bluecrystal.deps.pkcs11.Pkcs11Util;
-import bluecrystal.deps.pkcs11.PkiHelper;
-import bluecrystal.deps.pkcs11.util.Base64Coder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 import sun.security.pkcs.ContentInfo;
@@ -61,22 +60,24 @@ import sun.security.pkcs11.wrapper.PKCS11Exception;
 import sun.security.util.DerOutputStream;
 import sun.security.x509.AlgorithmId;
 import sun.security.x509.X500Name;
+import bluecrystal.deps.pkcs11.Pkcs11Ref;
+import bluecrystal.deps.pkcs11.Pkcs11Util;
+import bluecrystal.deps.pkcs11.PkiHelper;
+import bluecrystal.deps.pkcs11.util.Base64Coder;
 
 public class Pkcs11Wrapper extends Pkcs11Util {
+	static final Logger LOG = LoggerFactory.getLogger(Pkcs11Wrapper.class);
+
 	private static final int ALG_NO_SP = 99;
 
 	private static final String SYSTEM32 = "\\System32\\";
-
 
 	public static final int STORE_PKCS11 = 0;
 	public static final int STORE_FILE_UI = 1;
 	public static final int STORE_FILE = 2;
 
+	private static Pkcs11Ref pkcs11Ref = new Pkcs11Ref();
 
-	
-	private static Pkcs11Ref pkcs11Ref;
-	
-	
 	public String result;
 	private String caption;
 	private String certAlias;
@@ -180,9 +181,9 @@ public class Pkcs11Wrapper extends Pkcs11Util {
 		return result;
 	}
 
-	public void sign() throws Exception  {
+	public void sign() throws Exception {
 
-		System.out.println("sign");
+		LOG.debug("sign");
 		switch (this.store) {
 		case STORE_PKCS11:
 			signp11();
@@ -197,78 +198,80 @@ public class Pkcs11Wrapper extends Pkcs11Util {
 			break;
 
 		default:
-			System.out.println("opps " + this.store);
+			LOG.debug("opps " + this.store);
 			break;
 		}
 	}
-	
+
 	private void signFile() throws Exception {
 		if (this.alg != ALG_NO_SP) {
 			signFileSignPol();
 		} else {
 			signFileNoSignPol();
 		}
-		if(pkcs11Ref.getPkcs11Provider() != null){
+		if (pkcs11Ref.getPkcs11Provider() != null) {
 			Security.removeProvider(pkcs11Ref.getPkcs11Provider().getName());
 		}
 	}
 
-
 	private void signFileSignPol() throws Exception {
-		System.out.println("signFileSignPol");
+		LOG.debug("signFileSignPol");
 
-			String lastFilePath2 = this.lastFilePath;
-			String userPIN2 = this.userPIN;
-			this.result = signFileSignPol(lastFilePath2, userPIN2, this.alg, this.orig);
+		String lastFilePath2 = this.lastFilePath;
+		String userPIN2 = this.userPIN;
+		this.result = signFileSignPol(lastFilePath2, userPIN2, this.alg,
+				this.orig);
 
 	}
 
 	private void signFileNoSignPol() throws Exception {
-		System.out.println("signFileNoSignPol");
-			// LOAD CERT
-			PrivateKey privateKey = PkiHelper.loadPrivFromP12(
-					this.lastFilePath, this.userPIN);
-			X509Certificate certificate = PkiHelper.loadCertFromP12(
-					this.lastFilePath, this.userPIN);
-			// Sign data
-			Signature sig = Signature
-					.getInstance(DIGITAL_SIGNATURE_ALGORITHM_NAME[0]);
-//			sha1 only
-			sig.initSign(privateKey);
-			BASE64Decoder b64dec = new BASE64Decoder();
-			BASE64Encoder b64enc = new BASE64Encoder();
-			sig.update(b64dec.decodeBuffer(orig));
-			byte[] signedData  = sig.sign();
+		LOG.debug("signFileNoSignPol");
+		// LOAD CERT
+		PrivateKey privateKey = PkiHelper.loadPrivFromP12(this.lastFilePath,
+				this.userPIN);
+		X509Certificate certificate = PkiHelper.loadCertFromP12(
+				this.lastFilePath, this.userPIN);
+		// Sign data
+		Signature sig = Signature
+				.getInstance(DIGITAL_SIGNATURE_ALGORITHM_NAME[0]);
+		// sha1 only
+		sig.initSign(privateKey);
+		BASE64Decoder b64dec = new BASE64Decoder();
+		BASE64Encoder b64enc = new BASE64Encoder();
+		sig.update(b64dec.decodeBuffer(orig));
+		byte[] signedData = sig.sign();
 
-			  //load X500Name
-	        X500Name xName      = X500Name.asX500Name(certificate.getSubjectX500Principal());
-	        //load serial number
-	        BigInteger serial   = certificate.getSerialNumber();
-	        //laod digest algorithm
-	        AlgorithmId digestAlgorithmId = new AlgorithmId(AlgorithmId.SHA_oid);
-	        //load signing algorithm
-	        AlgorithmId signAlgorithmId = new AlgorithmId(AlgorithmId.RSAEncryption_oid);
+		// load X500Name
+		X500Name xName = X500Name.asX500Name(certificate
+				.getSubjectX500Principal());
+		// load serial number
+		BigInteger serial = certificate.getSerialNumber();
+		// laod digest algorithm
+		AlgorithmId digestAlgorithmId = new AlgorithmId(AlgorithmId.SHA_oid);
+		// load signing algorithm
+		AlgorithmId signAlgorithmId = new AlgorithmId(
+				AlgorithmId.RSAEncryption_oid);
 
-	        //Create SignerInfo:
-	        SignerInfo sInfo = new SignerInfo(xName, serial, digestAlgorithmId, signAlgorithmId, signedData);
-	        //Create ContentInfo:
-//	        ContentInfo cInfo = new ContentInfo(ContentInfo.DIGESTED_DATA_OID, new DerValue(DerValue.tag_OctetString, dataToSign));
-	        ContentInfo cInfo = new ContentInfo(ContentInfo.DIGESTED_DATA_OID, null);
-	        //Create PKCS7 Signed data
-	        PKCS7 p7 = new PKCS7(new AlgorithmId[] { digestAlgorithmId }, cInfo,
-	        		new X509Certificate[]{certificate},
-	                new SignerInfo[] { sInfo });
-	        //Write PKCS7 to bYteArray
-	        ByteArrayOutputStream bOut = new DerOutputStream();
-	        p7.encodeSignedData(bOut);
-	        byte[] encodedPKCS7 = bOut.toByteArray();
-	        
-	        result = b64enc.encode(encodedPKCS7);
-			System.out.println("result:"+result);
+		// Create SignerInfo:
+		SignerInfo sInfo = new SignerInfo(xName, serial, digestAlgorithmId,
+				signAlgorithmId, signedData);
+		// Create ContentInfo:
+		// ContentInfo cInfo = new ContentInfo(ContentInfo.DIGESTED_DATA_OID,
+		// new DerValue(DerValue.tag_OctetString, dataToSign));
+		ContentInfo cInfo = new ContentInfo(ContentInfo.DIGESTED_DATA_OID, null);
+		// Create PKCS7 Signed data
+		PKCS7 p7 = new PKCS7(new AlgorithmId[] { digestAlgorithmId }, cInfo,
+				new X509Certificate[] { certificate },
+				new SignerInfo[] { sInfo });
+		// Write PKCS7 to bYteArray
+		ByteArrayOutputStream bOut = new DerOutputStream();
+		p7.encodeSignedData(bOut);
+		byte[] encodedPKCS7 = bOut.toByteArray();
+
+		result = b64enc.encode(encodedPKCS7);
+		LOG.debug("result:" + result);
 	}
 
-	
-	
 	private void signp11() throws Exception {
 		if (this.alg != ALG_NO_SP) {
 			signp11SignPol();
@@ -280,102 +283,114 @@ public class Pkcs11Wrapper extends Pkcs11Util {
 
 	private void signp11NoSignPol() throws Exception {
 
-			// LOAD CERT
-			PrivateKey privateKey = (PrivateKey) pkcs11Ref.getKeyStore().getKey(this.getCertAlias(), "".toCharArray());
-			X509Certificate certificate = (X509Certificate) pkcs11Ref.getKeyStore().getCertificate(this.getCertAlias());
-			// Sign data
-			Signature sig = Signature
-					.getInstance(DIGITAL_SIGNATURE_ALGORITHM_NAME[0]);
-//			sha1 only
-			sig.initSign(privateKey);
-			BASE64Decoder b64dec = new BASE64Decoder();
-			BASE64Encoder b64enc = new BASE64Encoder();
-			sig.update(b64dec.decodeBuffer(orig));
-			byte[] signedData  = sig.sign();
+		// LOAD CERT
+		PrivateKey privateKey = (PrivateKey) pkcs11Ref.getKeyStore().getKey(
+				this.getCertAlias(), "".toCharArray());
+		X509Certificate certificate = (X509Certificate) pkcs11Ref.getKeyStore()
+				.getCertificate(this.getCertAlias());
+		// Sign data
+		Signature sig = Signature
+				.getInstance(DIGITAL_SIGNATURE_ALGORITHM_NAME[0]);
+		// sha1 only
+		sig.initSign(privateKey);
+		BASE64Decoder b64dec = new BASE64Decoder();
+		BASE64Encoder b64enc = new BASE64Encoder();
+		sig.update(b64dec.decodeBuffer(orig));
+		byte[] signedData = sig.sign();
 
-			  //load X500Name
-	        X500Name xName      = X500Name.asX500Name(certificate.getSubjectX500Principal());
-	        //load serial number
-	        BigInteger serial   = certificate.getSerialNumber();
-	        //laod digest algorithm
-	        AlgorithmId digestAlgorithmId = new AlgorithmId(AlgorithmId.SHA_oid);
-	        //load signing algorithm
-	        AlgorithmId signAlgorithmId = new AlgorithmId(AlgorithmId.RSAEncryption_oid);
+		// load X500Name
+		X500Name xName = X500Name.asX500Name(certificate
+				.getSubjectX500Principal());
+		// load serial number
+		BigInteger serial = certificate.getSerialNumber();
+		// laod digest algorithm
+		AlgorithmId digestAlgorithmId = new AlgorithmId(AlgorithmId.SHA_oid);
+		// load signing algorithm
+		AlgorithmId signAlgorithmId = new AlgorithmId(
+				AlgorithmId.RSAEncryption_oid);
 
-	        //Create SignerInfo:
-	        SignerInfo sInfo = new SignerInfo(xName, serial, digestAlgorithmId, signAlgorithmId, signedData);
-	        //Create ContentInfo:
-//	        ContentInfo cInfo = new ContentInfo(ContentInfo.DIGESTED_DATA_OID, new DerValue(DerValue.tag_OctetString, dataToSign));
-	        ContentInfo cInfo = new ContentInfo(ContentInfo.DIGESTED_DATA_OID, null);
-	        //Create PKCS7 Signed data
-	        PKCS7 p7 = new PKCS7(new AlgorithmId[] { digestAlgorithmId }, cInfo,
-	        		new X509Certificate[]{certificate},
-	                new SignerInfo[] { sInfo });
-	        //Write PKCS7 to bYteArray
-	        ByteArrayOutputStream bOut = new DerOutputStream();
-	        p7.encodeSignedData(bOut);
-	        byte[] encodedPKCS7 = bOut.toByteArray();
-	        
-	        result = b64enc.encode(encodedPKCS7);
+		// Create SignerInfo:
+		SignerInfo sInfo = new SignerInfo(xName, serial, digestAlgorithmId,
+				signAlgorithmId, signedData);
+		// Create ContentInfo:
+		// ContentInfo cInfo = new ContentInfo(ContentInfo.DIGESTED_DATA_OID,
+		// new DerValue(DerValue.tag_OctetString, dataToSign));
+		ContentInfo cInfo = new ContentInfo(ContentInfo.DIGESTED_DATA_OID, null);
+		// Create PKCS7 Signed data
+		PKCS7 p7 = new PKCS7(new AlgorithmId[] { digestAlgorithmId }, cInfo,
+				new X509Certificate[] { certificate },
+				new SignerInfo[] { sInfo });
+		// Write PKCS7 to bYteArray
+		ByteArrayOutputStream bOut = new DerOutputStream();
+		p7.encodeSignedData(bOut);
+		byte[] encodedPKCS7 = bOut.toByteArray();
+
+		result = b64enc.encode(encodedPKCS7);
 	}
 
-//	private void signp11NoSignPolWithChain() {
-//		// http://security.stackexchange.com/questions/13910/pkcs7-encoding-in-java-without-external-libs-like-bouncycastle-etc
-//		try {
-//			// LOAD CERT
-//			PrivateKey privateKey = (PrivateKey) keyStore.getKey(
-//					this.getCertAlias(), "".toCharArray());
-//			X509Certificate certificate = (X509Certificate) keyStore
-//					.getCertificate(this.getCertAlias());
-//
-//			X509Certificate[] chain = loadCertChain();
-//
-//			// Sign data
-//			Signature sig = Signature
-//					.getInstance(DIGITAL_SIGNATURE_ALGORITHM_NAME[0]);
-////			sha1 only
-//			sig.initSign(privateKey);
-//			BASE64Decoder b64dec = new BASE64Decoder();
-//			BASE64Encoder b64enc = new BASE64Encoder();
-//			sig.update(b64dec.decodeBuffer(orig));
-//			byte[] signedData  = sig.sign();
-//
-//			  //load X500Name
-//	        X500Name xName      = X500Name.asX500Name(certificate.getSubjectX500Principal());
-//	        //load serial number
-//	        BigInteger serial   = certificate.getSerialNumber();
-//	        //laod digest algorithm
-//	        AlgorithmId digestAlgorithmId = new AlgorithmId(AlgorithmId.SHA_oid);
-//	        //load signing algorithm
-//	        AlgorithmId signAlgorithmId = new AlgorithmId(AlgorithmId.RSAEncryption_oid);
-//
-//	        //Create SignerInfo:
-//	        SignerInfo sInfo = new SignerInfo(xName, serial, digestAlgorithmId, signAlgorithmId, signedData);
-//	        //Create ContentInfo:
-////	        ContentInfo cInfo = new ContentInfo(ContentInfo.DIGESTED_DATA_OID, new DerValue(DerValue.tag_OctetString, dataToSign));
-//	        ContentInfo cInfo = new ContentInfo(ContentInfo.DIGESTED_DATA_OID, null);
-//	        //Create PKCS7 Signed data
-//	        PKCS7 p7 = new PKCS7(new AlgorithmId[] { digestAlgorithmId }, cInfo,
-//	        		chain,
-//	                new SignerInfo[] { sInfo });
-//	        //Write PKCS7 to bYteArray
-//	        ByteArrayOutputStream bOut = new DerOutputStream();
-//	        p7.encodeSignedData(bOut);
-//	        byte[] encodedPKCS7 = bOut.toByteArray();
-//	        
-//	        result = b64enc.encode(encodedPKCS7);
-//
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//
-//	}
-	
+	// private void signp11NoSignPolWithChain() {
+	// //
+	// http://security.stackexchange.com/questions/13910/pkcs7-encoding-in-java-without-external-libs-like-bouncycastle-etc
+	// try {
+	// // LOAD CERT
+	// PrivateKey privateKey = (PrivateKey) keyStore.getKey(
+	// this.getCertAlias(), "".toCharArray());
+	// X509Certificate certificate = (X509Certificate) keyStore
+	// .getCertificate(this.getCertAlias());
+	//
+	// X509Certificate[] chain = loadCertChain();
+	//
+	// // Sign data
+	// Signature sig = Signature
+	// .getInstance(DIGITAL_SIGNATURE_ALGORITHM_NAME[0]);
+	// // sha1 only
+	// sig.initSign(privateKey);
+	// BASE64Decoder b64dec = new BASE64Decoder();
+	// BASE64Encoder b64enc = new BASE64Encoder();
+	// sig.update(b64dec.decodeBuffer(orig));
+	// byte[] signedData = sig.sign();
+	//
+	// //load X500Name
+	// X500Name xName =
+	// X500Name.asX500Name(certificate.getSubjectX500Principal());
+	// //load serial number
+	// BigInteger serial = certificate.getSerialNumber();
+	// //laod digest algorithm
+	// AlgorithmId digestAlgorithmId = new AlgorithmId(AlgorithmId.SHA_oid);
+	// //load signing algorithm
+	// AlgorithmId signAlgorithmId = new
+	// AlgorithmId(AlgorithmId.RSAEncryption_oid);
+	//
+	// //Create SignerInfo:
+	// SignerInfo sInfo = new SignerInfo(xName, serial, digestAlgorithmId,
+	// signAlgorithmId, signedData);
+	// //Create ContentInfo:
+	// // ContentInfo cInfo = new ContentInfo(ContentInfo.DIGESTED_DATA_OID, new
+	// DerValue(DerValue.tag_OctetString, dataToSign));
+	// ContentInfo cInfo = new ContentInfo(ContentInfo.DIGESTED_DATA_OID, null);
+	// //Create PKCS7 Signed data
+	// PKCS7 p7 = new PKCS7(new AlgorithmId[] { digestAlgorithmId }, cInfo,
+	// chain,
+	// new SignerInfo[] { sInfo });
+	// //Write PKCS7 to bYteArray
+	// ByteArrayOutputStream bOut = new DerOutputStream();
+	// p7.encodeSignedData(bOut);
+	// byte[] encodedPKCS7 = bOut.toByteArray();
+	//
+	// result = b64enc.encode(encodedPKCS7);
+	//
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// }
+	//
+	// }
+
 	private X509Certificate[] loadCertChain() throws Exception {
-		Certificate[] chain = pkcs11Ref.getKeyStore().getCertificateChain(this.getCertAlias());
+		Certificate[] chain = pkcs11Ref.getKeyStore().getCertificateChain(
+				this.getCertAlias());
 		X509Certificate[] chainX509 = new X509Certificate[chain.length];
-		
-		for(int i = 0; i < chain.length; i++){
+
+		for (int i = 0; i < chain.length; i++) {
 			chainX509[i] = (X509Certificate) chain[i];
 		}
 		return chainX509;
@@ -383,11 +398,13 @@ public class Pkcs11Wrapper extends Pkcs11Util {
 
 	private void signp11SignPol() throws Exception {
 
-			// LOAD CERT
-			PrivateKey privateKey = (PrivateKey) pkcs11Ref.getKeyStore().getKey(this.getCertAlias(), "".toCharArray());
-			X509Certificate certificate = (X509Certificate) pkcs11Ref.getKeyStore().getCertificate(this.getCertAlias());
+		// LOAD CERT
+		PrivateKey privateKey = (PrivateKey) pkcs11Ref.getKeyStore().getKey(
+				this.getCertAlias(), "".toCharArray());
+		X509Certificate certificate = (X509Certificate) pkcs11Ref.getKeyStore()
+				.getCertificate(this.getCertAlias());
 
-			this.result =  performSign(privateKey, certificate, this.alg, this.orig);			
+		this.result = performSign(privateKey, certificate, this.alg, this.orig);
 
 	}
 
@@ -409,15 +426,15 @@ public class Pkcs11Wrapper extends Pkcs11Util {
 		for (Object next : terminals) {
 			CardTerminal t = (CardTerminal) next;
 			// System.out.print(t.getName());
-			// System.out.println(t.isCardPresent() ? " COM" : " sem");
+			// LOG.debug(t.isCardPresent() ? " COM" : " sem");
 			if (t.isCardPresent()) {
 				break;
 				// card = t.connect("*");
 				// CardChannel channel = card.getBasicChannel();
 				//
 				// int cn = channel.getChannelNumber();
-				// System.out.println("getChannelNumber(): "+cn);
-				// System.out.println("Protocol: "+card.getProtocol());
+				// LOG.debug("getChannelNumber(): "+cn);
+				// LOG.debug("Protocol: "+card.getProtocol());
 			}
 			i++;
 
@@ -427,83 +444,29 @@ public class Pkcs11Wrapper extends Pkcs11Util {
 	}
 
 	void loadKeyStore() throws Exception {
-		System.out.println("loadKeyStore");
+		LOG.debug("loadKeyStore");
 		switch (this.store) {
 		case STORE_PKCS11:
 			loadKeyStorep11();
 			break;
 
-		case STORE_FILE_UI:
-			loadKeyStoreFileUi();
-			break;
-
-		case STORE_FILE:
-			loadKeyStoreFile();
-			break;
-
 		default:
-			System.out.println("opps " + this.store);
+			LOG.debug("opps " + this.store);
 			break;
-		}
-	}
-
-	private void loadKeyStoreFileUi() {
-		try {
-			KeyStore fileStore = KeyStore.getInstance("pkcs12", "SunJSSE");
-
-			FileChooser fileChooser = new FileChooser();
-			this.lastFilePath = fileChooser.choose();
-			File f = new File(this.lastFilePath);
-			if (this.lastFilePath != null && f.isFile() && f.exists()
-					&& f.isAbsolute()) {
-				fileStore.load(new FileInputStream(this.lastFilePath), this
-						.getUserPIN().toCharArray());
-				pkcs11Ref.setKeyStore(fileStore);
-			}
-			this.lastError = "";
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			this.lastError = e.getLocalizedMessage();
-		}
-
-	}
-
-	private void loadKeyStoreFile() throws Exception {
-		try {
-			KeyStore fileStore = KeyStore.getInstance("pkcs12", "SunJSSE");
-			if (this.lastFilePath == null || this.lastFilePath.length() == 0) {
-				FileChooser fileChooser = new FileChooser();
-				this.lastFilePath = fileChooser.choose();
-			}
-			File f = new File(this.lastFilePath);
-			if (this.lastFilePath != null && f.isFile() && f.exists()
-					&& f.isAbsolute()) {
-				fileStore.load(new FileInputStream(this.lastFilePath), this
-						.getUserPIN().toCharArray());
-				pkcs11Ref.setKeyStore(fileStore);
-			}
-			this.lastError = "";
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			this.lastError = e.getLocalizedMessage();
 		}
 	}
 
 	private void loadKeyStorep11() throws KeyStoreException, IOException,
 			NoSuchAlgorithmException, CertificateException {
 
-		System.out.println("loadKeyStorep11");
+		LOG.debug("loadKeyStorep11");
 		name = "ittru";
 
-		String systemWindowsDir = System.getenv("SystemRoot") + SYSTEM32;
+		String systemWindowsDir = System.getenv("SystemRoot");
 
 		List<String> paths = new ArrayList<String>();
 		if (systemWindowsDir != null) {
-			paths.add(systemWindowsDir);
+			paths.add(systemWindowsDir + SYSTEM32);
 		}
 		for (String next : this.otherPath) {
 			paths.add(verifyPath(next));
@@ -513,19 +476,22 @@ public class Pkcs11Wrapper extends Pkcs11Util {
 			for (String next : pkcs11LibName) {
 				try {
 					pkcs11Ref.setPKCS11Library(nextPath + next);
-					System.out.println("Carregando: " + pkcs11Ref.getPKCS11Library());
+					LOG.debug("Carregando: " + pkcs11Ref.getPKCS11Library());
 					createConfigSlotListIndex();
 					// Load SunPKCS#11 provider
-					pkcs11Ref.setPkcs11Provider(new sun.security.pkcs11.SunPKCS11(pkcs11Ref.getConfigStream()));
+					pkcs11Ref
+							.setPkcs11Provider(new sun.security.pkcs11.SunPKCS11(
+									pkcs11Ref.getConfigStream()));
 
 					Security.addProvider(pkcs11Ref.getPkcs11Provider());
 					pkcs11Ref.setKeyStore(KeyStore.getInstance("PKCS11"));
 
-					System.out.println("** FOUND!");
+					LOG.debug("** FOUND!");
 					printDebug();
 					break;
 				} catch (Exception e) {
-					System.out.println("Ex: "+e.getLocalizedMessage());
+					LOG.debug("Can't load p11 library: Ex: "
+							+ e.getLocalizedMessage());
 				}
 			}
 		}
@@ -539,7 +505,7 @@ public class Pkcs11Wrapper extends Pkcs11Util {
 				IOException io = (IOException) e;
 				FailedLoginException fl = (FailedLoginException) e.getCause();
 				PKCS11Exception p1ex = (PKCS11Exception) fl.getCause();
-				System.out.println(p1ex.getMessage());
+				LOG.error(p1ex.getMessage());
 				this.lastError = p1ex.getMessage();
 			}
 		}
@@ -560,15 +526,15 @@ public class Pkcs11Wrapper extends Pkcs11Util {
 			Object obj = el.nextElement();
 			System.err.println("OBJ: " + obj);
 		}
-		Set<Object> chaves =  pkcs11Ref.getPkcs11Provider().keySet();
+		Set<Object> chaves = pkcs11Ref.getPkcs11Provider().keySet();
 		System.err.println(" ** CHAVES ***");
 		for (Object nextKey : chaves) {
 			System.err.println("OBJ: " + nextKey);
 		}
-		System.err.println("INFO: " +  pkcs11Ref.getPkcs11Provider().getInfo());
-		System.err.println("NAME: " +  pkcs11Ref.getPkcs11Provider().getName());
+		System.err.println("INFO: " + pkcs11Ref.getPkcs11Provider().getInfo());
+		System.err.println("NAME: " + pkcs11Ref.getPkcs11Provider().getName());
 		pkcs11Ref.getPkcs11Provider().list(System.err);
-		Set<Service> services =  pkcs11Ref.getPkcs11Provider().getServices();
+		Set<Service> services = pkcs11Ref.getPkcs11Provider().getServices();
 		for (Object nextObj : services.toArray()) {
 			Service nextServ = (Service) nextObj;
 			System.err.println(" ** SERVICE ***");
@@ -581,11 +547,11 @@ public class Pkcs11Wrapper extends Pkcs11Util {
 			System.err.println("NAME: " + prov.getName());
 			System.err.println("VERS: " + prov.getVersion());
 		}
-		 pkcs11Ref.getPkcs11Provider().getInfo();
+		pkcs11Ref.getPkcs11Provider().getInfo();
 	}
 
 	public void println(String string) {
-		System.out.println("* " + string);
+		LOG.debug("* " + string);
 
 	}
 
@@ -602,9 +568,9 @@ public class Pkcs11Wrapper extends Pkcs11Util {
 		String slotTxt = String.format("\n slotListIndex  = %d ", i);
 
 		String ext = "attributes(*,*,*)=\n{\nCKA_TOKEN=true\nCKA_LOCAL=true\n}";
-		pkcs11Ref.setConfigString( "name = " + name.replace(' ', '_') + "\n" + "library = "
-				+ pkcs11Ref.getPKCS11Library() + slotTxt +
-				"\n attributes = compatibility \n" + ext);
+		pkcs11Ref.setConfigString("name = " + name.replace(' ', '_') + "\n"
+				+ "library = " + pkcs11Ref.getPKCS11Library() + slotTxt
+				+ "\n attributes = compatibility \n" + ext);
 		byte[] configBytes = pkcs11Ref.getConfigString().getBytes();
 		pkcs11Ref.setConfigStream(new ByteArrayInputStream(configBytes));
 	}
@@ -614,13 +580,13 @@ public class Pkcs11Wrapper extends Pkcs11Util {
 		for (CertId next : this.listCerts) {
 			ret += String.format("{\"alias\":\"%s\",\"subject\":\"%s\"},\n",
 					next.getAlias(), next.getSubjectDn());
-			System.out.println("ret:"+ret);
+			LOG.debug("ret:" + ret);
 		}
-		
-		System.out.println("ret:"+ret);
-		//ret = ret.replace(ret.substring(ret.length() - 2), "");
+
+		LOG.debug("ret:" + ret);
+		// ret = ret.replace(ret.substring(ret.length() - 2), "");
 		ret = ret.substring(0, ret.length() - 2);
-		System.out.println("ret:"+ret);
+		LOG.debug("ret:" + ret);
 		return "[\n" + ret + "]\n";
 	}
 
@@ -634,7 +600,8 @@ public class Pkcs11Wrapper extends Pkcs11Util {
 			Enumeration aliasesEnum = pkcs11Ref.getKeyStore().aliases();
 			while (aliasesEnum.hasMoreElements()) {
 				alias = (String) aliasesEnum.nextElement();
-				Certificate cert = pkcs11Ref.getKeyStore().getCertificate(alias);
+				Certificate cert = pkcs11Ref.getKeyStore()
+						.getCertificate(alias);
 				X509Certificate x509Certificate = (X509Certificate) cert;
 				RSAPublicKey rsaPubK = (RSAPublicKey) x509Certificate
 						.getPublicKey();
@@ -684,12 +651,12 @@ public class Pkcs11Wrapper extends Pkcs11Util {
 	}
 
 	private static void debugPrn(String x) {
-		System.out.println(x);
+		LOG.debug(x);
 	}
 
 	void skeyDercypt() throws Exception {
 
-		System.out.println("sign");
+		LOG.debug("sign");
 		switch (this.store) {
 		case STORE_PKCS11:
 			skeyDercyptP11();
@@ -704,14 +671,15 @@ public class Pkcs11Wrapper extends Pkcs11Util {
 			break;
 
 		default:
-			System.out.println("opps " + this.store);
+			LOG.debug("opps " + this.store);
 			break;
 		}
 	}
 
 	private void skeyDercyptP11() throws Exception {
 
-		PrivateKey privateKey = (PrivateKey) pkcs11Ref.getKeyStore().getKey(this.getCertAlias(), "".toCharArray());
+		PrivateKey privateKey = (PrivateKey) pkcs11Ref.getKeyStore().getKey(
+				this.getCertAlias(), "".toCharArray());
 
 		byte[] origBin = (new BASE64Decoder()).decodeBuffer(this.orig);
 

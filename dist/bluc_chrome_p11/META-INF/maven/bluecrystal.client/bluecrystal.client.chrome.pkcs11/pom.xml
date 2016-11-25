@@ -36,43 +36,23 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>2.3.1</version>
 				<configuration>
-					<!-- <finalName>bluc_chrome_p11</finalName>-->
-					<!-- <outputDirectory>../dist</outputDirectory> -->
+					<finalName>bluc_chrome_p11</finalName>
+					<outputDirectory>../dist</outputDirectory>
 					<excludes>
 						<exclude>**/pom.xml</exclude>
 						<exclude>**/pom.properties</exclude>
 					</excludes>
 					<archive>
-						<manifest>
-							<addClasspath>true</addClasspath>
-							<classpathPrefix>lib/</classpathPrefix>
-							<mainClass>bluecrystal.chrome.sign.NativeMessagingHost</mainClass>
-						</manifest>
 						<manifestEntries>
 							<Codebase>*</Codebase>
 							<Permissions>all-permissions</Permissions>
 							<Application-Library-Allowable-Codebase>*</Application-Library-Allowable-Codebase>
 							<Caller-Allowable-Codebase>*</Caller-Allowable-Codebase>
 							<Application-Name>BluC Chrome Extension PKCS#11</Application-Name>
+							<mainClass>bluecrystal.chrome.sign.NativeMessagingHost</mainClass>
 						</manifestEntries>
 					</archive>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>com.jolira</groupId>
-				<artifactId>onejar-maven-plugin</artifactId>
-				<version>1.4.4</version>
-				<executions>
-					<execution>
-						<configuration>
-							<!-- Optional, default is false -->
-							<attachToBuild>true</attachToBuild>
-						</configuration>
-						<goals>
-							<goal>one-jar</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>
