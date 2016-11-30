@@ -21,7 +21,6 @@ package bluecrystal.chrome.sign;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.KeyStore;
@@ -45,6 +44,7 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.security.auth.login.FailedLoginException;
+import javax.security.auth.login.LoginException;
 import javax.smartcardio.CardTerminal;
 import javax.smartcardio.TerminalFactory;
 
@@ -83,7 +83,6 @@ public class Pkcs11Wrapper extends Pkcs11Util {
 	private String certAlias;
 	public String orig;
 	private String userPIN;
-	private String lastError;
 	private String lastFilePath;
 	public int alg;
 	private int store;
@@ -141,10 +140,6 @@ public class Pkcs11Wrapper extends Pkcs11Util {
 
 	public void setAlg(int alg) {
 		this.alg = alg;
-	}
-
-	public String getLastError() {
-		return lastError;
 	}
 
 	public String getUserPIN() {
@@ -278,7 +273,7 @@ public class Pkcs11Wrapper extends Pkcs11Util {
 		} else {
 			signp11NoSignPol();
 		}
-		Security.removeProvider(pkcs11Ref.getPkcs11Provider().getName());
+		// Security.removeProvider(pkcs11Ref.getPkcs11Provider().getName());
 	}
 
 	private void signp11NoSignPol() throws Exception {
@@ -496,20 +491,7 @@ public class Pkcs11Wrapper extends Pkcs11Util {
 			}
 		}
 
-		try {
-			pkcs11Ref.getKeyStore().load(null, userPIN.toCharArray());
-			this.lastError = "";
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			if (e instanceof IOException) {
-				IOException io = (IOException) e;
-				FailedLoginException fl = (FailedLoginException) e.getCause();
-				PKCS11Exception p1ex = (PKCS11Exception) fl.getCause();
-				LOG.error(p1ex.getMessage());
-				this.lastError = p1ex.getMessage();
-			}
-		}
-
+		pkcs11Ref.getKeyStore().load(null, userPIN.toCharArray());
 	}
 
 	private String verifyPath(String next) {
@@ -563,7 +545,7 @@ public class Pkcs11Wrapper extends Pkcs11Util {
 			i = getSlot();
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			LOG.error("can't createConfigSlotListIndex", e1);
 		}
 		String slotTxt = String.format("\n slotListIndex  = %d ", i);
 
@@ -612,8 +594,7 @@ public class Pkcs11Wrapper extends Pkcs11Util {
 			}
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error("can't refreshCerts", e);
 		}
 
 	}
