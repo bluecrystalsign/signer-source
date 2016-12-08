@@ -20,15 +20,15 @@ package bluecrystal.service.loader;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import bluecrystal.service.interfaces.RepoLoader;
+import bluecrystal.service.util.PrefsFactory;
 
 public class FSRepoLoader implements RepoLoader {
 	
-	private String certFolder = Messages.getString("FSRepoLoader.certFolder"); //$NON-NLS-1$
-//	static final Logger logger = LoggerFactory.getLogger(FSRepoLoader.class);
+	private String certFolder = PrefsFactory.getCertFolder(); //$NON-NLS-1$
+
 
 	@Override
 	public InputStream load(String key) throws Exception {

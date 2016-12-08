@@ -3,6 +3,8 @@ package bluecrystal.service.loader;
 import java.util.HashMap;
 import java.util.Map;
 
+import bluecrystal.service.util.PrefsFactory;
+
 public class SignaturePolicyLoaderImpl implements SignaturePolicyLoader {
 
 	Map<String, byte[]> policies;
@@ -18,7 +20,7 @@ public class SignaturePolicyLoaderImpl implements SignaturePolicyLoader {
 		if(policies.containsKey(url)){
 			return policies.get(url);
 		} else {
-			sp = ExternalLoaderHttpNio.getfromUrl(url);
+			sp = PrefsFactory.getHttpLoader().getfromUrl(url);
 			policies.put(url, sp);
 		}
 		return sp;

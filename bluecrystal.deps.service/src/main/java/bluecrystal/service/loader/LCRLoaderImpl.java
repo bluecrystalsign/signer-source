@@ -34,24 +34,22 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import bluecrystal.service.util.PrefsFactory;
+
 public class LCRLoaderImpl implements LCRLoader {
 	static final Logger LOG = LoggerFactory.getLogger(LCRLoaderImpl.class);
 	private static CacheManager localCache = null;
 	
-	private static String cacheType = Messages.getString("LCRLoader.cacheType");
+//	private static String cacheType = Messages.getString("LCRLoader.cacheType");
 	static {
-		try {
-			localCache = (CacheManager) Class
-			        .forName(cacheType)
-			        .newInstance();
-//			if(repoLoader==null){
-//				LOG.error("Could not load Repoloader ");
-//			}
-		} catch (Exception e) {
-//			LOG.error("Could not load Repoloader ", e);
-//			e.printStackTrace();
-			localCache = new bluecrystal.service.loader.MapCacheManager();
-		}
+		localCache = PrefsFactory.getCacheManager();
+//		try {
+//			localCache = (CacheManager) Class
+//			        .forName(cacheType)
+//			        .newInstance();
+//		} catch (Exception e) {
+//			localCache = new bluecrystal.service.loader.MapCacheManager();
+//		}
 	}
 	
 	
@@ -113,7 +111,7 @@ public class LCRLoaderImpl implements LCRLoader {
 		 return crl;
 	}
 	private byte[] getFromServer(String url) throws MalformedURLException, IOException {
-		return ExternalLoaderHttpNio.getfromUrl(url);
+		return PrefsFactory.getHttpLoader().getfromUrl(url);
 	}
 	private X509CRL getInCache(String url, Date date) {
 		return getLocalCache().getInCache(url, date);

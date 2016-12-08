@@ -28,7 +28,7 @@ import java.nio.channels.ReadableByteChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ExternalLoaderHttpNio {
+public class ExternalLoaderHttpNio implements HttpLoader {
 	static final Logger LOG = LoggerFactory.getLogger(ExternalLoaderHttpNio.class);
 	private static final int BUFFER_SIZE = 4 * 1024 * 1024;
 
@@ -36,7 +36,7 @@ public class ExternalLoaderHttpNio {
 		super();
 	}
 
-	public static  byte[] getfromUrl(String urlName) throws MalformedURLException,
+	public byte[] getfromUrl(String urlName) throws MalformedURLException,
 	IOException  {
 		int totalRead = 0;
 		URL url = new URL(urlName);

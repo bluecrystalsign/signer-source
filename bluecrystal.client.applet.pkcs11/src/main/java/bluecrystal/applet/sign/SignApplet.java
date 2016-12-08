@@ -65,7 +65,16 @@ public class SignApplet extends java.applet.Applet implements SignAppletP11 {
 
 		String module = getParameter("module");
 		String otherPath = getParameter("otherPath");
+		
+		
+//		<PARAM name="module"
+//				value="aetpkss1.dll;eTPKCS11.dll;asepkcs.dll;libaetpkss.dylib;libeTPkcs11.dylib" />
+//			<PARAM name="otherPath" value="/usr/local/lib" />
+		
+		module = "aetpkss1.dll;eTPKCS11.dll;asepkcs.dll;libaetpkss.dylib;libeTPkcs11.dylib";
+		otherPath = "/usr/local/lib";
 		init(module, otherPath);
+		listCerts(0, "123");
 	}
 	public void init(String module, String otherPath) {
 		try {

@@ -35,32 +35,32 @@ import org.slf4j.LoggerFactory;
 
 import bluecrystal.service.exception.LicenseNotFoundExeception;
 import bluecrystal.service.interfaces.RepoLoader;
-import bluecrystal.service.loader.Messages;
+import bluecrystal.service.util.PrefsFactory;
 
 public class UtilsRepo {
 	static final Logger LOG = LoggerFactory.getLogger(UtilsRepo.class);
 	
 	static private	RepoLoader repoLoader;
-	private static String loaderType = Messages.getString("RepoLoader.loaderType");
 	
 	
 	static {
-		try {
-			repoLoader = (RepoLoader) Class
-			        .forName(loaderType)
-			        .newInstance();
-			if(repoLoader==null){
-				LOG.error("Could not load Repoloader ");
-				loadDefault();
-			}
-		} catch (Exception e) {
-			LOG.error("Could not load Repoloader ", e);
-			loadDefault();
-		}
+		repoLoader = PrefsFactory.getRepoLoader();
+//		try {
+//			repoLoader = (RepoLoader) Class
+//			        .forName(loaderType)
+//			        .newInstance();
+//			if(repoLoader==null){
+//				LOG.error("Could not load Repoloader ");
+//				loadDefault();
+//			}
+//		} catch (Exception e) {
+//			LOG.error("Could not load Repoloader ", e);
+//			loadDefault();
+//		}
 	}
-	private static void loadDefault() {
-		repoLoader = new bluecrystal.service.loader.FSRepoLoader();
-	}
+//	private static void loadDefault() {
+//		repoLoader = new bluecrystal.service.loader.FSRepoLoader();
+//	}
 	
 	protected static final String ID_SHA1 = "1.3.14.3.2.26";
 	
@@ -262,7 +262,7 @@ public class UtilsRepo {
 //	}	
 	public static RepoLoader getRepoLoader() {
 		if(repoLoader == null){
-			loadDefault();
+			repoLoader = PrefsFactory.getRepoLoader();
 		}
 		return repoLoader;
 	}
