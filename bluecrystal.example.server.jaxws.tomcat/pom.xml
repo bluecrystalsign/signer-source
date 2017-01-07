@@ -4,7 +4,7 @@
 	<groupId>al.bluecryst</groupId>
 	<artifactId>bluecrystal.example.server.jaxws.tomcat</artifactId>
 	<packaging>war</packaging>
-	<version>1.5.4</version>
+	<version>1.10.0</version>
 
 	<name>Web App Exampls</name>
 	<description>Web App that shows how to use BluC</description>
@@ -46,7 +46,7 @@
 		<dependency>
 			<groupId>al.bluecryst</groupId>
 			<artifactId>bluecrystal.deps.service</artifactId>
-			<version>1.5.4</version>
+			<version>1.10.0</version>
 		</dependency>
 
 		<dependency>

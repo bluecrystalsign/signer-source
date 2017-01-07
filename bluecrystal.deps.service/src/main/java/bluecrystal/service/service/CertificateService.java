@@ -54,9 +54,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.naming.ldap.LdapName;
-import javax.naming.ldap.Rdn;
-
 import org.bouncycastle.util.encoders.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,6 +70,7 @@ import bluecrystal.service.helper.UtilsLocal;
 import bluecrystal.service.helper.UtilsRepo;
 import bluecrystal.service.loader.LCRLoader;
 import bluecrystal.service.loader.LCRLoaderImpl;
+import bluecrystal.service.util.PrefsFactory;
 import bluecrystal.service.validator.CrlValidatorImpl;
 import bluecrystal.service.validator.OcspValidatorImpl;
 import bluecrystal.service.validator.StatusValidator;
@@ -82,6 +80,10 @@ public class CertificateService {
 	static final Logger logger = LoggerFactory.getLogger(CertificateService.class);
 	
 	private static LCRLoader lcrLoader;
+	
+	static {
+		lcrLoader = PrefsFactory.getLCRLoader();
+	}
 //	private static String loaderType = Messages.getString("LCRLoader.loaderType");
 //	
 //	static {

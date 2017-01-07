@@ -8,6 +8,7 @@ import bluecrystal.service.interfaces.RepoLoader;
 import bluecrystal.service.loader.CacheManager;
 import bluecrystal.service.loader.FSRepoLoader;
 import bluecrystal.service.loader.HttpLoader;
+import bluecrystal.service.loader.LCRLoader;
 import bluecrystal.service.loader.Messages;
 
 public class PrefsFactory {
@@ -66,6 +67,22 @@ public class PrefsFactory {
 		}
 		return httpLoader;
 	}
+	
+	public static LCRLoader getLCRLoader(){
+		LCRLoader lcrLoader = null;
+		String loaderType = Messages.getString("LCRLoader.loaderType");
+		try {
+			lcrLoader = (LCRLoader) Class
+			        .forName(loaderType)
+			        .newInstance();
+			if(lcrLoader == null){
+				lcrLoader = loadDefaultLCRLoader();
+			}
+		} catch (Exception e) {
+			lcrLoader = loadDefaultLCRLoader();
+		}
+		return lcrLoader;
+	}
 
 	private static FSRepoLoader loadDefaultFSRepoLoader() {
 		return new bluecrystal.service.loader.FSRepoLoader();
@@ -75,5 +92,9 @@ public class PrefsFactory {
 	}
 	private static HttpLoader loadDefaultHttpLoader() {
 		return new bluecrystal.service.loader.ExternalLoaderHttpNio();
+	}
+	
+	private static LCRLoader loadDefaultLCRLoader() {
+		return new bluecrystal.service.loader.LCRLoaderImpl();
 	}
 }
