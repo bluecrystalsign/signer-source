@@ -1760,7 +1760,7 @@ public class DerEncoder {
 				DERPrintableString derOCStr = (DERPrintableString) derObjB;
 				contentStr = new String(derOCStr.getOctets(), "UTF8");
 			} else {
-				System.err.println("FORMAT OF SAN: UNRECOGNIZED -> "
+				LOG.info("FORMAT OF SAN: UNRECOGNIZED -> "
 						+ derObjB.getClass().getCanonicalName());
 			}
 			LOG.debug(sanOid + " -> " + contentStr);
