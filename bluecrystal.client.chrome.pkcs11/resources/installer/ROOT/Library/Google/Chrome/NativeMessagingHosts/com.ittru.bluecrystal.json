@@ -1,0 +1,9 @@
+{
+  "name": "com.ittru.bluecrystal",
+  "description": "Ittru Fusion PKCS#11 Native Messaging Host",
+  "path": "/Library/BlueCrystal Extension/start.sh",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://ifabfihopbhogohngopafekijckmpmka/", "chrome-extension://aieljmkpabepbkpdpdogcflbccegfkmh/"
+  ]
+}

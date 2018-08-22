@@ -1,9 +1,0 @@
-{
-  "name": "br.jus.trf2.assijus",
-  "description": "Assijus PKCS#11 Native Messaging Host",
-  "path": "/Library/Assijus Chrome Extension/start.sh",
-  "type": "stdio",
-  "allowed_origins": [
-    "chrome-extension://ifabfihopbhogohngopafekijckmpmka/"
-  ]
-}
