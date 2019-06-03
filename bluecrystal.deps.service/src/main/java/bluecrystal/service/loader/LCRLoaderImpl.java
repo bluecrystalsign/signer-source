@@ -93,7 +93,6 @@ public class LCRLoaderImpl implements LCRLoader {
 			ret = crl;
 		}
 
-		LOG.debug(":: X509CRL get: "+ret);
 		return ret;
 		
 	}	
