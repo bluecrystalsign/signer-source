@@ -232,7 +232,7 @@ public class CertificateService {
 		lcrLoader = new LCRLoaderImpl();
 		CrlValidatorImpl crlValidator = new CrlValidatorImpl(lcrLoader);
 		statusValidator = new StatusValidatorImpl(crlValidator, ocspValidator);
-		statusValidator.setUseOcsp(true);
+		statusValidator.setUseOcsp(PrefsFactory.getUseOCSP());
 		org.bouncycastle.jce.provider.BouncyCastleProvider provider = new org.bouncycastle.jce.provider.BouncyCastleProvider();
 		Security.addProvider(provider);
 		enforceKu = false;

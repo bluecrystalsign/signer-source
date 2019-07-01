@@ -20,7 +20,7 @@ public class SignaturePolicyLoaderImpl implements SignaturePolicyLoader {
 		if(policies.containsKey(url)){
 			return policies.get(url);
 		} else {
-			sp = PrefsFactory.getHttpLoader().getfromUrl(url);
+			sp = PrefsFactory.getHttpLoader().get(url);
 			policies.put(url, sp);
 		}
 		return sp;

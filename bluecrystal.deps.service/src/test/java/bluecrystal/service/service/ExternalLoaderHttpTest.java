@@ -2,7 +2,7 @@ package bluecrystal.service.service;
 
 import static org.junit.Assert.fail;
 
-import java.util.Base64;
+import org.bouncycastle.util.encoders.Base64;
 
 import org.junit.Test;
 
@@ -30,8 +30,8 @@ public class ExternalLoaderHttpTest {
 			
 			
 			HttpLoader httpLoader = PrefsFactory.getHttpLoader();
-			byte[] ret = httpLoader.getfromUrl("https://p5.icpedu.rnp.br/crl");
-			System.out.println("resultado: "+ Base64.getEncoder().encodeToString(ret));
+			byte[] ret = httpLoader.get("https://p5.icpedu.rnp.br/crl");
+			System.out.println("resultado: "+ Base64.toBase64String(ret));
 			
 		} catch (Throwable e) {
 			fail(e.getLocalizedMessage());
@@ -44,8 +44,8 @@ public class ExternalLoaderHttpTest {
 		try {
 			
 			
-			byte[] ret = PrefsFactory.getHttpLoader().getfromUrl("http://lcr.caixa.gov.br/accaixajusv2.crl");
-			System.out.println("resultado: ("+ret.length+")"+ Base64.getEncoder().encodeToString(ret));
+			byte[] ret = PrefsFactory.getHttpLoader().get("http://lcr.caixa.gov.br/accaixajusv2.crl");
+			System.out.println("resultado: ("+ret.length+")"+ Base64.toBase64String(ret));
 			
 		} catch (Throwable e) {
 			fail(e.getLocalizedMessage());

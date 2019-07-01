@@ -19,6 +19,9 @@
 package bluecrystal.service.loader;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -36,7 +39,7 @@ public class ExternalLoaderHttpNio implements HttpLoader {
 		super();
 	}
 
-	public byte[] getfromUrl(String urlName) throws MalformedURLException,
+	public byte[] get(String urlName) throws MalformedURLException,
 	IOException  {
 		int totalRead = 0;
 		URL url = new URL(urlName);
@@ -53,5 +56,53 @@ public class ExternalLoaderHttpNio implements HttpLoader {
 		rbc.close();
 		return b;
 	}
+	
+
+	@Override
+	public byte[] post(String url, String contentType, byte[] body) throws MalformedURLException, IOException {
+		URL u = new URL(url);
+		HttpURLConnection con = (HttpURLConnection) u.openConnection();
+
+		con.setAllowUserInteraction(false);
+		con.setDoInput(true);
+		con.setDoOutput(true);
+		con.setUseCaches(false);
+		con.setInstanceFollowRedirects(false);
+		con.setRequestMethod("POST");
+
+		con.setRequestProperty("Content-Length", Integer.toString(body.length));
+		con.setRequestProperty("Content-Type", contentType);
+
+		con.connect();
+		OutputStream os = con.getOutputStream();
+		os.write(body);
+		os.close();
+
+		if (con.getResponseCode() != HttpURLConnection.HTTP_OK) {
+			throw new IOException("Server did not respond with HTTP_OK(200) but with " + con.getResponseCode());
+		}
+
+		if ((con.getContentType() == null) || !con.getContentType().equals("application/ocsp-response")) {
+			throw new IOException("Response MIME type is not application/ocsp-response");
+		}
+
+		// Read response
+		InputStream reader = con.getInputStream();
+
+		int resplen = con.getContentLength();
+		byte[] ocspResponseEncoded = new byte[resplen];
+
+		int offset = 0;
+		int bread;
+		while ((resplen > 0) && (bread = reader.read(ocspResponseEncoded, offset, resplen)) != -1) {
+			offset += bread;
+			resplen -= bread;
+		}
+
+		reader.close();
+		con.disconnect();
+		return ocspResponseEncoded;
+	}
+
 
 }

@@ -110,10 +110,10 @@ public class LCRLoaderImpl implements LCRLoader {
 		 return crl;
 	}
 	private byte[] getFromServer(String url) throws MalformedURLException, IOException {
-		return PrefsFactory.getHttpLoader().getfromUrl(url);
+		return PrefsFactory.getHttpLoader().get(url);
 	}
 	private X509CRL getInCache(String url, Date date) {
-		return getLocalCache().getInCache(url, date);
+		return (X509CRL) getLocalCache().getInCache(url, date);
 	}
 //	private boolean checkInCache(String url, Date date) {
 //		return localCache.checkInCache(url, date);

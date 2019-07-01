@@ -58,6 +58,8 @@ import bluecrystal.service.exception.RevokedException;
 //import bluecrystal.service.exception.RevokedException;
 //import bluecrystal.service.exception.UndefStateException;
 import bluecrystal.service.exception.UndefStateException;
+import bluecrystal.service.loader.CacheManager;
+import bluecrystal.service.util.PrefsFactory;
 
 public class OcspValidatorImpl implements OcspValidator {
 	static final Logger LOG = LoggerFactory.getLogger(OcspValidatorImpl.class);
@@ -82,7 +84,13 @@ public class OcspValidatorImpl implements OcspValidator {
 			OCSPResp ocspResponse = null;
 			for (String ocspUrl : OCSPUrls) {
 				try {
-					ocspResponse = xchangeOcsp(ocspUrl, req);
+					String urlToCache = ocspUrl + "?reqHash=" + nextCert.hashCode();
+					CacheManager cache = PrefsFactory.getCacheManager();
+					ocspResponse = (OCSPResp) cache.getInCache(urlToCache, date);
+					if (ocspResponse == null) {
+						ocspResponse = xchangeOcsp(ocspUrl, req);
+						cache.addToCache(urlToCache, ocspResponse);
+					}
 					break;
 				} catch (Exception e) {
 					LOG.error("Error exchanging OCSP",e);
@@ -107,7 +115,7 @@ public class OcspValidatorImpl implements OcspValidator {
 		return new OperationStatus(StatusConst.UNKNOWN, null);
 	}
 
-	private Date xtractNextUpdate(OCSPResp ocspResponse) throws OCSPQueryException {
+	public static Date xtractNextUpdate(OCSPResp ocspResponse) throws OCSPQueryException {
 		int status = ocspResponse.getStatus();
 		switch (status) {
 //		case OCSPRespStatus.SUCCESSFUL:
@@ -160,6 +168,8 @@ public class OcspValidatorImpl implements OcspValidator {
 				if (singleResp.getCertStatus() instanceof RevokedStatus) {
 					throw new RevokedException();
 				}
+				LOG.debug("this-update=" + singleResp.getThisUpdate().getTime());
+				LOG.debug("next-update=" + singleResp.getNextUpdate().getTime());
 				return singleResp.getNextUpdate();
 			}
 
@@ -172,56 +182,7 @@ public class OcspValidatorImpl implements OcspValidator {
 
 	private OCSPResp xchangeOcsp(String ocspUrl, OCSPReq req)
 			throws MalformedURLException, IOException, OCSPQueryException {
-		URL url = new URL(ocspUrl);
-		HttpURLConnection con = (HttpURLConnection) url.openConnection();
-
-		con.setAllowUserInteraction(false);
-		con.setDoInput(true);
-		con.setDoOutput(true);
-		con.setUseCaches(false);
-		con.setInstanceFollowRedirects(false);
-		con.setRequestMethod("POST"); //$NON-NLS-1$
-
-		con
-				.setRequestProperty(
-						"Content-Length", Integer.toString(req //$NON-NLS-1$
-										.getEncoded().length));
-		con
-				.setRequestProperty(
-						"Content-Type", "application/ocsp-request"); //$NON-NLS-1$ //$NON-NLS-2$
-
-		con.connect();
-		OutputStream os = con.getOutputStream();
-		os.write(req.getEncoded());
-		os.close();
-
-		if (con.getResponseCode() != HttpURLConnection.HTTP_OK) {
-			throw new OCSPQueryException("Server did not respond with HTTP_OK(200) but with "
-					+ con.getResponseCode());
-		}
-
-		if ((con.getContentType() == null)
-				|| !con.getContentType().equals(
-						"application/ocsp-response")) { //$NON-NLS-1$
-			throw new OCSPQueryException("Response MIME type is not application/ocsp-response"); //$NON-NLS-1$
-		}
-
-		// Read response
-		InputStream reader = con.getInputStream();
-
-		int resplen = con.getContentLength();
-		byte[] ocspResponseEncoded = new byte[resplen];
-
-		int offset = 0;
-		int bread;
-		while ((resplen > 0)
-				&& (bread = reader.read(ocspResponseEncoded, offset, resplen)) != -1) {
-			offset += bread;
-			resplen -= bread;
-		}
-
-		reader.close();
-		con.disconnect();
+		byte[] ocspResponseEncoded = PrefsFactory.getHttpLoader().post(ocspUrl, "application/ocsp-request", req.getEncoded());
 		return new OCSPResp(ocspResponseEncoded);
 	}
 	
