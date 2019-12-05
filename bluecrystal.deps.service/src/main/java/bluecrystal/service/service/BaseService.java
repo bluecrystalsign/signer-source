@@ -68,6 +68,13 @@ public abstract class BaseService implements EnvelopeService {
 	protected static final String SIG_POLICY_BES_ID_21 = "2.16.76.1.7.1.1.2.1";
 	protected static final String SIG_POLICY_HASH_21 = "dd57c98a4313bc1398ce"
 			+ "6543d3802458957cf716" + "ae3294ec4d8c26251291" + "e6c1";
+	
+
+	protected static final String SIG_POLICY_URI_23 = "http://politicas.icpbrasil.gov.br/PA_AD_RB_v2_3.der";
+	protected static final String SIG_POLICY_BES_ID_23 = "2.16.76.1.7.1.2.2.3";
+	protected static final String SIG_POLICY_HASH_23 = "80dfe81e2a8ae762cd36"
+			+ "0253722922332ee10164" + "9d92156d847c47c8fb87" + "c9d2";
+
 	protected static final int NDX_SHA1 = 0;
 	protected static final int NDX_SHA224 = 1;
 	protected static final int NDX_SHA256 = 2;

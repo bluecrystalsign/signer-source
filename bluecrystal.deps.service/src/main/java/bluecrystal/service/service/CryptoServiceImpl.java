@@ -82,7 +82,7 @@ public class CryptoServiceImpl implements CryptoService {
 	public CryptoServiceImpl() {
 		super();
 		serv2048 = new ADRBService_21();
-		// serv2048 = new CMS3Service();
+		serv2048 = new ADRBService_23();
 		serv1024 = new ADRBService_10();
 		certServ = new CertificateService();
 		signVerifyServ = new SignVerifyService();
