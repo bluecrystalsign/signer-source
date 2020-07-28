@@ -1,8 +1,9 @@
 # signer-source
 Biblioteca para o desenvolvimento de aplicações de assinatura digital.
 
-# esse repositório foi descontinuado e movido para https://github.com/bluecrystalsign/bluecrystal
-
+>
+> esse repositório foi descontinuado e movido para **https://github.com/bluecrystalsign/bluecrystal**
+>
 ## agora com suporte ao CAdES no padrão 2.3 da ICP-Brasil (DOC-ICP-15)
 
 Se você busca soluções de negócios, já existem 2 soluções que podem atender a sua necessidade.
