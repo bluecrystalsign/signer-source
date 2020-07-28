@@ -465,11 +465,25 @@ public class DerEncoder {
 		// c.2) A partir da versao 2.1, inclusive, id-aa-signingCertificateV2;
 		// d) id-aa-ets-sigPolicyId.
 
+		// A
+		// private static final String ID_CONTENT_TYPE = "1.2.840.113549.1.9.3";
+		Attribute seq5 = createContentType();
+		desSeq.add(seq5);
+
+
 		// OPTIONAL
 		// private static final String ID_SIGNING_TIME = "1.2.840.113549.1.9.5";
 		if (now != null) {
 			Attribute seq3 = createSigningTime(now);
 			desSeq.add(seq3);
+		}
+
+		// B
+		// private static final String ID_MESSAGE_DIGEST =
+		// "1.2.840.113549.1.9.4";
+		if (origHash != null) {
+			Attribute seq4 = createMessageDigest(origHash);
+			desSeq.add(seq4);
 		}
 
 		// D
@@ -490,19 +504,6 @@ public class DerEncoder {
 					hashNdx);
 			desSeq.add(seq1);
 		}
-
-		// B
-		// private static final String ID_MESSAGE_DIGEST =
-		// "1.2.840.113549.1.9.4";
-		if (origHash != null) {
-			Attribute seq4 = createMessageDigest(origHash);
-			desSeq.add(seq4);
-		}
-
-		// A
-		// private static final String ID_CONTENT_TYPE = "1.2.840.113549.1.9.3";
-		Attribute seq5 = createContentType();
-		desSeq.add(seq5);
 
 		DERSequence seq00 = new DERSequence(desSeq);
 		return seq00;

@@ -18,8 +18,6 @@
 
 package bluecrystal.service.service;
 
-
-
 import bluecrystal.service.helper.UtilsLocal;
 
 public class ADRBService_23 extends BaseService {
@@ -32,9 +30,8 @@ public class ADRBService_23 extends BaseService {
 		signedAttr = true;
 //		version = 3; // CEF
 		version = 1;
-		policyHash = UtilsLocal
-				.convHexToByte(SIG_POLICY_HASH_21);
-		policyId = SIG_POLICY_BES_ID_21;
-		policyUri = SIG_POLICY_URI_21;
+		policyHash = UtilsLocal.convHexToByte(SIG_POLICY_HASH_23);
+		policyId = SIG_POLICY_BES_ID_23;
+		policyUri = SIG_POLICY_URI_23;
 	}
 }

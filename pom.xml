@@ -16,7 +16,7 @@
 		<maven.compiler.target>1.7</maven.compiler.target>
 		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>ISO-8859-1</project.reporting.outputEncoding>
-		<bluc.version>1.14.0</bluc.version>
+		<bluc.version>1.17.0</bluc.version>
 	</properties>
 
 	<licenses>

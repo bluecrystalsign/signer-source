@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>al.bluecryst</groupId>
-	<version>1.14.0</version>
+	<version>1.17.0</version>
 
 	<artifactId>bluecrystal.deps.service</artifactId>
 	<name>Services provided to applications</name>
@@ -16,7 +16,7 @@
 		<maven.compiler.target>1.7</maven.compiler.target>
 		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>ISO-8859-1</project.reporting.outputEncoding>
-		<bluc.version>1.14.0</bluc.version>
+		<bluc.version>1.17.0</bluc.version>
 	</properties>
 
 	<licenses>
@@ -56,7 +56,7 @@
 		<dependency>
 			<groupId>al.bluecryst</groupId>
 			<artifactId>bluecrystal.deps.bc_g3</artifactId>
-			<version>1.14.0</version>
+			<version>1.17.0</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.auth0/java-jwt -->

@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>al.bluecryst</groupId>
 	<artifactId>bluecrystal.deps.bc_g3</artifactId>
-	<version>1.14.0</version>
+	<version>1.17.0</version>
 
 	<name>Wrapper to Bouncy Castle 1.54</name>
 	<description>Wrapper to Bouncy Castle 1.54</description>
@@ -18,7 +18,7 @@
 		<maven.compiler.target>1.7</maven.compiler.target>
 		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>ISO-8859-1</project.reporting.outputEncoding>
-		<bluc.version>1.14.0</bluc.version>
+		<bluc.version>1.17.0</bluc.version>
 	</properties>
 
 	<licenses>
@@ -76,7 +76,7 @@
 				<dependency>
 			<groupId>al.bluecryst</groupId>
 			<artifactId>bluecrystal.deps.domain</artifactId>
-			<version>1.14.0</version>
+			<version>1.17.0</version>
 		</dependency>
 		
 <!-- 
