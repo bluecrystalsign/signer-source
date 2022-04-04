@@ -72,7 +72,7 @@
 		<dependency>
 			<groupId>al.bluecryst</groupId>
 			<artifactId>bluecrystal.deps.service</artifactId>
-			<version>1.11.0</version>
+			<version>1.12.0</version>
 		</dependency>
 		
 	</dependencies>
